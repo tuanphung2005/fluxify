@@ -1,31 +1,28 @@
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
-  NavbarMenu,
-  NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
-  NavbarMenuItem,
 } from "@heroui/navbar";
 import { Button } from "@heroui/button";
-import { Kbd } from "@heroui/kbd";
-import { Link } from "@heroui/link";
-import { Input } from "@heroui/input";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
+import { auth } from "@/lib/auth";
+import { NavbarUserMenu } from "./user-menu";
 
-export const Navbar = () => {
+export const Navbar = async () => {
+  const session = await auth();
 
   return (
     <HeroUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
-            <p className="font-bold text-inherit">Fluxify</p>
+            <p className="font-bold text-inherit">fluxify</p>
           </NextLink>
         </NavbarBrand>
         <ul className="hidden lg:flex gap-4 justify-start ml-2">
@@ -47,14 +44,22 @@ export const Navbar = () => {
       </NavbarContent>
 
       <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
+        className=""
         justify="end"
       >
         <ThemeSwitch />
-      </NavbarContent>
-
-      <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <ThemeSwitch />
+        {session ? (
+          <NavbarUserMenu user={session.user} />
+        ) : (
+          <>
+            <Button as={NextLink} href="/auth/login" variant="flat" radius="none">
+              login
+            </Button>
+            <Button as={NextLink} href="/auth/register" color="primary" radius="none">
+              sign up
+            </Button>
+          </>
+        )}
       </NavbarContent>
     </HeroUINavbar>
   );
