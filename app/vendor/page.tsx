@@ -1,6 +1,6 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
-import { Plus } from "lucide-react";
+import { Plus, Edit } from "lucide-react";
 
 export default function VendorPage() {
   return (
@@ -12,9 +12,20 @@ export default function VendorPage() {
             manage your products and orders
           </p>
         </div>
-        <Button color="primary" startContent={<Plus />}>
-          add product
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            color="secondary"
+            variant="flat"
+            href="/vendor/shop-builder"
+            as="a"
+            startContent={<Edit />}
+          >
+            cusomize shop
+          </Button>
+          <Button color="primary" startContent={<Plus />}>
+            add product
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

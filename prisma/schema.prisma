@@ -87,8 +87,9 @@ model VendorProfile {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  products Product[]
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products     Product[]
+  shopTemplate ShopTemplate?
 
   @@map("vendor_profiles")
 }
@@ -187,5 +188,45 @@ model Address {
   orders Order[]
 
   @@map("addresses")
+}
+
+// Shop Builder models
+
+enum ComponentType {
+  HERO
+  PRODUCT_GRID
+  IMAGE_GALLERY
+  VIDEO_EMBED
+  TEXT_BLOCK
+  SPACER
+}
+
+model ShopTemplate {
+  id          String   @id @default(cuid())
+  vendorId    String   @unique
+  name        String   @default("My Shop")
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  vendor     VendorProfile  @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  components ShopComponent[]
+
+  @@map("shop_templates")
+}
+
+model ShopComponent {
+  id         String        @id @default(cuid())
+  templateId String
+  type       ComponentType
+  order      Int
+  config     Json          // Stores component-specific configuration
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  template ShopTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, order])
+  @@map("shop_components")
 }
 
