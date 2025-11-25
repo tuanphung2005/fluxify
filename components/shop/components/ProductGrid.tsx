@@ -1,11 +1,8 @@
 "use client";
 
-import { Card, CardBody, CardFooter } from "@heroui/card";
-import { Button } from "@heroui/button";
 import { ProductGridConfig } from "@/types/shop";
 import { BaseComponentProps } from "@/types/shop-components";
-import { ShoppingCart } from "lucide-react";
-import { Image } from "@heroui/image";
+import ProductCard from "../ProductCard";
 
 interface ProductGridProps extends BaseComponentProps<ProductGridConfig> {
     products?: Array<{
@@ -16,7 +13,7 @@ interface ProductGridProps extends BaseComponentProps<ProductGridConfig> {
     }>;
 }
 
-export default function ProductGrid ({
+export default function ProductGrid({
     config,
     products = [],
 }: ProductGridProps) {
@@ -64,35 +61,15 @@ export default function ProductGrid ({
             )}
             <div className={`grid ${gridCols} gap-6 max-w-7xl mx-auto`}>
                 {displayProducts.map((product) => (
-                    <Card key={product.id} shadow="sm">
-                        <CardBody className="p-0">
-                            <Image
-                                src={product.images[0]}
-                                alt={product.name}
-                                className="w-full object-cover"
-                                width="100%"
-                                height={300}
-                            />
-                        </CardBody>
-                        <CardFooter className="flex-col items-start gap-2">
-                            <h3 className="font-semibold text-lg">{product.name}</h3>
-                            <div className="flex justify-between items-center w-full">
-                                <p className="text-2xl font-bold text-primary">
-                                    ${product.price.toFixed(2)}
-                                </p>
-                                {showAddToCart && (
-                                    <Button
-                                        size="sm"
-                                        color="primary"
-                                        variant="flat"
-                                        startContent={<ShoppingCart className="w-4 h-4" />}
-                                    >
-                                        Add to Cart
-                                    </Button>
-                                )}
-                            </div>
-                        </CardFooter>
-                    </Card>
+                    <ProductCard
+                        key={product.id}
+                        id={product.id}
+                        name={product.name}
+                        price={product.price}
+                        images={product.images}
+                        showAddToCart={showAddToCart}
+                        onAddToCart={(id: string) => console.log("Add to cart:", id)}
+                    />
                 ))}
             </div>
         </div>

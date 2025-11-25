@@ -13,7 +13,7 @@ export default async function ShopPage(props: ShopPageProps) {
     const { vendorId } = params;
 
     // Fetch the vendor's published shop template
-    const template = await prisma.shopTemplate.findUnique({
+    const template = await prisma.shopTemplate.findFirst({
         where: {
             vendorId: vendorId,
             isPublished: true,

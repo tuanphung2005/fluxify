@@ -75,6 +75,8 @@ export function useShopBuilder() {
         }
     };
 
+    console.log("Template isPublished:", template?.isPublished);
+
     const addComponent = async (type: ComponentType, defaultConfig: ComponentConfig) => {
         if (!template) return;
 
@@ -130,43 +132,52 @@ export function useShopBuilder() {
         setHasUnsavedChanges(true);
     };
 
+
+    const performSave = async () => {
+        const response = await fetch("/api/shop/components/sync", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                templateId: template!.id,
+                components: components.map(c => ({
+                    id: c.id,
+                    type: c.type,
+                    order: c.order,
+                    config: c.config
+                }))
+            }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "unknown error");
+        }
+
+        const updatedComponents = await response.json();
+        setComponents(updatedComponents);
+        setSavedComponents(updatedComponents);
+        setHasUnsavedChanges(false);
+
+        if (selectedComponentId?.startsWith("temp_")) {
+            setSelectedComponentId(null);
+        }
+
+        return updatedComponents;
+    };
+
     const saveChanges = async () => {
         if (!hasUnsavedChanges || !template) return;
 
         setIsSaving(true);
+
         try {
-            const response = await fetch("/api/shop/components/sync", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    templateId: template.id,
-                    components: components.map(c => ({
-                        id: c.id,
-                        type: c.type,
-                        order: c.order,
-                        config: c.config
-                    }))
-                }),
+            await toast.promise(performSave(), {
+                loading: "saving changes...",
+                success: "changes saved successfully",
+                error: "failed to save changes",
             });
-
-            if (response.ok) {
-                const updatedComponents = await response.json();
-                setComponents(updatedComponents);
-                setSavedComponents(updatedComponents);
-                setHasUnsavedChanges(false);
-
-                // temporary map
-                if (selectedComponentId?.startsWith("temp_")) {
-                    setSelectedComponentId(null);
-                }
-                toast.success("changes saved successfully");
-            } else {
-                const errorData = await response.json();
-                toast.error(`failed to save changes: ${errorData.error || "unknown error"}`);
-            }
         } catch (error) {
             console.error("Error saving:", error);
-            toast.error("error saving changes");
         } finally {
             setIsSaving(false);
         }
@@ -175,14 +186,13 @@ export function useShopBuilder() {
     const publishShop = async () => {
         if (!template) return;
 
-        try {
-            setIsSaving(true);
-            // save
+        setIsSaving(true);
+
+        const publishPromise = async () => {
             if (hasUnsavedChanges) {
-                await saveChanges();
+                await performSave();
             }
 
-            // publish
             const response = await fetch("/api/shop/template", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
@@ -192,16 +202,23 @@ export function useShopBuilder() {
                 }),
             });
 
-            if (response.ok) {
-                const updatedTemplate = await response.json();
-                setTemplate(updatedTemplate);
-                toast.success("shop published successfully");
-            } else {
-                toast.error("failed to publish shop");
+            if (!response.ok) {
+                throw new Error("failed to publish");
             }
+
+            const updatedTemplate = await response.json();
+            setTemplate(updatedTemplate);
+            return updatedTemplate;
+        };
+
+        try {
+            await toast.promise(publishPromise(), {
+                loading: "publishing shop...",
+                success: "shop published successfully",
+                error: "failed to publish shop",
+            });
         } catch (error) {
             console.error("Error publishing template:", error);
-            toast.error("error publishing shop");
         } finally {
             setIsSaving(false);
         }
