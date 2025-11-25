@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { ComponentType } from "@prisma/client";
 import { ComponentConfig, ShopTemplateData, ShopComponentData } from "@/types/shop";
 import { useRouter } from "next/navigation";
+import { toast } from "@/lib/toast";
 
 export function useShopBuilder() {
     const router = useRouter();
@@ -12,6 +13,7 @@ export function useShopBuilder() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
     useEffect(() => {
         loadTemplate();
     }, []);
@@ -157,13 +159,14 @@ export function useShopBuilder() {
                 if (selectedComponentId?.startsWith("temp_")) {
                     setSelectedComponentId(null);
                 }
+                toast.success("changes saved successfully");
             } else {
                 const errorData = await response.json();
-                alert(`Failed to save changes: ${errorData.error || "Unknown error"}`);
+                toast.error(`failed to save changes: ${errorData.error || "unknown error"}`);
             }
         } catch (error) {
             console.error("Error saving:", error);
-            alert("Error saving changes. Please try again.");
+            toast.error("error saving changes");
         } finally {
             setIsSaving(false);
         }
@@ -192,13 +195,13 @@ export function useShopBuilder() {
             if (response.ok) {
                 const updatedTemplate = await response.json();
                 setTemplate(updatedTemplate);
-                // console.log("Template published successfully");
+                toast.success("shop published successfully");
             } else {
-                alert("Failed to publish template");
+                toast.error("failed to publish shop");
             }
         } catch (error) {
             console.error("Error publishing template:", error);
-            alert("Error publishing template");
+            toast.error("error publishing shop");
         } finally {
             setIsSaving(false);
         }

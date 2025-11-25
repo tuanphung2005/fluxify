@@ -38,15 +38,56 @@ export default function ShopComponentWrapper({
         }
     };
 
+    const getComponentLabel = () => {
+        switch (type) {
+            case "HERO": return "hero section";
+            case "PRODUCT_GRID": return "product grid";
+            case "IMAGE_GALLERY": return "image gallery";
+            case "VIDEO_EMBED": return "video embed";
+            case "TEXT_BLOCK": return "text block";
+            case "SPACER": return "spacer";
+            default: return "component";
+        }
+    };
+
+    const getComponentColor = () => {
+        switch (type) {
+            case "HERO": return "border-primary-500/50 bg-primary-50/10";
+            case "PRODUCT_GRID": return "border-secondary-500/50 bg-secondary-50/10";
+            case "IMAGE_GALLERY": return "border-success-500/50 bg-success-50/10";
+            case "VIDEO_EMBED": return "border-warning-500/50 bg-warning-50/10";
+            case "TEXT_BLOCK": return "border-danger-500/50 bg-danger-50/10";
+            case "SPACER": return "border-default-500/50 bg-default-50/10";
+            default: return "border-default-300";
+        }
+    };
+
+    const getBadgeColor = () => {
+        switch (type) {
+            case "HERO": return "bg-primary-500 text-white";
+            case "PRODUCT_GRID": return "bg-secondary-500 text-white";
+            case "IMAGE_GALLERY": return "bg-success-500 text-white";
+            case "VIDEO_EMBED": return "bg-warning-500 text-white";
+            case "TEXT_BLOCK": return "bg-danger-500 text-white";
+            case "SPACER": return "bg-default-500 text-white";
+            default: return "bg-default-500 text-white";
+        }
+    };
+
     const wrapperClasses = isBuilder
-        ? `cursor-pointer transition-all ${isSelected
-            ? "ring-2 ring-primary ring-offset-2"
-            : "hover:ring-2 hover:ring-default-300"
+        ? `relative border-2 transition-all ${isSelected
+            ? "border-primary ring-2 ring-primary ring-offset-2"
+            : `hover:border-primary/50 ${getComponentColor()}`
         }`
         : "";
 
     return (
         <div className={wrapperClasses} onClick={handleClick}>
+            {isBuilder && (
+                <div className={`absolute top-0 right-0 px-2 py-0.5 text-[10px] font-bold lowercase tracking-wider z-10 ${getBadgeColor()}`}>
+                    {getComponentLabel()}
+                </div>
+            )}
             {type === "HERO" && <HeroComponent config={config as HeroConfig} />}
             {type === "PRODUCT_GRID" && <ProductGridComponent config={config as ProductGridConfig} />}
             {type === "IMAGE_GALLERY" && <ImageGalleryComponent config={config as ImageGalleryConfig} />}

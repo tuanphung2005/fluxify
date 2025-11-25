@@ -27,9 +27,9 @@ export default function BuilderToolbar({
             <div>
                 <h2 className="text-xl font-bold">{templateName}</h2>
                 <p className="text-xs text-default-500">
-                    {isPublished ? "Published" : "Draft"}
+                    {isPublished ? "published" : "draft"}
                     {hasUnsavedChanges && (
-                        <span className="ml-2 text-warning">• Unsaved changes</span>
+                        <span className="ml-2 text-warning">• unsaved changes</span>
                     )}
                 </p>
             </div>
@@ -38,8 +38,9 @@ export default function BuilderToolbar({
                     variant="flat"
                     startContent={<Eye className="w-4 h-4" />}
                     onPress={onPreview}
+                    radius="none"
                 >
-                    Preview
+                    preview
                 </Button>
                 <Button
                     color="primary"
@@ -48,16 +49,18 @@ export default function BuilderToolbar({
                     onPress={onSave}
                     isLoading={isSaving}
                     isDisabled={!hasUnsavedChanges}
+                    radius="none"
                 >
-                    {hasUnsavedChanges ? "Save" : "Saved"}
+                    {hasUnsavedChanges ? "save" : "saved"}
                 </Button>
                 <Button
                     color="success"
                     startContent={<Upload className="w-4 h-4" />}
                     onPress={onPublish}
                     isDisabled={isSaving}
+                    radius="none"
                 >
-                    {isPublished ? "Update" : "Publish"}
+                    {isPublished ? "update" : "publish"}
                 </Button>
             </div>
         </div>

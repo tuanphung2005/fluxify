@@ -46,7 +46,7 @@ export default function ConfigurationPanel({
 
     return (
         <div className="w-80 bg-content1 border-l border-divider p-4 overflow-y-auto">
-            <h3 className="text-lg font-bold mb-4">Configuration</h3>
+            <h3 className="text-lg font-bold mb-4">configuration</h3>
             <div className="space-y-4">
                 {componentType === "HERO" && (
                     <HeroConfig config={localConfig as any} onUpdate={updateField} />

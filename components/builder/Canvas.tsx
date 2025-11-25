@@ -61,7 +61,7 @@ function SortableComponent({
     return (
         <div ref={setNodeRef} style={style} className="relative group">
             {/* Component Controls */}
-            <div className="absolute -left-16 top-4 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex flex-col gap-2">
+            <div className="absolute left-full top-0 opacity-0 group-hover:opacity-100 transition-opacity z-20 flex flex-col gap-1 ml-0.5">
                 <Button
                     isIconOnly
                     size="sm"
@@ -148,7 +148,7 @@ export default function BuilderCanvas({
 
     return (
         <div className="flex-1 bg-background p-8 overflow-y-auto">
-            <div className="max-w-6xl mx-auto space-y-4 pl-16">
+            <div className="max-w-6xl mx-auto space-y-4">
                 <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}

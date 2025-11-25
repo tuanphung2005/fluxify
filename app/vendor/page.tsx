@@ -19,17 +19,18 @@ export default function VendorPage() {
             href="/vendor/shop-builder"
             as="a"
             startContent={<Edit />}
+            radius="none"
           >
-            cusomize shop
+            customize shop
           </Button>
-          <Button color="primary" startContent={<Plus />}>
+          <Button color="primary" startContent={<Plus />} radius="none">
             add product
           </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
+        <Card radius="none">
           <CardHeader>
             <h3 className="text-xl font-semibold">products</h3>
           </CardHeader>
@@ -39,7 +40,7 @@ export default function VendorPage() {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card radius="none">
           <CardHeader>
             <h3 className="text-xl font-semibold">pending orders</h3>
           </CardHeader>
@@ -49,7 +50,7 @@ export default function VendorPage() {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card radius="none">
           <CardHeader>
             <h3 className="text-xl font-semibold">total revenue</h3>
           </CardHeader>
@@ -60,7 +61,7 @@ export default function VendorPage() {
         </Card>
       </div>
 
-      <Card>
+      <Card radius="none">
         <CardHeader>
           <h3 className="text-xl font-semibold">recent products</h3>
         </CardHeader>
