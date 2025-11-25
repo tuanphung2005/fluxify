@@ -11,7 +11,7 @@ export function useShopBuilder() {
     const [savedComponents, setSavedComponents] = useState<ShopComponentData[]>([]);
     const [selectedComponentId, setSelectedComponentId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [isSaving, setIsSaving] = useState(false);
+    const [isOperating, setIsOperating] = useState(false);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
     useEffect(() => {
@@ -75,7 +75,7 @@ export function useShopBuilder() {
         }
     };
 
-    console.log("Template isPublished:", template?.isPublished);
+    // console.log("Template isPublished:", template?.isPublished);
 
     const addComponent = async (type: ComponentType, defaultConfig: ComponentConfig) => {
         if (!template) return;
@@ -168,7 +168,7 @@ export function useShopBuilder() {
     const saveChanges = async () => {
         if (!hasUnsavedChanges || !template) return;
 
-        setIsSaving(true);
+        setIsOperating(true);
 
         try {
             await toast.promise(performSave(), {
@@ -179,14 +179,14 @@ export function useShopBuilder() {
         } catch (error) {
             console.error("Error saving:", error);
         } finally {
-            setIsSaving(false);
+            setIsOperating(false);
         }
     };
 
     const publishShop = async () => {
         if (!template) return;
 
-        setIsSaving(true);
+        setIsOperating(true);
 
         const publishPromise = async () => {
             if (hasUnsavedChanges) {
@@ -220,7 +220,44 @@ export function useShopBuilder() {
         } catch (error) {
             console.error("Error publishing template:", error);
         } finally {
-            setIsSaving(false);
+            setIsOperating(false);
+        }
+    };
+
+    const unpublishShop = async () => {
+        if (!template) return;
+
+        setIsOperating(true);
+
+        const unpublishPromise = async () => {
+            const response = await fetch("/api/shop/template", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: template.id,
+                    isPublished: false,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("failed to unpublish");
+            }
+
+            const updatedTemplate = await response.json();
+            setTemplate(updatedTemplate);
+            return updatedTemplate;
+        };
+
+        try {
+            await toast.promise(unpublishPromise(), {
+                loading: "unpublishing shop...",
+                success: "shop unpublished successfully",
+                error: "failed to unpublish shop",
+            });
+        } catch (error) {
+            console.error("Error unpublishing template:", error);
+        } finally {
+            setIsOperating(false);
         }
     };
 
@@ -235,7 +272,7 @@ export function useShopBuilder() {
         components,
         selectedComponentId,
         isLoading,
-        isSaving,
+        isOperating,
         hasUnsavedChanges,
         setSelectedComponentId,
         addComponent,
@@ -244,6 +281,7 @@ export function useShopBuilder() {
         reorderComponents,
         saveChanges,
         publishShop,
+        unpublishShop,
         previewShop,
     };
 }

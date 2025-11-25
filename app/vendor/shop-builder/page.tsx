@@ -13,7 +13,7 @@ export default function ShopBuilderPage() {
         components,
         selectedComponentId,
         isLoading,
-        isSaving,
+        isOperating,
         hasUnsavedChanges,
         setSelectedComponentId,
         addComponent,
@@ -22,6 +22,7 @@ export default function ShopBuilderPage() {
         reorderComponents,
         saveChanges,
         publishShop,
+        unpublishShop,
         previewShop,
     } = useShopBuilder();
 
@@ -40,10 +41,11 @@ export default function ShopBuilderPage() {
             <BuilderToolbar
                 templateName={template?.name || "my shop"}
                 isPublished={template?.isPublished || false}
-                isSaving={isSaving}
+                isOperating={isOperating}
                 hasUnsavedChanges={hasUnsavedChanges}
                 onSave={saveChanges}
                 onPublish={publishShop}
+                onUnpublish={unpublishShop}
                 onPreview={previewShop}
             />
             <div className="flex h-[calc(100%-4rem)]">
