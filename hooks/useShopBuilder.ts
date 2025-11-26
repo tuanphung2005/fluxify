@@ -3,6 +3,7 @@ import { ComponentType } from "@prisma/client";
 import { ComponentConfig, ShopTemplateData, ShopComponentData } from "@/types/shop";
 import { useRouter } from "next/navigation";
 import { toast } from "@/lib/toast";
+import { api } from "@/lib/api";
 
 export function useShopBuilder() {
     const router = useRouter();
@@ -33,15 +34,9 @@ export function useShopBuilder() {
 
     const createNewTemplate = async () => {
         try {
-            const response = await fetch("/api/shop/template", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: "My Shop" }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setTemplate(data);
+            const response = await api.post<ShopTemplateData>("/api/shop/template", { name: "My Shop" });
+            if (response) {
+                setTemplate(response);
                 setComponents([]);
                 setSavedComponents([]);
                 setHasUnsavedChanges(false);
@@ -53,18 +48,12 @@ export function useShopBuilder() {
 
     const loadTemplate = async () => {
         try {
-            const response = await fetch("/api/shop/template");
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data) {
-                    setTemplate(data);
-                    setComponents(data.components || []);
-                    setSavedComponents(data.components || []);
-                    setHasUnsavedChanges(false);
-                } else {
-                    await createNewTemplate();
-                }
+            const data = await api.get<ShopTemplateData>("/api/shop/template");
+            if (data) {
+                setTemplate(data);
+                setComponents(data.components || []);
+                setSavedComponents(data.components || []);
+                setHasUnsavedChanges(false);
             } else {
                 await createNewTemplate();
             }
@@ -134,26 +123,16 @@ export function useShopBuilder() {
 
 
     const performSave = async () => {
-        const response = await fetch("/api/shop/components/sync", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                templateId: template!.id,
-                components: components.map(c => ({
-                    id: c.id,
-                    type: c.type,
-                    order: c.order,
-                    config: c.config
-                }))
-            }),
+        const updatedComponents = await api.post<ShopComponentData[]>("/api/shop/components/sync", {
+            templateId: template!.id,
+            components: components.map(c => ({
+                id: c.id,
+                type: c.type,
+                order: c.order,
+                config: c.config
+            }))
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || "unknown error");
-        }
-
-        const updatedComponents = await response.json();
         setComponents(updatedComponents);
         setSavedComponents(updatedComponents);
         setHasUnsavedChanges(false);
@@ -193,20 +172,10 @@ export function useShopBuilder() {
                 await performSave();
             }
 
-            const response = await fetch("/api/shop/template", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    id: template.id,
-                    isPublished: true,
-                }),
+            const updatedTemplate = await api.put<ShopTemplateData>("/api/shop/template", {
+                id: template.id,
+                isPublished: true,
             });
-
-            if (!response.ok) {
-                throw new Error("failed to publish");
-            }
-
-            const updatedTemplate = await response.json();
             setTemplate(updatedTemplate);
             return updatedTemplate;
         };
@@ -230,20 +199,10 @@ export function useShopBuilder() {
         setIsOperating(true);
 
         const unpublishPromise = async () => {
-            const response = await fetch("/api/shop/template", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    id: template.id,
-                    isPublished: false,
-                }),
+            const updatedTemplate = await api.put<ShopTemplateData>("/api/shop/template", {
+                id: template.id,
+                isPublished: false,
             });
-
-            if (!response.ok) {
-                throw new Error("failed to unpublish");
-            }
-
-            const updatedTemplate = await response.json();
             setTemplate(updatedTemplate);
             return updatedTemplate;
         };

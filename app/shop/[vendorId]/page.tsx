@@ -18,10 +18,9 @@ export default async function ShopPage(props: ShopPageProps) {
             vendorId: vendorId,
             isPublished: true,
         },
-        include: {
-            components: {
-                orderBy: { order: "asc" },
-            },
+        select: {
+            id: true,
+            publishedComponents: true,
             vendor: {
                 include: {
                     products: true,
@@ -34,19 +33,21 @@ export default async function ShopPage(props: ShopPageProps) {
         notFound();
     }
 
+    // Parse published components
+    const components = (template.publishedComponents as any[]) || [];
+
     return (
         <div className="min-h-screen">
-
-            {template.components.map((component) => (
+            {components.map((component) => (
                 <ShopComponentWrapper
                     key={component.id}
                     type={component.type}
-                    config={component.config as any}
+                    config={component.config}
                     isBuilder={false}
                 />
             ))}
 
-            {template.components.length === 0 && (
+            {components.length === 0 && (
                 <div className="flex items-center justify-center min-h-[60vh]">
                     <div className="text-center">
                         <h2 className="text-2xl font-bold text-default-500 mb-2">

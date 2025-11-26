@@ -66,13 +66,25 @@ export async function PUT(req: NextRequest) {
 
         const { template } = ownershipCheck;
 
+        // Prepare update data
+        const updateData: any = {
+            name: name !== undefined ? name : template.name,
+            isPublished: isPublished !== undefined ? isPublished : template.isPublished,
+        };
+
+        // If publishing, create a snapshot of current components
+        if (isPublished === true) {
+            const currentComponents = await prisma.shopComponent.findMany({
+                where: { templateId: id },
+                orderBy: { order: "asc" },
+            });
+            updateData.publishedComponents = currentComponents;
+        }
+
         // Update template
         const updatedTemplate = await prisma.shopTemplate.update({
             where: { id },
-            data: {
-                name: name !== undefined ? name : template.name,
-                isPublished: isPublished !== undefined ? isPublished : template.isPublished,
-            },
+            data: updateData,
             include: {
                 components: {
                     orderBy: { order: "asc" },
