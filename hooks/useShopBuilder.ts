@@ -3,7 +3,7 @@ import { ComponentType } from "@prisma/client";
 import { ComponentConfig, ShopTemplateData, ShopComponentData } from "@/types/shop";
 import { useRouter } from "next/navigation";
 import { toast } from "@/lib/toast";
-import { api } from "@/lib/api";
+import { api } from "@/lib/api/api";
 
 export function useShopBuilder() {
     const router = useRouter();

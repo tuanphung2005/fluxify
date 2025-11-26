@@ -1,7 +1,9 @@
 "use client";
 
 import { Button } from "@heroui/button";
+import { useDisclosure } from "@heroui/react";
 import { Save, Eye, Upload, Undo2 } from "lucide-react";
+import ConfirmationModal from "@/components/common/ConfirmationModal";
 
 interface BuilderToolbarProps {
     templateName: string;
@@ -24,61 +26,86 @@ export default function BuilderToolbar({
     onUnpublish,
     onPreview,
 }: BuilderToolbarProps) {
+    const {
+        isOpen: isUnpublishModalOpen,
+        onOpen: onUnpublishModalOpen,
+        onClose: onUnpublishModalClose,
+        onOpenChange: onUnpublishModalOpenChange,
+    } = useDisclosure();
+
+    const handleUnpublishConfirm = () => {
+        onUnpublish();
+        onUnpublishModalClose();
+    };
+
     return (
-        <div className="h-16 bg-content1 border-b border-divider px-6 flex items-center justify-between">
-            <div>
-                <h2 className="text-xl font-bold">{templateName}</h2>
-                <p className="text-xs text-default-500">
-                    {isPublished ? "published" : "draft"}
-                    {hasUnsavedChanges && (
-                        <span className="ml-2 text-warning">• unsaved changes</span>
-                    )}
-                </p>
-            </div>
-            <div className="flex gap-3">
-                <Button
-                    variant="flat"
-                    startContent={<Eye />}
-                    onPress={onPreview}
-                    radius="none"
-                >
-                    preview
-                </Button>
-                <Button
-                    color="primary"
-                    variant="flat"
-                    startContent={<Save />}
-                    onPress={onSave}
-                    isLoading={isOperating}
-                    isDisabled={!hasUnsavedChanges}
-                    radius="none"
-                >
-                    {hasUnsavedChanges ? "save" : "saved"}
-                </Button>
-                <Button
-                    color="success"
-                    startContent={<Upload />}
-                    onPress={onPublish}
-                    isLoading={isOperating}
-                    isDisabled={isOperating}
-                    radius="none"
-                >
-                    {isPublished ? "update" : "publish"}
-                </Button>
-                {isPublished && (
+        <>
+            <div className="h-16 bg-content1 border-b border-divider px-6 flex items-center justify-between">
+                <div>
+                    <h2 className="text-xl font-bold">{templateName}</h2>
+                    <p className="text-xs text-default-500">
+                        {isPublished ? "published" : "draft"}
+                        {hasUnsavedChanges && (
+                            <span className="ml-2 text-warning">• unsaved changes</span>
+                        )}
+                    </p>
+                </div>
+                <div className="flex gap-3">
                     <Button
-                        color="warning"
                         variant="flat"
-                        onPress={onUnpublish}
+                        startContent={<Eye />}
+                        onPress={onPreview}
+                        radius="none"
+                    >
+                        preview
+                    </Button>
+                    <Button
+                        color="primary"
+                        variant="flat"
+                        startContent={<Save />}
+                        onPress={onSave}
+                        isLoading={isOperating}
+                        isDisabled={!hasUnsavedChanges}
+                        radius="none"
+                    >
+                        {hasUnsavedChanges ? "save" : "saved"}
+                    </Button>
+                    <Button
+                        color="success"
+                        startContent={<Upload />}
+                        onPress={onPublish}
                         isLoading={isOperating}
                         isDisabled={isOperating}
                         radius="none"
-                        startContent={<Undo2 />}
                     >
-                        unpublish
+                        {isPublished ? "update" : "publish"}
                     </Button>
-                )}
+                    {isPublished && (
+                        <Button
+                            color="warning"
+                            variant="flat"
+                            onPress={onUnpublishModalOpen}
+                            isLoading={isOperating}
+                            isDisabled={isOperating}
+                            radius="none"
+                            startContent={<Undo2 />}
+                        >
+                            unpublish
+                        </Button>
+                    )}
+                </div>
             </div>
-        </div>
+
+            <ConfirmationModal
+                isOpen={isUnpublishModalOpen}
+                onOpenChange={onUnpublishModalOpenChange}
+                title="Unpublish Shop"
+                description="Are you sure you want to unpublish your shop? This will make your shop inaccessible to customers."
+                confirmText="Unpublish"
+                variant="warning"
+                onConfirm={handleUnpublishConfirm}
+                isLoading={isOperating}
+            />
+        </>
     );
 }
