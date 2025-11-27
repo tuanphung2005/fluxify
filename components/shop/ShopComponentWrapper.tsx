@@ -23,6 +23,12 @@ interface ShopComponentWrapperProps {
     isBuilder?: boolean;
     onSelect?: () => void;
     isSelected?: boolean;
+    products?: Array<{
+        id: string;
+        name: string;
+        price: number;
+        images: string[];
+    }>;
 }
 
 export default function ShopComponentWrapper({
@@ -31,6 +37,7 @@ export default function ShopComponentWrapper({
     isBuilder = false,
     onSelect,
     isSelected = false,
+    products,
 }: ShopComponentWrapperProps) {
     const handleClick = () => {
         if (isBuilder && onSelect) {
@@ -89,7 +96,7 @@ export default function ShopComponentWrapper({
                 </div>
             )}
             {type === "HERO" && <HeroComponent config={config as HeroConfig} />}
-            {type === "PRODUCT_GRID" && <ProductGridComponent config={config as ProductGridConfig} />}
+            {type === "PRODUCT_GRID" && <ProductGridComponent config={config as ProductGridConfig} products={products} />}
             {type === "IMAGE_GALLERY" && <ImageGalleryComponent config={config as ImageGalleryConfig} />}
             {type === "VIDEO_EMBED" && <VideoEmbedComponent config={config as VideoEmbedConfig} />}
             {type === "TEXT_BLOCK" && <TextBlockComponent config={config as TextBlockConfig} />}

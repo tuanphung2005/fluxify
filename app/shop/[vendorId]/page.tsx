@@ -35,6 +35,12 @@ export default async function ShopPage(props: ShopPageProps) {
 
     // Parse published components
     const components = (template.publishedComponents as any[]) || [];
+    const products = template.vendor.products.map(p => ({
+        id: p.id,
+        name: p.name,
+        price: Number(p.price),
+        images: p.images,
+    }));
 
     return (
         <div className="min-h-screen">
@@ -44,6 +50,7 @@ export default async function ShopPage(props: ShopPageProps) {
                     type={component.type}
                     config={component.config}
                     isBuilder={false}
+                    products={products}
                 />
             ))}
 

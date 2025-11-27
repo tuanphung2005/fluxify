@@ -84,6 +84,7 @@ model VendorProfile {
   userId      String   @unique
   storeName   String
   description String?
+  favicon     String?  // Shop favicon URL
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -101,6 +102,7 @@ model Product {
   price       Decimal  @db.Decimal(10, 2)
   stock       Int      @default(0)
   images      String[]
+  variants    Json?    // Product variants (e.g., size, color options)
   vendorId    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

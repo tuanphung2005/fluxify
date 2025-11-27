@@ -5,6 +5,21 @@ import { useRouter } from "next/navigation";
 import { toast } from "@/lib/toast";
 import { api } from "@/lib/api/api";
 
+interface Product {
+    id: string;
+    name: string;
+    price: number;
+    stock: number;
+    images: string[];
+}
+
+interface VendorProfile {
+    id: string;
+    storeName: string;
+    description: string | null;
+    favicon: string | null;
+}
+
 export function useShopBuilder() {
     const router = useRouter();
     const [template, setTemplate] = useState<ShopTemplateData | null>(null);
@@ -14,9 +29,12 @@ export function useShopBuilder() {
     const [isLoading, setIsLoading] = useState(true);
     const [isOperating, setIsOperating] = useState(false);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [vendorProfile, setVendorProfile] = useState<VendorProfile | null>(null);
 
     useEffect(() => {
         loadTemplate();
+        loadProducts();
     }, []);
 
     // warn before leaving with unsaved changes
@@ -31,6 +49,15 @@ export function useShopBuilder() {
         window.addEventListener("beforeunload", handleBeforeUnload);
         return () => window.removeEventListener("beforeunload", handleBeforeUnload);
     }, [hasUnsavedChanges]);
+
+    const loadProducts = async () => {
+        try {
+            const data = await api.get<Product[]>("/api/products");
+            setProducts(data);
+        } catch (error) {
+            console.error("Error loading products:", error);
+        }
+    };
 
     const createNewTemplate = async () => {
         try {
@@ -226,6 +253,10 @@ export function useShopBuilder() {
         }
     };
 
+    const refetchProducts = () => {
+        loadProducts();
+    };
+
     return {
         template,
         components,
@@ -233,6 +264,8 @@ export function useShopBuilder() {
         isLoading,
         isOperating,
         hasUnsavedChanges,
+        products,
+        vendorProfile,
         setSelectedComponentId,
         addComponent,
         updateComponentConfig,
@@ -242,5 +275,6 @@ export function useShopBuilder() {
         publishShop,
         unpublishShop,
         previewShop,
+        refetchProducts,
     };
 }

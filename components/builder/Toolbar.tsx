@@ -2,18 +2,23 @@
 
 import { Button } from "@heroui/button";
 import { useDisclosure } from "@heroui/react";
-import { Save, Eye, Upload, Undo2 } from "lucide-react";
+import { Save, Eye, Upload, Undo2, Package, Settings } from "lucide-react";
 import ConfirmationModal from "@/components/common/ConfirmationModal";
+import ProductManager from "@/components/vendor/ProductManager";
+import ShopSettings from "@/components/vendor/ShopSettings";
 
 interface BuilderToolbarProps {
     templateName: string;
     isPublished: boolean;
     isOperating: boolean;
     hasUnsavedChanges: boolean;
+    favicon?: string;
     onSave: () => void;
     onPublish: () => void;
     onUnpublish: () => void;
     onPreview: () => void;
+    onProductsChange?: () => void;
+    onProfileUpdate?: () => void;
 }
 
 export default function BuilderToolbar({
@@ -21,10 +26,13 @@ export default function BuilderToolbar({
     isPublished,
     isOperating,
     hasUnsavedChanges,
+    favicon,
     onSave,
     onPublish,
     onUnpublish,
     onPreview,
+    onProductsChange,
+    onProfileUpdate,
 }: BuilderToolbarProps) {
     const {
         isOpen: isUnpublishModalOpen,
@@ -32,6 +40,8 @@ export default function BuilderToolbar({
         onClose: onUnpublishModalClose,
         onOpenChange: onUnpublishModalOpenChange,
     } = useDisclosure();
+    const productsModal = useDisclosure();
+    const settingsModal = useDisclosure();
 
     const handleUnpublishConfirm = () => {
         onUnpublish();
@@ -51,6 +61,22 @@ export default function BuilderToolbar({
                     </p>
                 </div>
                 <div className="flex gap-3">
+                    <Button
+                        variant="flat"
+                        startContent={<Package />}
+                        onPress={productsModal.onOpen}
+                        radius="none"
+                    >
+                        products
+                    </Button>
+                    <Button
+                        variant="flat"
+                        startContent={<Settings />}
+                        onPress={settingsModal.onOpen}
+                        radius="none"
+                    >
+                        settings
+                    </Button>
                     <Button
                         variant="flat"
                         startContent={<Eye />}
@@ -105,6 +131,20 @@ export default function BuilderToolbar({
                 variant="warning"
                 onConfirm={handleUnpublishConfirm}
                 isLoading={isOperating}
+            />
+
+            <ProductManager
+                isOpen={productsModal.isOpen}
+                onOpenChange={productsModal.onOpenChange}
+                onProductsChange={onProductsChange || (() => { })}
+            />
+
+            <ShopSettings
+                isOpen={settingsModal.isOpen}
+                onOpenChange={settingsModal.onOpenChange}
+                currentStoreName={templateName}
+                currentFavicon={favicon}
+                onUpdate={onProfileUpdate || (() => { })}
             />
         </>
     );

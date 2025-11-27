@@ -1,6 +1,7 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Plus, Edit } from "lucide-react";
+import SalesChart from "@/components/vendor/SalesChart";
 
 export default function VendorPage() {
   return (
@@ -22,9 +23,6 @@ export default function VendorPage() {
             radius="none"
           >
             customize shop
-          </Button>
-          <Button color="primary" startContent={<Plus />} radius="none">
-            add product
           </Button>
         </div>
       </div>
@@ -59,6 +57,10 @@ export default function VendorPage() {
             <p className="text-sm text-default-500 mt-2">all-time earnings</p>
           </CardBody>
         </Card>
+      </div>
+
+      <div className="mt-6">
+        <SalesChart />
       </div>
 
       <Card radius="none">

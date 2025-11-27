@@ -2,7 +2,7 @@
 
 import { ProductGridConfig } from "@/types/shop";
 import { BaseComponentProps } from "@/types/shop-components";
-import ProductCard from "../ProductCard";
+import ProductCard from "../../common/ProductCard";
 
 interface ProductGridProps extends BaseComponentProps<ProductGridConfig> {
     products?: Array<{
@@ -21,12 +21,19 @@ export default function ProductGrid({
         title,
         columns = 3,
         showAddToCart = true,
+        productIds = [],
+        showAllProducts = true,
     } = config as ProductGridConfig;
+
+    // Filter products based on configuration
+    const filteredProducts = showAllProducts
+        ? products
+        : products.filter((p) => productIds.includes(p.id));
 
     // demo products TODO: MAKE A REUSEABLE PRODUCT CARD COMPONENT
     const displayProducts =
-        products.length > 0
-            ? products
+        filteredProducts.length > 0
+            ? filteredProducts
             : [
                 {
                     id: "1",

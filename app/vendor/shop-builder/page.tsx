@@ -24,6 +24,7 @@ export default function ShopBuilderPage() {
         publishShop,
         unpublishShop,
         previewShop,
+        refetchProducts,
     } = useShopBuilder();
 
     if (isLoading) {
@@ -47,6 +48,8 @@ export default function ShopBuilderPage() {
                 onPublish={publishShop}
                 onUnpublish={unpublishShop}
                 onPreview={previewShop}
+                onProductsChange={refetchProducts}
+                onProfileUpdate={() => window.location.reload()}
             />
             <div className="flex h-[calc(100%-4rem)]">
                 <ComponentPalette onSelectComponent={addComponent} />
