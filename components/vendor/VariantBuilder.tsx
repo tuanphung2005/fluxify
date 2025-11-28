@@ -36,8 +36,9 @@ export default function VariantBuilder({ value, onChange }: VariantBuilderProps)
         } catch (e) {
             // If invalid JSON, ignore or handle gracefully
             console.error("Invalid variant JSON", e);
+            setVariants([]);
         }
-    }, []);
+    }, [value]);
 
     // Update parent whenever variants change
     const updateParent = (newVariants: VariantOption[]) => {

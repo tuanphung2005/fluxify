@@ -27,8 +27,17 @@ export default function ConfigurationPanel({
         setLocalConfig(config);
     }, [config, componentType]);
 
-    const updateField = (field: string | number | symbol, value: any) => {
-        const newConfig = { ...(localConfig || {}), [field]: value };
+    const updateField = (field: string | number | symbol | Partial<ComponentConfig>, value?: any) => {
+        let newConfig: ComponentConfig;
+
+        if (typeof field === 'object' && field !== null) {
+            // Handle partial update
+            newConfig = { ...(localConfig || {}), ...field } as ComponentConfig;
+        } else {
+            // Handle single field update
+            newConfig = { ...(localConfig || {}), [field as string]: value };
+        }
+
         setLocalConfig(newConfig);
         onUpdateConfig(newConfig);
     };

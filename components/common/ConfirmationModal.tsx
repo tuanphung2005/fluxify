@@ -11,72 +11,45 @@ import {
 
 interface ConfirmationModalProps {
     isOpen: boolean;
-    onOpenChange: (isOpen: boolean) => void;
-    title: string;
-    description: string;
+    onClose: () => void;
+    onConfirm: () => void;
+    title?: string;
+    message?: string;
     confirmText?: string;
     cancelText?: string;
-    onConfirm: () => void;
-    variant?: "danger" | "warning" | "primary";
-    isLoading?: boolean;
+    confirmColor?: "default" | "primary" | "secondary" | "success" | "warning" | "danger";
 }
 
 export default function ConfirmationModal({
     isOpen,
-    onOpenChange,
-    title,
-    description,
+    onClose,
+    onConfirm,
+    title = "Confirm Action",
+    message = "Are you sure you want to proceed?",
     confirmText = "Confirm",
     cancelText = "Cancel",
-    onConfirm,
-    variant = "primary",
-    isLoading = false,
+    confirmColor = "danger",
 }: ConfirmationModalProps) {
     const handleConfirm = () => {
         onConfirm();
-    };
-
-    const getColor = () => {
-        switch (variant) {
-            case "danger":
-                return "danger";
-            case "warning":
-                return "warning";
-            default:
-                return "primary";
-        }
+        onClose();
     };
 
     return (
-        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <Modal isOpen={isOpen} onClose={onClose} size="sm">
             <ModalContent>
-                {(onClose) => (
-                    <>
-                        <ModalHeader className="flex flex-col gap-1">
-                            {title}
-                        </ModalHeader>
-                        <ModalBody>
-                            <p>{description}</p>
-                        </ModalBody>
-                        <ModalFooter>
-                            <Button
-                                color="default"
-                                variant="light"
-                                onPress={onClose}
-                                isDisabled={isLoading}
-                            >
-                                {cancelText}
-                            </Button>
-                            <Button
-                                color={getColor()}
-                                onPress={handleConfirm}
-                                isLoading={isLoading}
-                            >
-                                {confirmText}
-                            </Button>
-                        </ModalFooter>
-                    </>
-                )}
+                <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
+                <ModalBody>
+                    <p>{message}</p>
+                </ModalBody>
+                <ModalFooter>
+                    <Button variant="light" onPress={onClose}>
+                        {cancelText}
+                    </Button>
+                    <Button color={confirmColor} onPress={handleConfirm}>
+                        {confirmText}
+                    </Button>
+                </ModalFooter>
             </ModalContent>
         </Modal>
     );

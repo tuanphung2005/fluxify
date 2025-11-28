@@ -29,6 +29,7 @@ interface ShopComponentWrapperProps {
         price: number;
         images: string[];
     }>;
+    vendorId?: string;
 }
 
 export default function ShopComponentWrapper({
@@ -38,6 +39,7 @@ export default function ShopComponentWrapper({
     onSelect,
     isSelected = false,
     products,
+    vendorId,
 }: ShopComponentWrapperProps) {
     const handleClick = () => {
         if (isBuilder && onSelect) {
@@ -96,7 +98,7 @@ export default function ShopComponentWrapper({
                 </div>
             )}
             {type === "HERO" && <HeroComponent config={config as HeroConfig} />}
-            {type === "PRODUCT_GRID" && <ProductGridComponent config={config as ProductGridConfig} products={products} />}
+            {type === "PRODUCT_GRID" && <ProductGridComponent config={config as ProductGridConfig} products={products} vendorId={vendorId} />}
             {type === "IMAGE_GALLERY" && <ImageGalleryComponent config={config as ImageGalleryConfig} />}
             {type === "VIDEO_EMBED" && <VideoEmbedComponent config={config as VideoEmbedConfig} />}
             {type === "TEXT_BLOCK" && <TextBlockComponent config={config as TextBlockConfig} />}

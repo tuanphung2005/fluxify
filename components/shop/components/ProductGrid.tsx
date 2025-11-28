@@ -3,6 +3,8 @@
 import { ProductGridConfig } from "@/types/shop";
 import { BaseComponentProps } from "@/types/shop-components";
 import ProductCard from "../../common/ProductCard";
+import { useRouter } from "next/navigation";
+import { useCartStore } from "@/store/cart-store";
 
 interface ProductGridProps extends BaseComponentProps<ProductGridConfig> {
     products?: Array<{
@@ -11,11 +13,13 @@ interface ProductGridProps extends BaseComponentProps<ProductGridConfig> {
         price: number;
         images: string[];
     }>;
+    vendorId?: string;
 }
 
 export default function ProductGrid({
     config,
     products = [],
+    vendorId,
 }: ProductGridProps) {
     const {
         title,
@@ -61,6 +65,20 @@ export default function ProductGrid({
         4: "grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
     }[columns] || "grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
 
+    const router = useRouter();
+    const { addItem, setIsOpen } = useCartStore();
+
+    const handleAddToCart = (product: any) => {
+        addItem({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.images[0],
+            vendorId: "demo", // TODO: Get actual vendor ID
+        });
+        setIsOpen(true);
+    };
+
     return (
         <div className="py-12 px-6">
             {title && (
@@ -75,7 +93,13 @@ export default function ProductGrid({
                         price={product.price}
                         images={product.images}
                         showAddToCart={showAddToCart}
-                        onAddToCart={(id: string) => console.log("Add to cart:", id)}
+                        onAddToCart={() => handleAddToCart(product)}
+                        onPress={() => {
+                            if (vendorId) {
+                                router.push(`/shop/${vendorId}/product/${product.id}`);
+                            }
+                        }}
+                        variants={(product as any).variants}
                     />
                 ))}
             </div>

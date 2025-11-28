@@ -50,11 +50,15 @@ export default function ProductGrid({
     };
 
     const handleShowAllProductsChange = (value: boolean) => {
-        onUpdate("showAllProducts", value);
         if (value) {
             // Clear product selection when showing all products
-            onUpdate("productIds", []);
+            onUpdate({
+                showAllProducts: value,
+                productIds: []
+            });
             setSelectedProducts([]);
+        } else {
+            onUpdate("showAllProducts", value);
         }
     };
 

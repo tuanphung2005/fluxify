@@ -1,5 +1,4 @@
 "use client";
-
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import { motion } from "framer-motion";
 
@@ -22,28 +21,28 @@ export default function SalesChart() {
     const maxSales = Math.max(...data.map((d) => d.sales));
 
     return (
-        <Card className="w-full">
+        <Card className="w-full border-none shadow-md h-full">
             <CardHeader className="flex flex-col items-start px-6 pt-6 pb-0">
-                <h4 className="text-large font-bold">Monthly Sales</h4>
-                <p className="text-small text-default-500">Revenue over the last 7 months</p>
+                <h4 className="text-xl font-bold">Revenue Overview</h4>
+                <p className="text-sm text-default-500">Monthly sales performance</p>
             </CardHeader>
             <CardBody className="px-6 py-6">
-                <div className="flex items-end justify-between h-64 gap-2 w-full">
+                <div className="flex items-end justify-between h-64 gap-4 w-full mt-4">
                     {data.map((item, index) => (
-                        <div key={index} className="flex flex-col items-center gap-2 flex-1 h-full justify-end group">
+                        <div key={index} className="flex flex-col items-center gap-3 flex-1 h-full justify-end group">
                             <div className="relative w-full flex justify-center h-full items-end">
                                 <motion.div
                                     initial={{ height: 0 }}
                                     animate={{ height: `${(item.sales / maxSales) * 100}%` }}
-                                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                                    className="w-full max-w-[40px] bg-primary rounded-t-lg opacity-80 group-hover:opacity-100 transition-opacity relative"
+                                    transition={{ duration: 0.8, delay: index * 0.1, type: "spring" }}
+                                    className="w-full max-w-[40px] bg-primary rounded-t-xl opacity-80 group-hover:opacity-100 transition-all duration-300 relative hover:shadow-lg hover:shadow-primary/30"
                                 >
-                                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-content1 px-2 py-1 rounded shadow-sm text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                                        ${item.sales}
+                                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-content1 px-3 py-1.5 rounded-lg shadow-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap z-10 border border-divider transform translate-y-2 group-hover:translate-y-0">
+                                        ${item.sales.toLocaleString()}
                                     </div>
                                 </motion.div>
                             </div>
-                            <span className="text-xs text-default-500 font-medium">{item.month}</span>
+                            <span className="text-xs text-default-500 font-medium uppercase tracking-wider">{item.month}</span>
                         </div>
                     ))}
                 </div>
