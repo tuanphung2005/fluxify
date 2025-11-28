@@ -5,6 +5,7 @@ import { Button, Input, Textarea } from "@heroui/react";
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api/api";
 import VariantBuilder from "./VariantBuilder";
+import ImageBuilder from "./ImageBuilder";
 
 export interface Product {
     id: string;
@@ -152,13 +153,13 @@ export default function ProductFormModal({
                                         radius="none"
                                     />
                                 </div>
-                                <Textarea
-                                    label="Image URLs (one per line)"
-                                    value={images}
-                                    onValueChange={setImages}
-                                    placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"
-                                    radius="none"
-                                />
+                                <div className="flex flex-col gap-2">
+                                    <span className="text-small font-medium">Product Images</span>
+                                    <ImageBuilder
+                                        value={images}
+                                        onChange={setImages}
+                                    />
+                                </div>
                                 <div className="flex flex-col gap-2">
                                     <span className="text-small font-medium">Variants</span>
                                     <VariantBuilder
