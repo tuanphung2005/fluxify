@@ -65,7 +65,7 @@ export default function BuilderToolbar({
                         variant="flat"
                         startContent={<Package />}
                         onPress={productsModal.onOpen}
-                        radius="none"
+
                     >
                         products
                     </Button>
@@ -73,7 +73,7 @@ export default function BuilderToolbar({
                         variant="flat"
                         startContent={<Settings />}
                         onPress={settingsModal.onOpen}
-                        radius="none"
+
                     >
                         settings
                     </Button>
@@ -81,7 +81,7 @@ export default function BuilderToolbar({
                         variant="flat"
                         startContent={<Eye />}
                         onPress={onPreview}
-                        radius="none"
+
                     >
                         preview
                     </Button>
@@ -92,7 +92,7 @@ export default function BuilderToolbar({
                         onPress={onSave}
                         isLoading={isOperating}
                         isDisabled={!hasUnsavedChanges}
-                        radius="none"
+
                     >
                         {hasUnsavedChanges ? "save" : "saved"}
                     </Button>
@@ -102,7 +102,7 @@ export default function BuilderToolbar({
                         onPress={onPublish}
                         isLoading={isOperating}
                         isDisabled={isOperating}
-                        radius="none"
+
                     >
                         {isPublished ? "update" : "publish"}
                     </Button>
@@ -113,7 +113,7 @@ export default function BuilderToolbar({
                             onPress={onUnpublishModalOpen}
                             isLoading={isOperating}
                             isDisabled={isOperating}
-                            radius="none"
+
                             startContent={<Undo2 />}
                         >
                             unpublish

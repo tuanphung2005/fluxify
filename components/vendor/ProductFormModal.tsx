@@ -114,7 +114,7 @@ export default function ProductFormModal({
     };
 
     return (
-        <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl" scrollBehavior="inside" radius="none">
+        <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl" scrollBehavior="inside" >
             <ModalContent>
                 {(onClose) => (
                     <>
@@ -126,13 +126,13 @@ export default function ProductFormModal({
                                     value={name}
                                     onValueChange={setName}
                                     isRequired
-                                    radius="none"
+
                                 />
                                 <Textarea
                                     label="Description"
                                     value={description}
                                     onValueChange={setDescription}
-                                    radius="none"
+
                                 />
                                 <div className="flex gap-4">
                                     <Input
@@ -142,7 +142,7 @@ export default function ProductFormModal({
                                         onValueChange={setPrice}
                                         startContent="$"
                                         isRequired
-                                        radius="none"
+
                                     />
                                     <Input
                                         label="Stock"
@@ -150,7 +150,7 @@ export default function ProductFormModal({
                                         value={stock}
                                         onValueChange={setStock}
                                         isRequired
-                                        radius="none"
+
                                     />
                                 </div>
                                 <div className="flex flex-col gap-2">

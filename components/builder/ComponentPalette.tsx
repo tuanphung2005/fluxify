@@ -71,12 +71,12 @@ export default function ComponentPalette({ onSelectComponent }: ComponentPalette
                                 onSelectComponent(component.type, DEFAULT_CONFIGS[component.type])
                             }
                             className="hover:bg-primary/10 transition-colors"
-                            radius="none"
+
                         >
                             <CardBody className="p-3">
                                 <div className="flex items-start gap-3">
                                     <div className="p-2 bg-primary/20 rounded-lg">
-                                        <Icon className="w-5 h-5 text-primary"/>
+                                        <Icon className="w-5 h-5 text-primary" />
                                     </div>
                                     <div className="flex-1">
                                         <h4 className="font-semibold text-sm">{component.label}</h4>

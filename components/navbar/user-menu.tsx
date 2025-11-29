@@ -44,7 +44,7 @@ export const NavbarUserMenu = ({ user }: NavbarUserMenuProps) => {
         key="vendor"
         as={NextLink}
         href="/vendor"
-        startContent={<LayoutDashboard size={16}/>}
+        startContent={<LayoutDashboard size={16} />}
       >
         dashboard
       </DropdownItem>
@@ -52,19 +52,19 @@ export const NavbarUserMenu = ({ user }: NavbarUserMenuProps) => {
   }
 
   items.push(
-    <DropdownItem key="orders" as={NextLink} startContent={<Package2 size={16}/>} href="/orders" >
+    <DropdownItem key="orders" as={NextLink} startContent={<Package2 size={16} />} href="/orders" >
       my orders
     </DropdownItem>,
-    <DropdownItem key="settings" as={NextLink} startContent={<Settings size={16}/>} href="/settings">
+    <DropdownItem key="settings" as={NextLink} startContent={<Settings size={16} />} href="/settings">
       settings
     </DropdownItem>,
-    <DropdownItem key="logout" color="danger" startContent={<LogOut size={16}/>}>
+    <DropdownItem key="logout" color="danger" startContent={<LogOut size={16} />}>
       <SignOutButton />
     </DropdownItem>
   );
 
   return (
-    <Dropdown placement="bottom-end" radius="none">
+    <Dropdown placement="bottom-end" >
       <DropdownTrigger>
         <Avatar
           isBordered
@@ -76,7 +76,7 @@ export const NavbarUserMenu = ({ user }: NavbarUserMenuProps) => {
           src={user.image || undefined}
         />
       </DropdownTrigger>
-      
+
       <DropdownMenu aria-label="Profile Actions" variant="flat">
         <DropdownSection>
           <DropdownItem key="info" showDivider isReadOnly>

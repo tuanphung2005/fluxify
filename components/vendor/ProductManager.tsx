@@ -104,7 +104,7 @@ export default function ProductManager({
 
     return (
         <>
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl" scrollBehavior="inside" radius="none">
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl" scrollBehavior="inside" >
                 <ModalContent>
                     {(onClose) => (
                         <>
@@ -117,13 +117,13 @@ export default function ProductManager({
                                         value={searchQuery}
                                         onValueChange={setSearchQuery}
                                         className="max-w-xs"
-                                        radius="none"
+
                                     />
                                     <Button
                                         color="primary"
                                         startContent={<Plus />}
                                         onPress={handleAddProduct}
-                                        radius="none"
+
                                     >
                                         Add Product
                                     </Button>

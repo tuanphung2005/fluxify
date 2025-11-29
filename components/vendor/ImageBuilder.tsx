@@ -61,7 +61,7 @@ export default function ImageBuilder({ value, onChange }: ImageBuilderProps) {
                             handleAddImage();
                         }
                     }}
-                    radius="none"
+
                     size="sm"
                 />
                 <Button
@@ -70,7 +70,7 @@ export default function ImageBuilder({ value, onChange }: ImageBuilderProps) {
                     isIconOnly
                     onPress={handleAddImage}
                     size="sm"
-                    radius="none"
+
                 >
                     <Plus size={16} />
                 </Button>

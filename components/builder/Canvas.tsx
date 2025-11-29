@@ -69,7 +69,6 @@ function SortableComponent({
                     className="cursor-grab active:cursor-grabbing"
                     {...attributes}
                     {...listeners}
-                    radius="none"
                 >
                     <ChevronsUpDown />
                 </Button>
@@ -79,7 +78,7 @@ function SortableComponent({
                     color="danger"
                     variant="flat"
                     onPress={onDelete}
-                    radius="none"
+
                 >
                     <Trash2 />
                 </Button>

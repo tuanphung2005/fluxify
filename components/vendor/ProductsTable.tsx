@@ -19,7 +19,7 @@ export default function ProductsTable({
     onDelete,
 }: ProductsTableProps) {
     return (
-        <Table aria-label="Products table" radius="none">
+        <Table aria-label="Products table" >
             <TableHeader>
                 <TableColumn>IMAGE</TableColumn>
                 <TableColumn>NAME</TableColumn>
