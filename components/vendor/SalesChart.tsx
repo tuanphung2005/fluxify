@@ -7,18 +7,12 @@ interface SalesData {
     sales: number;
 }
 
-const data: SalesData[] = [
-    { month: "Jan", sales: 4000 },
-    { month: "Feb", sales: 3000 },
-    { month: "Mar", sales: 2000 },
-    { month: "Apr", sales: 2780 },
-    { month: "May", sales: 1890 },
-    { month: "Jun", sales: 2390 },
-    { month: "Jul", sales: 3490 },
-];
+interface SalesChartProps {
+    data: SalesData[];
+}
 
-export default function SalesChart() {
-    const maxSales = Math.max(...data.map((d) => d.sales));
+export default function SalesChart({ data }: SalesChartProps) {
+    const maxSales = Math.max(...data.map((d) => d.sales), 100);
 
     return (
         <Card className="w-full border-none shadow-md h-full">

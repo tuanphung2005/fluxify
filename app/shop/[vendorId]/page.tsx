@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import ShopComponentWrapper from "@/components/shop/ShopComponentWrapper";
 import CartDrawer from "@/components/shop/CartDrawer";
 import CartButton from "@/components/shop/CartButton";
+import ShopProductModalManager from "@/components/shop/ShopProductModalManager";
 
 interface ShopPageProps {
     params: Promise<{
@@ -41,6 +42,8 @@ export default async function ShopPage(props: ShopPageProps) {
         id: p.id,
         name: p.name,
         price: Number(p.price),
+        description: p.description,
+        stock: p.stock,
         images: p.images,
         variants: p.variants,
     }));
@@ -70,6 +73,8 @@ export default async function ShopPage(props: ShopPageProps) {
                     </div>
                 </div>
             )}
+
+            <ShopProductModalManager products={products} />
             <CartButton />
             <CartDrawer />
         </div>

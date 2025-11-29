@@ -40,7 +40,7 @@ export default function ShopBuilderPage() {
     return (
         <div className="fixed inset-0 top-16 z-40 bg-background">
             <BuilderToolbar
-                templateName={template?.name || "my shop"}
+                templateName={template?.vendor?.storeName || template?.name || "my shop"}
                 isPublished={template?.isPublished || false}
                 isOperating={isOperating}
                 hasUnsavedChanges={hasUnsavedChanges}

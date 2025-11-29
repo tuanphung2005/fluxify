@@ -96,7 +96,7 @@ export default function ProductGrid({
                         onAddToCart={() => handleAddToCart(product)}
                         onPress={() => {
                             if (vendorId) {
-                                router.push(`/shop/${vendorId}/product/${product.id}`);
+                                router.push(`/shop/${vendorId}?productId=${product.id}`, { scroll: false });
                             }
                         }}
                         variants={(product as any).variants}

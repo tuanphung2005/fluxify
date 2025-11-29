@@ -121,12 +121,15 @@ export default async function ProductPage(props: ProductPageProps) {
                         )}
 
                         <div className="mt-auto pt-6">
-                            <AddToCartButton product={{
-                                id: product.id,
-                                name: product.name,
-                                price: Number(product.price),
-                                images: product.images,
-                            }} />
+                            <AddToCartButton
+                                product={{
+                                    id: product.id,
+                                    name: product.name,
+                                    price: Number(product.price),
+                                    images: product.images,
+                                }}
+                                disabled={product.stock <= 0}
+                            />
                         </div>
                     </div>
                 </div>

@@ -11,9 +11,10 @@ interface AddToCartButtonProps {
         price: number;
         images: string[];
     };
+    disabled?: boolean;
 }
 
-export default function AddToCartButton({ product }: AddToCartButtonProps) {
+export default function AddToCartButton({ product, disabled }: AddToCartButtonProps) {
     const { addItem, setIsOpen } = useCartStore();
 
     const handleAddToCart = () => {
@@ -34,8 +35,9 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
             className="w-full md:w-auto font-semibold px-8"
             startContent={<ShoppingCart />}
             onPress={handleAddToCart}
+            isDisabled={disabled}
         >
-            Add to Cart
+            {disabled ? "Out of Stock" : "Add to Cart"}
         </Button>
     );
 }

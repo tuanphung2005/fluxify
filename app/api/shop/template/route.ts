@@ -12,8 +12,23 @@ export async function GET(req: NextRequest) {
             return errorResponse(auth.error, auth.status);
         }
 
-        const vendorData = await getVendorWithTemplate(auth.vendor.id);
-        return successResponse(vendorData?.shopTemplate || null);
+        // Fetch template with components and vendor details
+        const template = await prisma.shopTemplate.findUnique({
+            where: { vendorId: auth.vendor.id },
+            include: {
+                components: {
+                    orderBy: { order: "asc" },
+                },
+                vendor: {
+                    select: {
+                        storeName: true,
+                        favicon: true,
+                    }
+                }
+            },
+        });
+
+        return successResponse(template);
     } catch (error) {
         return errorResponse("Failed to fetch shop template", 500, error);
     }

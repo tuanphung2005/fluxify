@@ -78,6 +78,10 @@ export interface ShopTemplateData {
     createdAt: Date;
     updatedAt: Date;
     components: ShopComponentData[];
+    vendor?: {
+        storeName: string;
+        favicon: string | null;
+    };
 }
 
 // Builder state management
