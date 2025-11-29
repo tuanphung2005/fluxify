@@ -17,12 +17,7 @@ export default async function VendorLayout({
 
   return (
     <div className="min-h-screen">
-      <div className="border-b">
-        <div className="container mx-auto max-w-7xl px-6 py-4">
-          <h1 className="text-2xl font-bold">dashboard</h1>
-        </div>
-      </div>
-      <div className="container mx-auto max-w-7xl px-6 py-8">{children}</div>
+      <div className="container mx-auto max-w-7xl px-6">{children}</div>
     </div>
   );
 }
