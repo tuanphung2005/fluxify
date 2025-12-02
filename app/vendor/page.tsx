@@ -20,9 +20,14 @@ export default async function VendorPage() {
   });
   const productIds = products.map(p => p.id);
 
-  // 2. Get order items for these products
+  // 2. Get order items for these products (exclude cancelled orders)
   const orderItems = await prisma.orderItem.findMany({
-    where: { productId: { in: productIds } },
+    where: {
+      productId: { in: productIds },
+      order: {
+        status: { not: 'CANCELLED' }
+      }
+    },
     include: {
       order: true,
       product: true
@@ -30,7 +35,7 @@ export default async function VendorPage() {
     orderBy: { order: { createdAt: 'desc' } }
   });
 
-  // 3. Calculate Metrics
+  // 3. Calculate Metrics (cancelled orders already excluded from orderItems)
   const totalRevenue = orderItems.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
 
   const uniqueOrderIds = new Set(orderItems.map(item => item.order.id));
@@ -42,7 +47,7 @@ export default async function VendorPage() {
       .map(item => item.order.id)
   ).size;
 
-  // 4. Prepare Chart Data (Monthly)
+  // 4. Prepare Chart Data (Monthly) - cancelled orders already excluded
   const chartDataMap = new Map<string, number>();
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -67,7 +72,7 @@ export default async function VendorPage() {
     sales
   }));
 
-  // 5. Recent Activity
+  // 5. Recent Activity (cancelled orders already excluded)
   // Serialize recent activity items to avoid Decimal errors
   const recentActivity = orderItems.slice(0, 5).map(item => ({
     id: item.id,

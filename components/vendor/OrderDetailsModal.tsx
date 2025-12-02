@@ -1,7 +1,7 @@
 "use client";
 
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Chip } from "@heroui/react";
-import { useState } from "react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Chip, Select, SelectItem } from "@heroui/react";
+import { useState, useEffect } from "react";
 import { api } from "@/lib/api/api";
 import { toast } from "@/lib/toast";
 
@@ -41,24 +41,41 @@ interface OrderDetailsModalProps {
     onStatusUpdate: () => void;
 }
 
+const ORDER_STATUSES = [
+    { value: "PENDING", label: "Pending", color: "warning" },
+    { value: "PROCESSING", label: "Processing", color: "primary" },
+    { value: "SHIPPED", label: "Shipped", color: "secondary" },
+    { value: "DELIVERED", label: "Delivered", color: "success" },
+    { value: "CANCELLED", label: "Cancelled", color: "danger" },
+] as const;
+
 export default function OrderDetailsModal({ order, isOpen, onClose, onStatusUpdate }: OrderDetailsModalProps) {
     const [isLoading, setIsLoading] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState<string>("");
+
+    useEffect(() => {
+        if (order) {
+            setSelectedStatus(order.status);
+        }
+    }, [order]);
 
     if (!order) return null;
 
-    const handleConfirmOrder = async () => {
+    const handleUpdateStatus = async () => {
+        if (!selectedStatus || selectedStatus === order.status) return;
+
         setIsLoading(true);
         try {
             await api.patch("/api/vendor/orders", {
                 orderId: order.id,
-                status: "PROCESSING"
+                status: selectedStatus
             });
-            toast.success("Order confirmed successfully");
+            toast.success("Order status updated successfully");
             onStatusUpdate();
             onClose();
         } catch (error) {
-            console.error("Failed to confirm order:", error);
-            toast.error("Failed to confirm order");
+            console.error("Failed to update order status:", error);
+            toast.error("Failed to update order status");
         } finally {
             setIsLoading(false);
         }
@@ -75,20 +92,40 @@ export default function OrderDetailsModal({ order, isOpen, onClose, onStatusUpda
                 </ModalHeader>
                 <ModalBody>
                     <div className="space-y-6">
-                        {/* Status */}
-                        <div className="flex items-center justify-between p-4 bg-default-50 rounded-lg">
-                            <span className="font-semibold">Status</span>
-                            <Chip
-                                color={
-                                    order.status === 'PENDING' ? 'warning' :
-                                        order.status === 'PROCESSING' ? 'primary' :
-                                            order.status === 'SHIPPED' ? 'secondary' :
-                                                order.status === 'DELIVERED' ? 'success' : 'default'
-                                }
-                                variant="flat"
+                        {/* Status Management */}
+                        <div className="p-4 bg-default-50 rounded-lg space-y-3">
+                            <div className="flex items-center justify-between">
+                                <span className="font-semibold">Current Status</span>
+                                <Chip
+                                    color={
+                                        order.status === 'PENDING' ? 'warning' :
+                                            order.status === 'PROCESSING' ? 'primary' :
+                                                order.status === 'SHIPPED' ? 'secondary' :
+                                                    order.status === 'DELIVERED' ? 'success' :
+                                                        order.status === 'CANCELLED' ? 'danger' : 'default'
+                                    }
+                                    variant="flat"
+                                >
+                                    {order.status}
+                                </Chip>
+                            </div>
+                            <Select
+                                label="Update Status"
+                                placeholder="Select new status"
+                                selectedKeys={selectedStatus ? [selectedStatus] : []}
+                                onSelectionChange={(keys) => {
+                                    const selected = Array.from(keys)[0] as string;
+                                    setSelectedStatus(selected);
+                                }}
+                                className="max-w-full"
+                                size="sm"
                             >
-                                {order.status}
-                            </Chip>
+                                {ORDER_STATUSES.map((status) => (
+                                    <SelectItem key={status.value}>
+                                        {status.label}
+                                    </SelectItem>
+                                ))}
+                            </Select>
                         </div>
 
                         {/* Customer Info */}
@@ -131,11 +168,14 @@ export default function OrderDetailsModal({ order, isOpen, onClose, onStatusUpda
                     <Button variant="light" onPress={onClose}>
                         Close
                     </Button>
-                    {order.status === 'PENDING' && (
-                        <Button color="primary" onPress={handleConfirmOrder} isLoading={isLoading}>
-                            Confirm Order
-                        </Button>
-                    )}
+                    <Button
+                        color="primary"
+                        onPress={handleUpdateStatus}
+                        isLoading={isLoading}
+                        isDisabled={!selectedStatus || selectedStatus === order.status}
+                    >
+                        Update Status
+                    </Button>
                 </ModalFooter>
             </ModalContent>
         </Modal>

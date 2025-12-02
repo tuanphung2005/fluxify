@@ -2,7 +2,7 @@
 
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
-import { Edit, Package, ShoppingCart, DollarSign, TrendingUp, ListOrdered, Eye } from "lucide-react";
+import { Edit, Package, ShoppingCart, DollarSign, TrendingUp, ListOrdered, Eye, RefreshCw } from "lucide-react";
 import SalesChart from "@/components/vendor/SalesChart";
 import { useDisclosure, Chip } from "@heroui/react";
 import ProductManager from "@/components/vendor/ProductManager";
@@ -10,6 +10,7 @@ import { Tabs, Tab } from "@heroui/tabs";
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api/api";
 import OrderDetailsModal from "@/components/vendor/OrderDetailsModal";
+import { useRouter } from "next/navigation";
 
 interface DashboardData {
     totalSales: number;
@@ -26,6 +27,8 @@ export default function VendorDashboard({ initialData }: { initialData: Dashboar
     const [isLoadingOrders, setIsLoadingOrders] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<any>(null);
     const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const router = useRouter();
 
     const fetchOrders = async () => {
         setIsLoadingOrders(true);
@@ -50,6 +53,13 @@ export default function VendorDashboard({ initialData }: { initialData: Dashboar
         setIsOrderModalOpen(true);
     };
 
+    const handleRefresh = () => {
+        setIsRefreshing(true);
+        router.refresh();
+        // Reset refreshing state after a short delay
+        setTimeout(() => setIsRefreshing(false), 1000);
+    };
+
     return (
         <div className="space-y-8 p-6">
             <div className="flex justify-between items-center">
@@ -60,6 +70,14 @@ export default function VendorDashboard({ initialData }: { initialData: Dashboar
                     </p>
                 </div>
                 <div className="flex gap-3">
+                    <Button
+                        variant="flat"
+                        startContent={<RefreshCw size={18} />}
+                        onPress={handleRefresh}
+                        isLoading={isRefreshing}
+                    >
+                        Refresh
+                    </Button>
                     <Button
                         variant="flat"
                         startContent={<Package />}

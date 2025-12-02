@@ -3,9 +3,10 @@
 import { Modal, ModalContent, ModalBody, Button } from "@heroui/react";
 import { Image } from "@heroui/image";
 import { Chip } from "@heroui/chip";
-import { X } from "lucide-react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import AddToCartButton from "@/components/shop/AddToCartButton";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useState } from "react";
 
 interface Product {
     id: string;
@@ -24,6 +25,8 @@ interface ProductModalProps {
 }
 
 export default function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
     // Parse variants if they exist
     let variants: { name: string; values: string[] }[] = [];
     try {
@@ -42,6 +45,20 @@ export default function ProductModal({ product, isOpen, onClose }: ProductModalP
     } catch (e) {
         console.error("Error parsing variants", e);
     }
+
+    const handlePrevImage = () => {
+        setCurrentImageIndex((prev) =>
+            prev === 0 ? product.images.length - 1 : prev - 1
+        );
+    };
+
+    const handleNextImage = () => {
+        setCurrentImageIndex((prev) =>
+            prev === product.images.length - 1 ? 0 : prev + 1
+        );
+    };
+
+    const hasMultipleImages = product.images.length > 1;
 
     return (
         <Modal
@@ -67,19 +84,59 @@ export default function ProductModal({ product, isOpen, onClose }: ProductModalP
                             <X size={24} />
                         </Button>
 
-                        {/* Product Image */}
-                        <div className="relative bg-default-50 h-[400px] md:h-full">
-                            {product.images[0] ? (
+                        {/* Product Image Carousel */}
+                        <div className="relative bg-default-50 w-full h-[600px] flex items-center justify-center">
+                            {product.images[currentImageIndex] ? (
                                 <Image
-                                    src={product.images[0]}
+                                    src={product.images[currentImageIndex]}
                                     alt={product.name}
-                                    className="w-full h-full object-cover"
-                                    radius="none"
+                                    className="w-full h-full object-contain"
                                     removeWrapper
                                 />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-default-300">
                                     No Image
+                                </div>
+                            )}
+
+                            {/* Navigation Arrows */}
+                            {hasMultipleImages && (
+                                <>
+                                    <Button
+                                        isIconOnly
+                                        variant="flat"
+                                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/90 backdrop-blur-sm z-10 shadow-lg"
+                                        onPress={handlePrevImage}
+                                        size="sm"
+                                    >
+                                        <ChevronLeft size={20} />
+                                    </Button>
+                                    <Button
+                                        isIconOnly
+                                        variant="flat"
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/90 backdrop-blur-sm z-10 shadow-lg"
+                                        onPress={handleNextImage}
+                                        size="sm"
+                                    >
+                                        <ChevronRight size={20} />
+                                    </Button>
+                                </>
+                            )}
+
+                            {/* Dot Indicators */}
+                            {hasMultipleImages && (
+                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10 bg-background/60 backdrop-blur-sm px-3 py-2 rounded-full">
+                                    {product.images.map((_, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => setCurrentImageIndex(index)}
+                                            className={`h-2 rounded-full transition-all ${index === currentImageIndex
+                                                ? 'bg-primary w-6'
+                                                : 'bg-default-400 hover:bg-default-500 w-2'
+                                                }`}
+                                            aria-label={`Go to image ${index + 1}`}
+                                        />
+                                    ))}
                                 </div>
                             )}
                         </div>
