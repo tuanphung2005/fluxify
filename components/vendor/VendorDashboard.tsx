@@ -65,9 +65,6 @@ export default function VendorDashboard({ initialData }: { initialData: Dashboar
             <div className="flex justify-between items-center">
                 <div>
                     <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-                    <p className="text-default-500 mt-1">
-                        Overview of your store's performance
-                    </p>
                 </div>
                 <div className="flex gap-3">
                     <Button
