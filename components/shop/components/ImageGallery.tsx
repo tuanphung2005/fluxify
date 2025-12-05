@@ -2,9 +2,9 @@
 
 import { ImageGalleryConfig } from "@/types/shop";
 import { BaseComponentProps } from "@/types/shop-components";
-import { Image } from "@heroui/image";
+import { Image as HeroUIImage } from "@heroui/image";
 
-export default function ImageGallery ({
+export default function ImageGallery({
     config,
 }: BaseComponentProps<ImageGalleryConfig>) {
     const {
@@ -34,7 +34,7 @@ export default function ImageGallery ({
             <div className={`grid ${gridCols} gap-4 max-w-7xl mx-auto`}>
                 {images.map((image, index) => (
                     <div key={index} className={`relative overflow-hidden ${aspectClasses}`}>
-                        <Image
+                        <HeroUIImage
                             src={image.url}
                             alt={image.alt}
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"

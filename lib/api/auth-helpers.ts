@@ -40,6 +40,26 @@ export async function getAuthenticatedVendor(): Promise<AuthResult | AuthError> 
     });
 
     if (!user?.vendorProfile) {
+        // If user is ADMIN, create a vendor profile automatically
+        if (user?.role === "ADMIN") {
+            const newVendor = await prisma.vendorProfile.create({
+                data: {
+                    userId: user.id,
+                    storeName: "Admin Store",
+                    description: "Auto-generated store for Admin"
+                }
+            });
+
+            return {
+                vendor: newVendor,
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    role: user.role,
+                },
+            };
+        }
         return { error: "Vendor profile not found", status: 404 };
     }
 

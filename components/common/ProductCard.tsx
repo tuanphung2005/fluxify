@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardBody, CardFooter } from "@heroui/card";
-import { Image } from "@heroui/image";
+import { Image as HeroUIImage } from "@heroui/image";
 import { Button } from "@heroui/button";
 import { Badge } from "@heroui/badge";
 import { Chip } from "@heroui/chip";
@@ -77,7 +77,7 @@ export default function ProductCard({
                             }
                         }}
                     >
-                        <Image
+                        <HeroUIImage
                             src={images[currentImageIndex] || images[0]}
                             alt={name}
                             className="w-full object-cover transition-opacity duration-500"

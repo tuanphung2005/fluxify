@@ -1,8 +1,5 @@
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Button } from "@heroui/button";
-import { Edit, Package, ShoppingCart, DollarSign, TrendingUp } from "lucide-react";
-import SalesChart from "@/components/vendor/SalesChart";
 import VendorDashboard from "@/components/vendor/VendorDashboard";
+import VendorLayout from "@/components/vendor/VendorLayout";
 import { getAuthenticatedVendor } from "@/lib/api/auth-helpers";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
@@ -45,6 +42,7 @@ export default async function VendorPage() {
     orderItems
       .filter(item => item.order.status === 'PENDING')
       .map(item => item.order.id)
+      .filter(id => id !== undefined)
   ).size;
 
   // 4. Prepare Chart Data (Monthly) - cancelled orders already excluded
@@ -72,33 +70,34 @@ export default async function VendorPage() {
     sales
   }));
 
-  // 5. Recent Activity (cancelled orders already excluded)
-  // Serialize recent activity items to avoid Decimal errors
+  // 5. Recent Activity
   const recentActivity = orderItems.slice(0, 5).map(item => ({
     id: item.id,
     orderId: item.orderId,
     productId: item.productId,
     quantity: item.quantity,
-    price: Number(item.price), // Convert Decimal to number
+    price: Number(item.price),
     order: {
       ...item.order,
-      total: Number(item.order.total), // Convert Decimal to number
+      total: Number(item.order.total),
     },
     product: {
       ...item.product,
-      price: Number(item.product.price), // Convert Decimal to number
+      price: Number(item.product.price),
     }
   }));
 
   return (
-    <VendorDashboard
-      initialData={{
-        totalSales,
-        pendingOrders,
-        totalRevenue: Number(totalRevenue), // Ensure it's a number
-        chartData,
-        recentActivity
-      }}
-    />
+    <VendorLayout>
+      <VendorDashboard
+        initialData={{
+          totalSales,
+          pendingOrders,
+          totalRevenue: Number(totalRevenue),
+          chartData,
+          recentActivity
+        }}
+      />
+    </VendorLayout>
   );
 }

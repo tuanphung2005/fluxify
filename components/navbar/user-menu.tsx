@@ -32,8 +32,9 @@ export const NavbarUserMenu = ({ user }: NavbarUserMenuProps) => {
         key="admin"
         as={NextLink}
         href="/admin"
+        startContent={<LayoutDashboard size={16} />}
       >
-        dashboard
+        Admin Dashboard
       </DropdownItem>
     );
   }
@@ -46,7 +47,7 @@ export const NavbarUserMenu = ({ user }: NavbarUserMenuProps) => {
         href="/vendor"
         startContent={<LayoutDashboard size={16} />}
       >
-        dashboard
+        Vendor Dashboard
       </DropdownItem>
     );
   }

@@ -5,6 +5,7 @@ import { useCartStore } from "@/store/cart-store";
 import { X, Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { Button } from "@heroui/button";
 import { ScrollShadow } from "@heroui/scroll-shadow";
+import { Image as HeroUIImage } from "@heroui/image";
 import { useState } from "react";
 import CheckoutModal from "./CheckoutModal";
 
@@ -63,7 +64,13 @@ export default function CartDrawer() {
                                         {items.map((item) => (
                                             <div key={item.id} className="flex gap-4 p-3 bg-default-50 rounded-lg">
                                                 {item.image ? (
-                                                    <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-md" />
+                                                    <HeroUIImage
+                                                        src={item.image}
+                                                        alt={item.name}
+                                                        className="w-20 h-20 object-cover rounded-md"
+                                                        width={80}
+                                                        height={80}
+                                                    />
                                                 ) : (
                                                     <div className="w-20 h-20 bg-default-200 rounded-md flex items-center justify-center text-xs text-default-500">
                                                         No Img

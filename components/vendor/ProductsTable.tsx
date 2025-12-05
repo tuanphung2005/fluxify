@@ -1,6 +1,7 @@
 "use client";
 
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@heroui/table";
+import { Image as HeroUIImage } from "@heroui/image";
 import { Button } from "@heroui/button";
 import { Edit, Trash2 } from "lucide-react";
 import { Product } from "./ProductFormModal";
@@ -38,10 +39,12 @@ export default function ProductsTable({
                     <TableRow key={product.id}>
                         <TableCell>
                             {product.images[0] ? (
-                                <img
+                                <HeroUIImage
                                     src={product.images[0]}
                                     alt={product.name}
                                     className="w-10 h-10 object-cover rounded"
+                                    width={40}
+                                    height={40}
                                 />
                             ) : (
                                 <div className="w-10 h-10 bg-default-200 rounded flex items-center justify-center text-xs">

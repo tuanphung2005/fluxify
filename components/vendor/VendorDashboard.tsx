@@ -7,6 +7,7 @@ import SalesChart from "@/components/vendor/SalesChart";
 import { useDisclosure, Chip } from "@heroui/react";
 import ProductManager from "@/components/vendor/ProductManager";
 import { Tabs, Tab } from "@heroui/tabs";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@heroui/table";
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api/api";
 import OrderDetailsModal from "@/components/vendor/OrderDetailsModal";
@@ -202,45 +203,43 @@ export default function VendorDashboard({ initialData }: { initialData: Dashboar
                         </CardHeader>
                         <CardBody className="p-0">
                             {orders.length > 0 ? (
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-left text-sm">
-                                        <thead className="bg-default-50 text-default-500 font-medium border-b border-divider">
-                                            <tr>
-                                                <th className="px-6 py-3">Order ID</th>
-                                                <th className="px-6 py-3">Date</th>
-                                                <th className="px-6 py-3">Customer</th>
-                                                <th className="px-6 py-3">Status</th>
-                                                <th className="px-6 py-3">Total</th>
-                                                <th className="px-6 py-3 text-right">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-divider">
-                                            {orders.map((order) => (
-                                                <tr key={order.id} className="hover:bg-default-50/50 transition-colors">
-                                                    <td className="px-6 py-4 font-medium">#{order.id.slice(-6)}</td>
-                                                    <td className="px-6 py-4">{new Date(order.createdAt).toLocaleDateString()}</td>
-                                                    <td className="px-6 py-4">
-                                                        <div className="flex flex-col">
-                                                            <span>{order.user.name || "Guest"}</span>
-                                                            <span className="text-xs text-default-400">{order.user.email}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        <Chip
-                                                            size="sm"
-                                                            variant="flat"
-                                                            color={
-                                                                order.status === 'PENDING' ? 'warning' :
-                                                                    order.status === 'PROCESSING' ? 'primary' :
-                                                                        order.status === 'SHIPPED' ? 'secondary' :
-                                                                            order.status === 'DELIVERED' ? 'success' : 'default'
-                                                            }
-                                                        >
-                                                            {order.status}
-                                                        </Chip>
-                                                    </td>
-                                                    <td className="px-6 py-4 font-semibold">${Number(order.total).toFixed(2)}</td>
-                                                    <td className="px-6 py-4 text-right">
+                                <Table aria-label="Orders table" removeWrapper>
+                                    <TableHeader>
+                                        <TableColumn>Order ID</TableColumn>
+                                        <TableColumn>Date</TableColumn>
+                                        <TableColumn>Customer</TableColumn>
+                                        <TableColumn>Status</TableColumn>
+                                        <TableColumn>Total</TableColumn>
+                                        <TableColumn align="end">Actions</TableColumn>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {orders.map((order) => (
+                                            <TableRow key={order.id}>
+                                                <TableCell>#{order.id.slice(-6)}</TableCell>
+                                                <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
+                                                <TableCell>
+                                                    <div className="flex flex-col">
+                                                        <span>{order.user.name || "Guest"}</span>
+                                                        <span className="text-xs text-default-400">{order.user.email}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Chip
+                                                        size="sm"
+                                                        variant="flat"
+                                                        color={
+                                                            order.status === 'PENDING' ? 'warning' :
+                                                                order.status === 'PROCESSING' ? 'primary' :
+                                                                    order.status === 'SHIPPED' ? 'secondary' :
+                                                                        order.status === 'DELIVERED' ? 'success' : 'default'
+                                                        }
+                                                    >
+                                                        {order.status}
+                                                    </Chip>
+                                                </TableCell>
+                                                <TableCell>${Number(order.total).toFixed(2)}</TableCell>
+                                                <TableCell>
+                                                    <div className="flex justify-end">
                                                         <Button
                                                             size="sm"
                                                             variant="light"
@@ -249,12 +248,12 @@ export default function VendorDashboard({ initialData }: { initialData: Dashboar
                                                         >
                                                             <Eye size={18} />
                                                         </Button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
                             ) : (
                                 <div className="text-center py-12 text-default-500">
                                     <ListOrdered size={48} className="mx-auto mb-4 opacity-50" />

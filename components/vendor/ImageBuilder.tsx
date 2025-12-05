@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button, Input } from "@heroui/react";
+import { Image as HeroUIImage } from "@heroui/image";
 import { Plus, X } from "lucide-react";
 
 interface ImageBuilderProps {
@@ -81,13 +82,14 @@ export default function ImageBuilder({ value, onChange }: ImageBuilderProps) {
                 <div className="flex flex-col gap-2">
                     {images.map((url, index) => (
                         <div key={index} className="flex items-center gap-2 p-2 bg-default-50 rounded">
-                            <img
+                            <HeroUIImage
                                 src={url}
                                 alt={`Product image ${index + 1}`}
                                 className="w-12 h-12 object-cover rounded"
-                                onError={(e) => {
-                                    e.currentTarget.src = "";
-                                    e.currentTarget.style.display = "none";
+                                width={48}
+                                height={48}
+                                onError={() => {
+                                    // Handle error if needed, though HeroUI Image handles fallback
                                 }}
                             />
                             <span className="flex-1 text-sm truncate text-default-600">
