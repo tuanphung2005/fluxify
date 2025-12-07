@@ -2,6 +2,7 @@
 
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Package, ShoppingCart, DollarSign, TrendingUp } from "lucide-react";
+import StatsCard from "@/components/common/StatsCard";
 import SalesChart from "@/components/vendor/SalesChart";
 import { useDisclosure } from "@heroui/react";
 import ProductManager from "@/components/vendor/ProductManager";
@@ -27,57 +28,35 @@ export default function VendorDashboard({ initialData }: { initialData: Dashboar
 
             <div className="space-y-8 mt-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <Card className="border-none shadow-md bg-gradient-to-br from-primary-50 to-background">
-                        <CardBody className="p-6">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <p className="text-sm font-medium text-default-600 uppercase tracking-wider">Total Sales</p>
-                                    <h3 className="text-4xl font-bold mt-2">{initialData.totalSales}</h3>
-                                </div>
-                                <div className="p-3 bg-primary/10 rounded-xl text-primary">
-                                    <Package size={24} />
-                                </div>
-                            </div>
-                            <div className="mt-4 flex items-center text-sm text-success font-medium">
+                    <StatsCard
+                        title="Total Sales"
+                        value={initialData.totalSales.toString()}
+                        icon={Package}
+                        subtext={
+                            <div className="flex items-center text-success font-medium">
                                 <TrendingUp size={16} className="mr-1" />
                                 <span>Orders count</span>
                             </div>
-                        </CardBody>
-                    </Card>
+                        }
+                        color="primary"
+                        className="bg-gradient-to-br from-primary-50 to-background"
+                    />
 
-                    <Card className="border-none shadow-md">
-                        <CardBody className="p-6">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <p className="text-sm font-medium text-default-600 uppercase tracking-wider">Pending Orders</p>
-                                    <h3 className="text-4xl font-bold mt-2">{initialData.pendingOrders}</h3>
-                                </div>
-                                <div className="p-3 bg-warning/10 rounded-xl text-warning">
-                                    <ShoppingCart size={24} />
-                                </div>
-                            </div>
-                            <div className="mt-4 text-sm text-default-400">
-                                Orders to fulfill
-                            </div>
-                        </CardBody>
-                    </Card>
+                    <StatsCard
+                        title="Pending Orders"
+                        value={initialData.pendingOrders.toString()}
+                        icon={ShoppingCart}
+                        subtext="Orders to fulfill"
+                        color="warning"
+                    />
 
-                    <Card className="border-none shadow-md">
-                        <CardBody className="p-6">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <p className="text-sm font-medium text-default-600 uppercase tracking-wider">Total Revenue</p>
-                                    <h3 className="text-4xl font-bold mt-2">${initialData.totalRevenue.toLocaleString()}</h3>
-                                </div>
-                                <div className="p-3 bg-success/10 rounded-xl text-success">
-                                    <DollarSign size={24} />
-                                </div>
-                            </div>
-                            <div className="mt-4 text-sm text-default-400">
-                                Lifetime earnings
-                            </div>
-                        </CardBody>
-                    </Card>
+                    <StatsCard
+                        title="Total Revenue"
+                        value={`$${initialData.totalRevenue.toLocaleString()}`}
+                        icon={DollarSign}
+                        subtext="Lifetime earnings"
+                        color="success"
+                    />
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
