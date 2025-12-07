@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { Navbar } from "@/components/navbar/navbar";
 
 export default async function AdminLayoutPage({
   children,
@@ -13,5 +14,12 @@ export default async function AdminLayoutPage({
     redirect("/");
   }
 
-  return <AdminLayout>{children}</AdminLayout>;
+  return (
+    <div className="relative flex flex-col h-screen">
+      <Navbar />
+      <main className="flex-grow">
+        <AdminLayout>{children}</AdminLayout>
+      </main>
+    </div>
+  );
 }

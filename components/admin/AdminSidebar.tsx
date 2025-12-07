@@ -21,7 +21,7 @@ export default function AdminSidebar() {
     };
 
     return (
-        <div className="w-64 h-screen bg-content1 border-r border-divider flex flex-col fixed left-0 top-0 z-50">
+        <div className="w-64 h-[calc(100vh-64px)] bg-content1 border-r border-divider flex flex-col fixed left-0 top-16 z-50">
             <div className="p-6 flex items-center gap-3 border-b border-divider">
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                     <span className="text-white font-bold">F</span>

@@ -16,7 +16,7 @@ export default function VendorSidebar() {
     ];
 
     return (
-        <div className="w-64 h-[calc(100vh-64px)] bg-content1 border-r border-divider flex flex-col fixed left-0 top-16 z-40">
+        <div className="w-64 h-[calc(100vh-64px)] bg-content1 border-r border-divider flex flex-col fixed left-0 top-16 z-50">
             <div className="flex-1 p-4 space-y-1 overflow-y-auto">
                 {menuItems.map((item) => {
                     const Icon = item.icon;
