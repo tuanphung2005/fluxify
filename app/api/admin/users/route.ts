@@ -9,6 +9,7 @@ export async function GET() {
                 email: true,
                 name: true,
                 role: true,
+                isActive: true,
                 createdAt: true,
                 vendorProfile: {
                     select: { id: true }

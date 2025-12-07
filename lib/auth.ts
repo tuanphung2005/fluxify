@@ -32,7 +32,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async authorize(credentials) {
         const { prisma } = await import("@/lib/prisma");
-        
+
         if (!credentials?.email || !credentials?.password) {
           throw new Error("invalid credentials");
         }
@@ -54,6 +54,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (!isPasswordValid) {
           throw new Error("Invalid credentials");
+        }
+
+        if (user.isActive === false) {
+          throw new Error("Account deactivated");
         }
 
         return {

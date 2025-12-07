@@ -6,12 +6,15 @@ import { Chip } from "@heroui/chip";
 import { User as UserIcon } from "lucide-react";
 import { api } from "@/lib/api/api";
 import { Spinner } from "@heroui/spinner";
+import { Switch } from "@heroui/switch";
+import { toast } from "@/lib/toast";
 
 interface UserData {
     id: string;
     name: string | null;
     email: string;
     role: string;
+    isActive: boolean;
     createdAt: string;
     vendorProfile: {
         id: string;
@@ -23,19 +26,35 @@ export default function AdminUsers() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const data = await api.get<UserData[]>("/api/admin/users");
-                setUsers(data);
-            } catch (error) {
-                console.error("Failed to fetch users", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         fetchUsers();
     }, []);
+
+    const fetchUsers = async () => {
+        try {
+            const data = await api.get<UserData[]>("/api/admin/users");
+            setUsers(data);
+        } catch (error) {
+            console.error("Failed to fetch users", error);
+            toast.error("Failed to fetch users");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const toggleStatus = async (userId: string, currentStatus: boolean) => {
+        // Optimistic update
+        setUsers(users.map(u => u.id === userId ? { ...u, isActive: !currentStatus } : u));
+
+        try {
+            await api.patch(`/api/admin/users/${userId}/status`, { isActive: !currentStatus });
+            toast.success(`User ${!currentStatus ? "activated" : "deactivated"} successfully`);
+        } catch (error) {
+            console.error("Failed to update status", error);
+            toast.error("Failed to update status");
+            // Revert on failure
+            setUsers(users.map(u => u.id === userId ? { ...u, isActive: currentStatus } : u));
+        }
+    };
 
     return (
         <div className="space-y-6">
@@ -56,6 +75,7 @@ export default function AdminUsers() {
                         <TableColumn>SHOPS</TableColumn>
                         <TableColumn>JOINED</TableColumn>
                         <TableColumn>STATUS</TableColumn>
+                        <TableColumn>ACTIONS</TableColumn>
                     </TableHeader>
                     <TableBody>
                         {users.map((user) => (
@@ -81,7 +101,17 @@ export default function AdminUsers() {
                                     {new Date(user.createdAt).toLocaleDateString()}
                                 </TableCell>
                                 <TableCell>
-                                    <Chip size="sm" color="success" variant="dot">Active</Chip>
+                                    <Chip size="sm" color={user.isActive ? "success" : "danger"} variant="dot">
+                                        {user.isActive ? "Active" : "Inactive"}
+                                    </Chip>
+                                </TableCell>
+                                <TableCell>
+                                    <Switch
+                                        size="sm"
+                                        isSelected={user.isActive}
+                                        onValueChange={() => toggleStatus(user.id, user.isActive)}
+                                        isDisabled={user.role === "ADMIN"} // Prevent locking out admins
+                                    />
                                 </TableCell>
                             </TableRow>
                         ))}
