@@ -1,7 +1,8 @@
 "use client";
 
-import { Card, CardBody, CardHeader, Button, Link } from "@heroui/react";
+import { Card, CardBody, CardHeader, Button } from "@heroui/react";
 import { AlertCircle } from "lucide-react";
+import Link from "next/link";
 
 export default function AuthErrorPage() {
   return (
@@ -16,12 +17,16 @@ export default function AuthErrorPage() {
             Something went wrong during authentication.
           </p>
           <div className="flex gap-2 justify-center">
-            <Button as={Link} href="/auth/login" color="primary">
-              Try Again
-            </Button>
-            <Button as={Link} href="/" variant="bordered">
-              Go Home
-            </Button>
+            <Link href="/auth/login">
+              <Button color="primary">
+                Try Again
+              </Button>
+            </Link>
+            <Link href="/">
+              <Button variant="bordered">
+                Go Home
+              </Button>
+            </Link>
           </div>
         </CardBody>
       </Card>

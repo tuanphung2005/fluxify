@@ -8,7 +8,6 @@ import {
   DropdownItem,
 } from "@heroui/dropdown";
 import { Avatar } from "@heroui/avatar";
-import NextLink from "next/link";
 import { SignOutButton } from "./sign-out-button";
 import { Session } from "next-auth";
 
@@ -19,53 +18,8 @@ interface NavbarUserMenuProps {
 }
 
 export const NavbarUserMenu = ({ user }: NavbarUserMenuProps) => {
-  const items = [
-    // <DropdownItem key="profile" className="h-14 gap-2">
-    //   <p className="font-semibold">Signed in as</p>
-    //   <p className="font-semibold">{user.email}</p>
-    // </DropdownItem>,
-  ];
-
-  if (user.role === "ADMIN") {
-    items.push(
-      <DropdownItem
-        key="admin"
-        as={NextLink}
-        href="/admin"
-        startContent={<LayoutDashboard size={16} />}
-      >
-        Admin Dashboard
-      </DropdownItem>
-    );
-  }
-
-  if (user.role === "VENDOR" || user.role === "ADMIN") {
-    items.push(
-      <DropdownItem
-        key="vendor"
-        as={NextLink}
-        href="/vendor"
-        startContent={<LayoutDashboard size={16} />}
-      >
-        Vendor Dashboard
-      </DropdownItem>
-    );
-  }
-
-  items.push(
-    <DropdownItem key="orders" as={NextLink} startContent={<Package2 size={16} />} href="/orders" >
-      my orders
-    </DropdownItem>,
-    <DropdownItem key="settings" as={NextLink} startContent={<Settings size={16} />} href="/settings">
-      settings
-    </DropdownItem>,
-    <DropdownItem key="logout" color="danger" startContent={<LogOut size={16} />}>
-      <SignOutButton />
-    </DropdownItem>
-  );
-
   return (
-    <Dropdown placement="bottom-end" >
+    <Dropdown placement="bottom-end">
       <DropdownTrigger>
         <Avatar
           isBordered
@@ -85,7 +39,41 @@ export const NavbarUserMenu = ({ user }: NavbarUserMenuProps) => {
           </DropdownItem>
         </DropdownSection>
         <DropdownSection>
-          {items}
+          {user.role === "ADMIN" ? (
+            <DropdownItem
+              key="admin"
+              href="/admin"
+              startContent={<LayoutDashboard size={16} />}
+            >
+              Admin Dashboard
+            </DropdownItem>
+          ) : null}
+          {user.role === "VENDOR" || user.role === "ADMIN" ? (
+            <DropdownItem
+              key="vendor"
+              href="/vendor"
+              startContent={<LayoutDashboard size={16} />}
+            >
+              Vendor Dashboard
+            </DropdownItem>
+          ) : null}
+          <DropdownItem
+            key="orders"
+            href="/orders"
+            startContent={<Package2 size={16} />}
+          >
+            my orders
+          </DropdownItem>
+          <DropdownItem
+            key="settings"
+            href="/settings"
+            startContent={<Settings size={16} />}
+          >
+            settings
+          </DropdownItem>
+          <DropdownItem key="logout" color="danger" startContent={<LogOut size={16} />}>
+            <SignOutButton />
+          </DropdownItem>
         </DropdownSection>
       </DropdownMenu>
     </Dropdown>

@@ -1,10 +1,40 @@
 import { prisma } from "@/lib/prisma";
 
-export function getVendorProducts(vendorId: string) {
-    return prisma.product.findMany({
-        where: { vendorId },
-        orderBy: { createdAt: "desc" },
-    });
+export async function getVendorProducts(
+    vendorId: string,
+    options: {
+        page?: number;
+        limit?: number;
+        search?: string;
+    } = {}
+) {
+    const { page = 1, limit = 10, search = "" } = options;
+    const skip = (page - 1) * limit;
+
+    const where: any = {
+        vendorId,
+    };
+
+    if (search) {
+        where.name = { contains: search, mode: "insensitive" };
+    }
+
+    const [products, total] = await Promise.all([
+        prisma.product.findMany({
+            where,
+            orderBy: { createdAt: "desc" },
+            skip,
+            take: limit,
+        }),
+        prisma.product.count({ where }),
+    ]);
+
+    return {
+        products,
+        total,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+    };
 }
 
 export function getProductById(id: string) {

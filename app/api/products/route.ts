@@ -15,15 +15,20 @@ const createProductSchema = z.object({
 });
 
 // GET - List vendor's products
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
         const auth = await getAuthenticatedVendor();
         if (isErrorResult(auth)) {
             return errorResponse(auth.error, auth.status);
         }
 
-        const products = await getVendorProducts(auth.vendor.id);
-        return successResponse(products);
+        const { searchParams } = new URL(req.url);
+        const page = parseInt(searchParams.get("page") || "1");
+        const limit = parseInt(searchParams.get("limit") || "10");
+        const search = searchParams.get("search") || "";
+
+        const result = await getVendorProducts(auth.vendor.id, { page, limit, search });
+        return successResponse(result);
     } catch (error) {
         return errorResponse("Failed to fetch products", 500, error);
     }

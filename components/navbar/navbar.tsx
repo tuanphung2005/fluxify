@@ -52,12 +52,16 @@ export const Navbar = async () => {
           <NavbarUserMenu user={session.user} />
         ) : (
           <>
-            <Button as={NextLink} href="/auth/login" variant="flat" >
-              login
-            </Button>
-            <Button as={NextLink} href="/auth/register" color="primary" >
-              sign up
-            </Button>
+            <NextLink href="/auth/login">
+              <Button variant="flat">
+                login
+              </Button>
+            </NextLink>
+            <NextLink href="/auth/register">
+              <Button color="primary">
+                sign up
+              </Button>
+            </NextLink>
           </>
         )}
       </NavbarContent>

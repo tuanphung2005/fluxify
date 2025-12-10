@@ -1,29 +1,50 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
-        const shops = await prisma.vendorProfile.findMany({
-            include: {
-                user: {
-                    select: {
-                        name: true,
-                        email: true
+        const { searchParams } = new URL(req.url);
+        const page = parseInt(searchParams.get("page") || "1");
+        const limit = parseInt(searchParams.get("limit") || "10");
+        const search = searchParams.get("search") || "";
+        const skip = (page - 1) * limit;
+
+        const where: any = {};
+        if (search) {
+            where.OR = [
+                { storeName: { contains: search, mode: "insensitive" } },
+                { user: { name: { contains: search, mode: "insensitive" } } },
+                { user: { email: { contains: search, mode: "insensitive" } } },
+            ];
+        }
+
+        const [shops, total] = await Promise.all([
+            prisma.vendorProfile.findMany({
+                where,
+                include: {
+                    user: {
+                        select: {
+                            name: true,
+                            email: true
+                        }
+                    },
+                    shopTemplate: {
+                        select: {
+                            isPublished: true
+                        }
+                    },
+                    _count: {
+                        select: { products: true }
                     }
                 },
-                shopTemplate: {
-                    select: {
-                        isPublished: true
-                    }
+                orderBy: {
+                    createdAt: 'desc'
                 },
-                _count: {
-                    select: { products: true }
-                }
-            },
-            orderBy: {
-                createdAt: 'desc'
-            }
-        });
+                skip,
+                take: limit,
+            }),
+            prisma.vendorProfile.count({ where })
+        ]);
 
         // Transform data to match frontend expectation
         const formattedShops = shops.map(shop => ({
@@ -36,7 +57,12 @@ export async function GET() {
             _count: shop._count
         }));
 
-        return NextResponse.json(formattedShops);
+        return NextResponse.json({
+            shops: formattedShops,
+            total,
+            totalPages: Math.ceil(total / limit),
+            currentPage: page
+        });
     } catch (error) {
         console.error("Failed to fetch shops:", error);
         return NextResponse.json(

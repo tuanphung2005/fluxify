@@ -5,15 +5,24 @@ import {
     Input,
     useDisclosure,
 } from "@heroui/react";
+import { Pagination } from "@heroui/pagination";
 import { Plus, Search } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { api } from "@/lib/api/api";
 import ProductsTable from "./ProductsTable";
 import ProductFormModal, { Product } from "./ProductFormModal";
 import ConfirmationModal from "../common/ConfirmationModal";
+import { useDebounce } from "@/hooks/use-debounce";
 
 interface ProductManagerContentProps {
     onProductsChange?: () => void;
+}
+
+interface ProductResponse {
+    products: Product[];
+    total: number;
+    totalPages: number;
+    currentPage: number;
 }
 
 export default function ProductManagerContent({
@@ -22,39 +31,38 @@ export default function ProductManagerContent({
     const productModal = useDisclosure();
     const deleteModal = useDisclosure();
     const [products, setProducts] = useState<Product[]>([]);
-    const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetchProducts();
-    }, []);
+    // Pagination state
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
-    const fetchProducts = async () => {
+    const debouncedSearch = useDebounce(searchQuery, 300);
+
+    const fetchProducts = useCallback(async () => {
         setIsLoading(true);
         try {
-            const data = await api.get<Product[]>("/api/products");
-            setProducts(data);
-            setFilteredProducts(data);
+            const queryParams = new URLSearchParams({
+                page: page.toString(),
+                limit: "10",
+                search: debouncedSearch
+            });
+            const data = await api.get<ProductResponse>(`/api/products?${queryParams}`);
+            setProducts(data.products);
+            setTotalPages(data.totalPages);
         } catch (error) {
             console.error("Failed to fetch products", error);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [page, debouncedSearch]);
 
     useEffect(() => {
-        if (searchQuery) {
-            const filtered = products.filter((product) =>
-                product.name.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-            setFilteredProducts(filtered);
-        } else {
-            setFilteredProducts(products);
-        }
-    }, [searchQuery, products]);
+        fetchProducts();
+    }, [fetchProducts]);
 
     const handleProductSaved = () => {
         fetchProducts();
@@ -91,6 +99,11 @@ export default function ProductManagerContent({
         }
     };
 
+    const handleSearchChange = (value: string) => {
+        setSearchQuery(value);
+        setPage(1); // Reset to first page on search
+    };
+
     return (
         <>
             <div className="flex justify-between items-center mb-4 gap-4">
@@ -98,7 +111,7 @@ export default function ProductManagerContent({
                     placeholder="Search products..."
                     startContent={<Search size={18} />}
                     value={searchQuery}
-                    onValueChange={setSearchQuery}
+                    onValueChange={handleSearchChange}
                     className="max-w-xs"
                 />
                 <Button
@@ -109,12 +122,24 @@ export default function ProductManagerContent({
                     Add Product
                 </Button>
             </div>
+
             <ProductsTable
-                products={filteredProducts}
+                products={products}
                 isLoading={isLoading}
                 onEdit={handleEditProduct}
                 onDelete={handleDeleteProduct}
             />
+
+            {totalPages > 1 && (
+                <div className="flex justify-center mt-4">
+                    <Pagination
+                        total={totalPages}
+                        page={page}
+                        onChange={setPage}
+                        showControls
+                    />
+                </div>
+            )}
 
             <ProductFormModal
                 isOpen={productModal.isOpen}
