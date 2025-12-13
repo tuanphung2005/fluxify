@@ -146,7 +146,7 @@ export default function ProductSelectorModal({
                                         const imageUrl = product.images?.[0] || "/placeholder-product.png";
 
                                         return (
-                                            <div
+                                            <div    
                                                 key={product.id}
                                                 onClick={() => handleToggleProduct(product.id)}
                                                 className={`

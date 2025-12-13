@@ -49,6 +49,70 @@ export interface SpacerConfig {
     height: number; // in pixels
 }
 
+// New component configs for Phase 4
+export interface TestimonialsConfig {
+    title?: string;
+    testimonials: Array<{
+        name: string;
+        avatar?: string;
+        rating: number;
+        comment: string;
+        role?: string;
+    }>;
+    layout?: "grid" | "carousel";
+    backgroundColor?: string;
+}
+
+export interface FeaturedCollectionConfig {
+    title: string;
+    description?: string;
+    productIds: string[];
+    layout?: "grid" | "list" | "carousel";
+    columns?: number;
+    showAddToCart?: boolean;
+}
+
+export interface CountdownTimerConfig {
+    title: string;
+    endDate: string; // ISO date string
+    subtitle?: string;
+    expiredMessage?: string;
+    backgroundColor?: string;
+    textColor?: string;
+}
+
+export interface NewsletterSignupConfig {
+    title: string;
+    subtitle?: string;
+    buttonText?: string;
+    placeholder?: string;
+    backgroundColor?: string;
+    textColor?: string;
+}
+
+export interface FaqAccordionConfig {
+    title?: string;
+    items: Array<{
+        question: string;
+        answer: string;
+    }>;
+    backgroundColor?: string;
+}
+
+export interface BannerCarouselConfig {
+    banners: Array<{
+        imageUrl: string;
+        title?: string;
+        subtitle?: string;
+        ctaText?: string;
+        ctaLink?: string;
+    }>;
+    autoplay?: boolean;
+    interval?: number; // milliseconds
+    showDots?: boolean;
+    showArrows?: boolean;
+}
+
 // Union type for all component configs
 export type ComponentConfig =
     | HeroConfig
@@ -56,7 +120,13 @@ export type ComponentConfig =
     | ImageGalleryConfig
     | VideoEmbedConfig
     | TextBlockConfig
-    | SpacerConfig;
+    | SpacerConfig
+    | TestimonialsConfig
+    | FeaturedCollectionConfig
+    | CountdownTimerConfig
+    | NewsletterSignupConfig
+    | FaqAccordionConfig
+    | BannerCarouselConfig;
 
 // Shop component instance from database
 export interface ShopComponentData {

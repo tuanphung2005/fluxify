@@ -9,6 +9,12 @@ import ImageGalleryConfig from "./config/ImageGallery";
 import VideoEmbedConfig from "./config/VideoEmbed";
 import TextBlockConfig from "./config/TextBlock";
 import SpacerConfig from "./config/Spacer";
+import TestimonialsConfigPanel from "./config/TestimonialsConfig";
+import FeaturedCollectionConfigPanel from "./config/FeaturedCollectionConfig";
+import CountdownTimerConfigPanel from "./config/CountdownTimerConfig";
+import NewsletterSignupConfigPanel from "./config/NewsletterSignupConfig";
+import FaqAccordionConfigPanel from "./config/FaqAccordionConfig";
+import BannerCarouselConfigPanel from "./config/BannerCarouselConfig";
 
 interface ConfigurationPanelProps {
     componentType: ComponentType | null;
@@ -91,6 +97,48 @@ export default function ConfigurationPanel({
 
                 {componentType === "SPACER" && (
                     <SpacerConfig config={localConfig as any} onUpdate={updateField} />
+                )}
+
+                {componentType === "TESTIMONIALS" && (
+                    <TestimonialsConfigPanel
+                        config={localConfig as any}
+                        onUpdate={updateField}
+                    />
+                )}
+
+                {componentType === "FEATURED_COLLECTION" && (
+                    <FeaturedCollectionConfigPanel
+                        config={localConfig as any}
+                        onUpdate={updateField}
+                    />
+                )}
+
+                {componentType === "COUNTDOWN_TIMER" && (
+                    <CountdownTimerConfigPanel
+                        config={localConfig as any}
+                        onUpdate={updateField}
+                    />
+                )}
+
+                {componentType === "NEWSLETTER_SIGNUP" && (
+                    <NewsletterSignupConfigPanel
+                        config={localConfig as any}
+                        onUpdate={updateField}
+                    />
+                )}
+
+                {componentType === "FAQ_ACCORDION" && (
+                    <FaqAccordionConfigPanel
+                        config={localConfig as any}
+                        onUpdate={updateField}
+                    />
+                )}
+
+                {componentType === "BANNER_CAROUSEL" && (
+                    <BannerCarouselConfigPanel
+                        config={localConfig as any}
+                        onUpdate={updateField}
+                    />
                 )}
             </div>
         </div>

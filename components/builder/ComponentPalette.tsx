@@ -9,6 +9,12 @@ import {
     Grid3x3,
     LayoutTemplate,
     Space,
+    MessageSquareQuote,
+    Star,
+    Timer,
+    Mail,
+    HelpCircle,
+    Images,
 } from "lucide-react";
 import { ComponentConfig } from "@/types/shop";
 import { DEFAULT_CONFIGS } from "@/lib/shop/default-configs";
@@ -53,6 +59,42 @@ const COMPONENT_METADATA = [
         label: "Spacer",
         icon: Space,
         description: "Add vertical spacing",
+    },
+    {
+        type: "TESTIMONIALS" as ComponentType,
+        label: "Testimonials",
+        icon: MessageSquareQuote,
+        description: "Customer reviews showcase",
+    },
+    {
+        type: "FEATURED_COLLECTION" as ComponentType,
+        label: "Featured Collection",
+        icon: Star,
+        description: "Curated product display",
+    },
+    {
+        type: "COUNTDOWN_TIMER" as ComponentType,
+        label: "Countdown Timer",
+        icon: Timer,
+        description: "Sale countdown",
+    },
+    {
+        type: "NEWSLETTER_SIGNUP" as ComponentType,
+        label: "Newsletter",
+        icon: Mail,
+        description: "Email subscription",
+    },
+    {
+        type: "FAQ_ACCORDION" as ComponentType,
+        label: "FAQ",
+        icon: HelpCircle,
+        description: "Questions & answers",
+    },
+    {
+        type: "BANNER_CAROUSEL" as ComponentType,
+        label: "Banner Carousel",
+        icon: Images,
+        description: "Rotating banner images",
     },
 ];
 

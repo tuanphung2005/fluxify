@@ -8,7 +8,13 @@ import {
     ImageGalleryConfig,
     VideoEmbedConfig,
     TextBlockConfig,
-    SpacerConfig
+    SpacerConfig,
+    TestimonialsConfig,
+    FeaturedCollectionConfig,
+    CountdownTimerConfig,
+    NewsletterSignupConfig,
+    FaqAccordionConfig,
+    BannerCarouselConfig,
 } from "@/types/shop";
 import HeroComponent from "./components/Hero";
 import ProductGridComponent from "./components/ProductGrid";
@@ -16,6 +22,12 @@ import ImageGalleryComponent from "./components/ImageGallery";
 import VideoEmbedComponent from "./components/VideoEmbedt";
 import TextBlockComponent from "./components/TextBlock";
 import SpacerComponent from "./components/Spacer";
+import TestimonialsComponent from "./components/TestimonialsComponent";
+import FeaturedCollectionComponent from "./components/FeaturedCollectionComponent";
+import CountdownTimerComponent from "./components/CountdownTimerComponent";
+import NewsletterSignupComponent from "./components/NewsletterSignupComponent";
+import FaqAccordionComponent from "./components/FaqAccordionComponent";
+import BannerCarouselComponent from "./components/BannerCarouselComponent";
 
 interface ShopComponentWrapperProps {
     type: ComponentType;
@@ -55,6 +67,12 @@ export default function ShopComponentWrapper({
             case "VIDEO_EMBED": return "video embed";
             case "TEXT_BLOCK": return "text block";
             case "SPACER": return "spacer";
+            case "TESTIMONIALS": return "testimonials";
+            case "FEATURED_COLLECTION": return "featured collection";
+            case "COUNTDOWN_TIMER": return "countdown timer";
+            case "NEWSLETTER_SIGNUP": return "newsletter";
+            case "FAQ_ACCORDION": return "FAQ";
+            case "BANNER_CAROUSEL": return "banner carousel";
             default: return "component";
         }
     };
@@ -67,6 +85,12 @@ export default function ShopComponentWrapper({
             case "VIDEO_EMBED": return "border-warning-500/50 bg-warning-50/10";
             case "TEXT_BLOCK": return "border-danger-500/50 bg-danger-50/10";
             case "SPACER": return "border-default-500/50 bg-default-50/10";
+            case "TESTIMONIALS": return "border-pink-500/50 bg-pink-50/10";
+            case "FEATURED_COLLECTION": return "border-purple-500/50 bg-purple-50/10";
+            case "COUNTDOWN_TIMER": return "border-orange-500/50 bg-orange-50/10";
+            case "NEWSLETTER_SIGNUP": return "border-cyan-500/50 bg-cyan-50/10";
+            case "FAQ_ACCORDION": return "border-teal-500/50 bg-teal-50/10";
+            case "BANNER_CAROUSEL": return "border-indigo-500/50 bg-indigo-50/10";
             default: return "border-default-300";
         }
     };
@@ -79,6 +103,12 @@ export default function ShopComponentWrapper({
             case "VIDEO_EMBED": return "bg-warning-500 text-white";
             case "TEXT_BLOCK": return "bg-danger-500 text-white";
             case "SPACER": return "bg-default-500 text-white";
+            case "TESTIMONIALS": return "bg-pink-500 text-white";
+            case "FEATURED_COLLECTION": return "bg-purple-500 text-white";
+            case "COUNTDOWN_TIMER": return "bg-orange-500 text-white";
+            case "NEWSLETTER_SIGNUP": return "bg-cyan-500 text-white";
+            case "FAQ_ACCORDION": return "bg-teal-500 text-white";
+            case "BANNER_CAROUSEL": return "bg-indigo-500 text-white";
             default: return "bg-default-500 text-white";
         }
     };
@@ -103,6 +133,12 @@ export default function ShopComponentWrapper({
             {type === "VIDEO_EMBED" && <VideoEmbedComponent config={config as VideoEmbedConfig} />}
             {type === "TEXT_BLOCK" && <TextBlockComponent config={config as TextBlockConfig} />}
             {type === "SPACER" && <SpacerComponent config={config as SpacerConfig} />}
+            {type === "TESTIMONIALS" && <TestimonialsComponent config={config as TestimonialsConfig} />}
+            {type === "FEATURED_COLLECTION" && <FeaturedCollectionComponent config={config as FeaturedCollectionConfig} />}
+            {type === "COUNTDOWN_TIMER" && <CountdownTimerComponent config={config as CountdownTimerConfig} />}
+            {type === "NEWSLETTER_SIGNUP" && <NewsletterSignupComponent config={config as NewsletterSignupConfig} />}
+            {type === "FAQ_ACCORDION" && <FaqAccordionComponent config={config as FaqAccordionConfig} />}
+            {type === "BANNER_CAROUSEL" && <BannerCarouselComponent config={config as BannerCarouselConfig} />}
         </div>
     );
 }

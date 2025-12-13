@@ -1,0 +1,101 @@
+"use client";
+
+import { useState } from "react";
+import { Input } from "@heroui/input";
+import { Button } from "@heroui/button";
+import { Mail, CheckCircle } from "lucide-react";
+import { addToast } from "@heroui/toast";
+import type { NewsletterSignupConfig } from "@/types/shop";
+
+interface NewsletterSignupComponentProps {
+    config: NewsletterSignupConfig;
+}
+
+export default function NewsletterSignupComponent({ config }: NewsletterSignupComponentProps) {
+    const {
+        title,
+        subtitle,
+        buttonText = "Subscribe",
+        placeholder = "Enter your email",
+        backgroundColor,
+        textColor,
+    } = config;
+
+    const [email, setEmail] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSubscribed, setIsSubscribed] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!email || !email.includes("@")) {
+            addToast({ title: "Please enter a valid email", color: "warning" });
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        // Simulate API call - in real implementation, connect to email service
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        setIsSubmitting(false);
+        setIsSubscribed(true);
+        addToast({ title: "Successfully subscribed!", color: "success" });
+    };
+
+    return (
+        <section
+            className="py-16 px-4"
+            style={{
+                backgroundColor: backgroundColor || "#f8fafc",
+                color: textColor || "inherit",
+            }}
+        >
+            <div className="max-w-2xl mx-auto text-center">
+                <Mail size={48} className="mx-auto mb-6 text-primary" />
+
+                <h2 className="text-3xl font-bold mb-4">{title}</h2>
+
+                {subtitle && (
+                    <p className="text-lg text-default-600 mb-8">{subtitle}</p>
+                )}
+
+                {isSubscribed ? (
+                    <div className="flex items-center justify-center gap-3 text-success">
+                        <CheckCircle size={24} />
+                        <span className="text-lg font-medium">
+                            Thanks for subscribing!
+                        </span>
+                    </div>
+                ) : (
+                    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                        <Input
+                            type="email"
+                            placeholder={placeholder}
+                            value={email}
+                            onValueChange={setEmail}
+                            size="lg"
+                            classNames={{
+                                inputWrapper: "bg-white shadow-sm",
+                            }}
+                            startContent={<Mail size={18} className="text-default-400" />}
+                        />
+                        <Button
+                            type="submit"
+                            color="primary"
+                            size="lg"
+                            isLoading={isSubmitting}
+                            className="px-8"
+                        >
+                            {buttonText}
+                        </Button>
+                    </form>
+                )}
+
+                <p className="text-sm text-default-400 mt-4">
+                    We respect your privacy. Unsubscribe at any time.
+                </p>
+            </div>
+        </section>
+    );
+}
