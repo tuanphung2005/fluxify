@@ -131,7 +131,7 @@ export async function GET(req: NextRequest) {
             }));
 
         // Get recent orders
-        const recentOrderIds = [...new Set(orderItems.map(item => item.order.id))].slice(0, 5);
+        const recentOrderIds = Array.from(new Set(orderItems.map(item => item.order.id))).slice(0, 5);
         const recentOrders = await prisma.order.findMany({
             where: { id: { in: recentOrderIds } },
             include: {
