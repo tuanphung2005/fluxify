@@ -46,7 +46,8 @@ export default function ProductCard({
         if (onPress) {
             onPress();
         } else if (vendorId) {
-            router.push(`/shop/${vendorId}/product/${id}`);
+            // Use query param to open modal instead of navigating to new page
+            router.push(`/shop/${vendorId}?productId=${id}`, { scroll: false });
         }
     };
 

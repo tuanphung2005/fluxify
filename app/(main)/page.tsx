@@ -1,14 +1,292 @@
-import { subtitle, title } from "@/components/primitives";
+'use client'
+import { Button } from "@heroui/button";
+import { Card, CardBody } from "@heroui/card";
+import Link from "next/link";
+import {
+  ShoppingBag,
+  Zap,
+  Shield,
+  TrendingUp,
+  Store,
+  CreditCard,
+  Users,
+  ArrowRight,
+  Sparkles,
+  BarChart3,
+  Package,
+} from "lucide-react";
+
+const FEATURES = [
+  {
+    icon: Store,
+    title: "Beautiful Storefronts",
+    description: "Create stunning shops with our drag-and-drop builder. No coding required.",
+    color: "text-primary",
+    bg: "bg-primary/10",
+  },
+  {
+    icon: Zap,
+    title: "Lightning Fast",
+    description: "Optimized for speed. Your customers won't wait, and neither should you.",
+    color: "text-warning",
+    bg: "bg-warning/10",
+  },
+  {
+    icon: Shield,
+    title: "Secure Payments",
+    description: "Built-in security with encrypted transactions and fraud protection.",
+    color: "text-success",
+    bg: "bg-success/10",
+  },
+  {
+    icon: BarChart3,
+    title: "Analytics Dashboard",
+    description: "Track sales, monitor trends, and grow your business with insights.",
+    color: "text-secondary",
+    bg: "bg-secondary/10",
+  },
+  {
+    icon: Package,
+    title: "Inventory Management",
+    description: "Manage products, variants, and stock levels all in one place.",
+    color: "text-danger",
+    bg: "bg-danger/10",
+  },
+  {
+    icon: Users,
+    title: "Multi-Vendor Support",
+    description: "Host multiple vendors on a single platform. Perfect for marketplaces.",
+    color: "text-primary",
+    bg: "bg-primary/10",
+  },
+];
+
+const STATS = [
+  { value: "10K+", label: "Active Vendors" },
+  { value: "1M+", label: "Products Sold" },
+  { value: "99.9%", label: "Uptime" },
+  { value: "$50M+", label: "Total GMV" },
+];
 
 export default function Home() {
   return (
-    <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <p className={title()}>welcome</p>
-      <p className={subtitle()}>
-        the simple ecommerce platform for everyone, selling made easy.
-      </p>
+    <div className="flex flex-col">
+      {/* Hero Section */}
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
 
-      <p>This is base text.</p>
-    </section>
+        {/* Animated Grid Pattern */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, hsl(var(--heroui-default-300)) 1px, transparent 0)`,
+            backgroundSize: '40px 40px',
+          }} />
+        </div>
+
+        {/* Floating Elements */}
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+
+        <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-primary">Now in Beta — Start Selling Today</span>
+          </div>
+
+          {/* Main Heading */}
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6">
+            <span className="bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
+              Selling Made
+            </span>
+            <br />
+            <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+              Effortless
+            </span>
+          </h1>
+
+          {/* Subtitle */}
+          <p className="text-xl md:text-2xl text-default-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+            The modern e-commerce platform that helps you build, launch, and scale
+            your online store in minutes — not months.
+          </p>
+
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button
+              as={Link}
+              href="/auth/register"
+              color="primary"
+              size="lg"
+              className="px-8 py-6 text-lg font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all"
+              endContent={<ArrowRight className="w-5 h-5" />}
+            >
+              Start Selling Free
+            </Button>
+            <Button
+              as={Link}
+              href="/auth/login"
+              variant="bordered"
+              size="lg"
+              className="px-8 py-6 text-lg font-semibold"
+            >
+              Sign In
+            </Button>
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="mt-16 flex flex-wrap justify-center gap-8 text-default-400">
+            <div className="flex items-center gap-2">
+              <CreditCard className="w-5 h-5" />
+              <span className="text-sm">No credit card required</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Shield className="w-5 h-5" />
+              <span className="text-sm">Free forever plan</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Zap className="w-5 h-5" />
+              <span className="text-sm">Setup in 5 minutes</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-20 bg-default-50">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {STATS.map((stat, index) => (
+              <div key={index} className="text-center">
+                <p className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  {stat.value}
+                </p>
+                <p className="text-default-500 mt-2">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Everything You Need to Succeed
+            </h2>
+            <p className="text-xl text-default-500 max-w-2xl mx-auto">
+              Powerful tools designed to help vendors thrive in the digital marketplace
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {FEATURES.map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <Card
+                  key={index}
+                  className="border border-divider hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                >
+                  <CardBody className="p-6">
+                    <div className={`w-12 h-12 rounded-xl ${feature.bg} flex items-center justify-center mb-4`}>
+                      <Icon className={`w-6 h-6 ${feature.color}`} />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                    <p className="text-default-500">{feature.description}</p>
+                  </CardBody>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="py-24 px-6 bg-gradient-to-b from-default-50 to-background">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Launch in 3 Simple Steps
+            </h2>
+            <p className="text-xl text-default-500">
+              From idea to income in just a few clicks
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-12">
+            {[
+              { step: "01", title: "Create Account", desc: "Sign up free and set up your vendor profile in seconds" },
+              { step: "02", title: "Build Your Shop", desc: "Use our visual builder to create a stunning storefront" },
+              { step: "03", title: "Start Selling", desc: "Add products, set prices, and watch the orders roll in" },
+            ].map((item, index) => (
+              <div key={index} className="text-center relative">
+                <div className="text-8xl font-bold text-default-100 absolute -top-4 left-1/2 -translate-x-1/2">
+                  {item.step}
+                </div>
+                <div className="relative z-10 pt-12">
+                  <h3 className="text-2xl font-semibold mb-3">{item.title}</h3>
+                  <p className="text-default-500">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-24 px-6">
+        <div className="max-w-4xl mx-auto">
+          <Card className="bg-gradient-to-br from-primary to-secondary overflow-hidden">
+            <CardBody className="p-12 md:p-16 text-center relative">
+              {/* Decorative Elements */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+
+              <div className="relative z-10">
+                <ShoppingBag className="w-16 h-16 text-white/90 mx-auto mb-6" />
+                <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+                  Ready to Transform Your Business?
+                </h2>
+                <p className="text-xl text-white/80 mb-8 max-w-xl mx-auto">
+                  Join thousands of vendors who have already discovered the easier way to sell online.
+                </p>
+                <Button
+                  as={Link}
+                  href="/auth/register"
+                  size="lg"
+                  className="bg-white text-primary px-10 py-6 text-lg font-semibold hover:bg-white/90 transition-colors"
+                  endContent={<ArrowRight className="w-5 h-5" />}
+                >
+                  Get Started Now — It's Free
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 px-6 border-t border-divider">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold">F</span>
+            </div>
+            <span className="font-bold text-lg">Fluxify</span>
+          </div>
+          <div className="flex gap-6 text-default-500 text-sm">
+            <Link href="/about" className="hover:text-foreground transition-colors">About</Link>
+            <Link href="#" className="hover:text-foreground transition-colors">Privacy</Link>
+            <Link href="#" className="hover:text-foreground transition-colors">Terms</Link>
+            <Link href="#" className="hover:text-foreground transition-colors">Contact</Link>
+          </div>
+          <p className="text-default-400 text-sm">
+            © {new Date().getFullYear()} Fluxify. All rights reserved.
+          </p>
+        </div>
+      </footer>
+    </div>
   );
 }
