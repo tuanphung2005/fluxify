@@ -1,39 +1,34 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import AdminSidebar from "./AdminSidebar";
-import { Spinner } from "@heroui/spinner";
+import { LayoutDashboard, Users, ShoppingBag } from "lucide-react";
+import { DashboardLayout } from "@/components/dashboard";
+import type { SidebarMenuItem } from "@/components/common/DashboardSidebar";
+
+const ADMIN_MENU_ITEMS: SidebarMenuItem[] = [
+    { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
+    { key: "users", label: "Users", icon: Users, path: "/admin/users" },
+    { key: "shops", label: "Shops", icon: ShoppingBag, path: "/admin/shops" },
+];
+
+const AdminSidebarHeader = () => (
+    <>
+        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold">F</span>
+        </div>
+        <span className="font-bold text-lg">Fluxify Admin</span>
+    </>
+);
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-    const { data: session, status } = useSession();
-    const router = useRouter();
-
-    useEffect(() => {
-        if (status === "unauthenticated") {
-            router.push("/auth/login");
-        } else if (status === "authenticated" && session?.user.role !== "ADMIN") {
-            router.push("/");
-        }
-    }, [status, session, router]);
-
-    if (status === "loading" || !session || session.user.role !== "ADMIN") {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <Spinner size="lg" />
-            </div>
-        );
-    }
-
     return (
-        <div className="min-h-[calc(100vh-64px)] bg-default-50 flex">
-            <AdminSidebar />
-            <div className="flex-1 ml-64">
-                <main className="p-8 w-full">
-                    {children}
-                </main>
-            </div>
-        </div>
+        <DashboardLayout
+            requiredRole="ADMIN"
+            menuItems={ADMIN_MENU_ITEMS}
+            sidebarHeader={<AdminSidebarHeader />}
+            showLogout={true}
+            showSettings={true}
+        >
+            {children}
+        </DashboardLayout>
     );
 }

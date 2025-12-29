@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Input } from "@heroui/input";
 import { Textarea } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/select";
@@ -9,7 +10,23 @@ import { Divider } from "@heroui/divider";
 import ProductSelectorModal from "./ProductSelectorModal";
 import { useDisclosure } from "@heroui/react";
 import { Package, Plus, X } from "lucide-react";
+import { api } from "@/lib/api/api";
 import type { FeaturedCollectionConfig } from "@/types/shop";
+
+interface Product {
+    id: string;
+    name: string;
+    price: number | string;
+    stock: number;
+    images?: string[];
+}
+
+interface ProductsResponse {
+    products: Product[];
+    total: number;
+    totalPages: number;
+    currentPage: number;
+}
 
 interface FeaturedCollectionConfigPanelProps {
     config: FeaturedCollectionConfig;
@@ -19,6 +36,31 @@ interface FeaturedCollectionConfigPanelProps {
 export default function FeaturedCollectionConfigPanel({ config, onUpdate }: FeaturedCollectionConfigPanelProps) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const productIds = config.productIds || [];
+    const [products, setProducts] = useState<Product[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
+    const fetchProducts = async () => {
+        setIsLoading(true);
+        try {
+            const data = await api.get<ProductsResponse | Product[]>("/api/products?limit=100");
+            if (Array.isArray(data)) {
+                setProducts(data);
+            } else if (data && 'products' in data) {
+                setProducts(data.products);
+            } else {
+                setProducts([]);
+            }
+        } catch (error) {
+            console.error("Failed to fetch products", error);
+            setProducts([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const handleProductSelect = (selectedIds: string[]) => {
         onUpdate("productIds", selectedIds);
@@ -26,6 +68,12 @@ export default function FeaturedCollectionConfigPanel({ config, onUpdate }: Feat
 
     const removeProduct = (id: string) => {
         onUpdate("productIds", productIds.filter(p => p !== id));
+    };
+
+    // Get product names for display
+    const getProductName = (id: string) => {
+        const product = products.find(p => p.id === id);
+        return product?.name || id;
     };
 
     return (
@@ -93,7 +141,7 @@ export default function FeaturedCollectionConfigPanel({ config, onUpdate }: Feat
                     <div className="space-y-2">
                         {productIds.map((id) => (
                             <div key={id} className="flex items-center justify-between p-2 bg-default-50 rounded">
-                                <span className="text-sm truncate">{id}</span>
+                                <span className="text-sm truncate">{getProductName(id)}</span>
                                 <Button
                                     isIconOnly
                                     size="sm"
@@ -112,9 +160,12 @@ export default function FeaturedCollectionConfigPanel({ config, onUpdate }: Feat
             <ProductSelectorModal
                 isOpen={isOpen}
                 onOpenChange={onOpenChange}
+                products={products}
                 selectedProductIds={productIds}
-                onSelectProducts={handleProductSelect}
+                onSelectionChange={handleProductSelect}
+                isLoading={isLoading}
             />
         </div>
     );
 }
+

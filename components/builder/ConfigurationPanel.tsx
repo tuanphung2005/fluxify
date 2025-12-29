@@ -1,20 +1,10 @@
 "use client";
 
+import { Suspense, useState, useEffect } from "react";
 import { ComponentType } from "@prisma/client";
 import { ComponentConfig } from "@/types/shop";
-import { useState, useEffect } from "react";
-import HeroConfig from "./config/Hero";
-import ProductGridConfig from "./config/ProductGrid";
-import ImageGalleryConfig from "./config/ImageGallery";
-import VideoEmbedConfig from "./config/VideoEmbed";
-import TextBlockConfig from "./config/TextBlock";
-import SpacerConfig from "./config/Spacer";
-import TestimonialsConfigPanel from "./config/TestimonialsConfig";
-import FeaturedCollectionConfigPanel from "./config/FeaturedCollectionConfig";
-import CountdownTimerConfigPanel from "./config/CountdownTimerConfig";
-import NewsletterSignupConfigPanel from "./config/NewsletterSignupConfig";
-import FaqAccordionConfigPanel from "./config/FaqAccordionConfig";
-import BannerCarouselConfigPanel from "./config/BannerCarouselConfig";
+import { COMPONENT_REGISTRY } from "@/lib/registry/component-registry";
+import { Spinner } from "@heroui/spinner";
 
 interface ConfigurationPanelProps {
     componentType: ComponentType | null;
@@ -22,6 +12,10 @@ interface ConfigurationPanelProps {
     onUpdateConfig: (newConfig: ComponentConfig) => void;
 }
 
+/**
+ * Configuration panel for editing shop component properties
+ * Uses the component registry for dynamic config panel loading
+ */
 export default function ConfigurationPanel({
     componentType,
     config,
@@ -33,10 +27,13 @@ export default function ConfigurationPanel({
         setLocalConfig(config);
     }, [config, componentType]);
 
-    const updateField = (field: string | number | symbol | Partial<ComponentConfig>, value?: any) => {
+    const updateField = (
+        field: string | number | symbol | Partial<ComponentConfig>,
+        value?: unknown
+    ) => {
         let newConfig: ComponentConfig;
 
-        if (typeof field === 'object' && field !== null) {
+        if (typeof field === "object" && field !== null) {
             // Handle partial update
             newConfig = { ...(localConfig || {}), ...field } as ComponentConfig;
         } else {
@@ -59,87 +56,34 @@ export default function ConfigurationPanel({
         );
     }
 
+    const meta = COMPONENT_REGISTRY[componentType];
+
+    if (!meta) {
+        return (
+            <div className="w-80 bg-content1 border-l border-divider p-4">
+                <h3 className="text-lg font-bold mb-4">configuration</h3>
+                <p className="text-sm text-default-500">
+                    Unknown component type: {componentType}
+                </p>
+            </div>
+        );
+    }
+
+    const { ConfigPanel } = meta;
+
     return (
         <div className="w-80 bg-content1 border-l border-divider p-4 overflow-y-auto">
             <h3 className="text-lg font-bold mb-4">configuration</h3>
             <div className="space-y-4">
-                {componentType === "HERO" && (
-                    <HeroConfig config={localConfig as any} onUpdate={updateField} />
-                )}
-
-                {componentType === "PRODUCT_GRID" && (
-                    <ProductGridConfig
-                        config={localConfig as any}
-                        onUpdate={updateField}
-                    />
-                )}
-
-                {componentType === "IMAGE_GALLERY" && (
-                    <ImageGalleryConfig
-                        config={localConfig as any}
-                        onUpdate={updateField}
-                    />
-                )}
-
-                {componentType === "VIDEO_EMBED" && (
-                    <VideoEmbedConfig
-                        config={localConfig as any}
-                        onUpdate={updateField}
-                    />
-                )}
-
-                {componentType === "TEXT_BLOCK" && (
-                    <TextBlockConfig
-                        config={localConfig as any}
-                        onUpdate={updateField}
-                    />
-                )}
-
-                {componentType === "SPACER" && (
-                    <SpacerConfig config={localConfig as any} onUpdate={updateField} />
-                )}
-
-                {componentType === "TESTIMONIALS" && (
-                    <TestimonialsConfigPanel
-                        config={localConfig as any}
-                        onUpdate={updateField}
-                    />
-                )}
-
-                {componentType === "FEATURED_COLLECTION" && (
-                    <FeaturedCollectionConfigPanel
-                        config={localConfig as any}
-                        onUpdate={updateField}
-                    />
-                )}
-
-                {componentType === "COUNTDOWN_TIMER" && (
-                    <CountdownTimerConfigPanel
-                        config={localConfig as any}
-                        onUpdate={updateField}
-                    />
-                )}
-
-                {componentType === "NEWSLETTER_SIGNUP" && (
-                    <NewsletterSignupConfigPanel
-                        config={localConfig as any}
-                        onUpdate={updateField}
-                    />
-                )}
-
-                {componentType === "FAQ_ACCORDION" && (
-                    <FaqAccordionConfigPanel
-                        config={localConfig as any}
-                        onUpdate={updateField}
-                    />
-                )}
-
-                {componentType === "BANNER_CAROUSEL" && (
-                    <BannerCarouselConfigPanel
-                        config={localConfig as any}
-                        onUpdate={updateField}
-                    />
-                )}
+                <Suspense
+                    fallback={
+                        <div className="flex items-center justify-center py-8">
+                            <Spinner size="sm" />
+                        </div>
+                    }
+                >
+                    <ConfigPanel config={localConfig} onUpdate={updateField} />
+                </Suspense>
             </div>
         </div>
     );
