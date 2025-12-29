@@ -1,12 +1,11 @@
 "use client";
 
 import { Card, CardBody, CardFooter } from "@heroui/card";
-import { Image as HeroUIImage } from "@heroui/image";
+import { Image } from "@heroui/image";
 import { Button } from "@heroui/button";
-import { Badge } from "@heroui/badge";
 import { Chip } from "@heroui/chip";
 import { ShoppingCart } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 type StockStatus = "in_stock" | "low_stock" | "out_of_stock";
 
@@ -15,143 +14,124 @@ interface ProductCardProps {
     name: string;
     price: number;
     images: string[];
+    vendorId?: string;
+    description?: string;
     isSale?: boolean;
     stockStatus?: StockStatus;
     showAddToCart?: boolean;
     onAddToCart?: (id: string) => void;
     onPress?: () => void;
-    variants?: any;
+    variants?: Record<string, unknown>;
 }
 
+/**
+ * Unified ProductCard component with modern styling
+ * Supports navigation to product page and optional Add to Cart button
+ */
 export default function ProductCard({
     id,
     name,
     price,
     images = [],
+    vendorId,
     isSale = false,
     stockStatus = "in_stock",
     showAddToCart = false,
     onAddToCart,
     onPress,
-    variants,
 }: ProductCardProps) {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const router = useRouter();
 
-    // Cycle through images every 3 seconds if multiple images exist
-    useEffect(() => {
-        if (images.length <= 1) return;
+    const handleCardClick = () => {
+        if (onPress) {
+            onPress();
+        } else if (vendorId) {
+            router.push(`/shop/${vendorId}/product/${id}`);
+        }
+    };
 
-        const interval = setInterval(() => {
-            setCurrentImageIndex((prev) => (prev + 1) % images.length);
-        }, 3000);
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onAddToCart?.(id);
+    };
 
-        return () => clearInterval(interval);
-    }, [images.length]);
-
-    // Parse variants to display
-    const variantOptions = variants
-        ? Object.entries(variants).map(([name, values]) => ({
-            name,
-            count: Array.isArray(values) ? values.length : 0,
-        }))
-        : [];
+    const isOutOfStock = stockStatus === "out_of_stock";
+    const hasButton = showAddToCart && !isOutOfStock;
 
     return (
-        <Badge
-            content="New"
-            color="secondary"
-            isInvisible={true}
-            placement="top-right"
-            className="z-10"
+        <Card
+            className="overflow-hidden group"
+            isPressable={!hasButton}
+            onPress={!hasButton ? handleCardClick : undefined}
         >
-            <Card shadow="sm" className="w-full">
-                <CardBody className="p-0 relative">
-                    <div
-                        className={onPress ? "cursor-pointer" : ""}
-                        onClick={onPress}
-                        role={onPress ? "button" : undefined}
-                        tabIndex={onPress ? 0 : undefined}
-                        onKeyDown={(e) => {
-                            if (onPress && (e.key === "Enter" || e.key === " ")) {
-                                onPress();
-                            }
-                        }}
+            {/* Image Section */}
+            <div
+                className={`relative aspect-square overflow-hidden ${hasButton ? "cursor-pointer" : ""}`}
+                onClick={hasButton ? handleCardClick : undefined}
+            >
+                <Image
+                    src={images[0] || "/placeholder.png"}
+                    alt={name}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    removeWrapper
+                />
+                {/* Sale Badge */}
+                {isSale && (
+                    <Chip
+                        color="danger"
+                        variant="flat"
+                        className="absolute top-2 left-2 z-10"
+                        size="sm"
                     >
-                        <HeroUIImage
-                            src={images[currentImageIndex] || images[0]}
-                            alt={name}
-                            className="w-full object-cover transition-opacity duration-500"
-                            width="100%"
-                            height={300}
-                        />
-                        {isSale && (
-                            <Chip
-                                color="danger"
-                                variant="flat"
-                                className="absolute top-2 left-2 z-10"
-                                size="sm"
-                            >
-                                Sale
-                            </Chip>
-                        )}
-                        {stockStatus === "low_stock" && (
-                            <Chip
-                                color="warning"
-                                variant="flat"
-                                className="absolute bottom-2 right-2 z-10"
-                                size="sm"
-                            >
-                                Low Stock
-                            </Chip>
-                        )}
-                        {stockStatus === "out_of_stock" && (
-                            <div className="absolute inset-0 bg-background/50 z-20 flex items-center justify-center">
-                                <Chip color="default" variant="solid">
-                                    Out of Stock
-                                </Chip>
-                            </div>
-                        )}
-                    </div>
-                </CardBody>
-                <CardFooter className="flex-col items-start gap-2">
-                    <div
-                        className={`w-full ${onPress ? "cursor-pointer" : ""}`}
-                        onClick={onPress}
+                        Sale
+                    </Chip>
+                )}
+                {/* Low Stock Badge */}
+                {stockStatus === "low_stock" && (
+                    <Chip
+                        color="warning"
+                        variant="flat"
+                        className="absolute top-2 right-2 z-10"
+                        size="sm"
                     >
-                        <h3 className="font-semibold text-lg">{name}</h3>
-                        <p className="text-2xl font-bold text-primary">
-                            ${price.toFixed(2)}
-                        </p>
-                        {variantOptions.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-2">
-                                {variantOptions.map((variant, idx) => (
-                                    <Chip
-                                        key={idx}
-                                        size="sm"
-                                        variant="flat"
-                                        className="text-tiny"
-                                    >
-                                        {variant.name}: {variant.count}
-                                    </Chip>
-                                ))}
-                            </div>
-                        )}
+                        Low Stock
+                    </Chip>
+                )}
+                {/* Out of Stock Overlay */}
+                {isOutOfStock && (
+                    <div className="absolute inset-0 bg-background/60 z-10 flex items-center justify-center">
+                        <Chip color="default" variant="solid">
+                            Out of Stock
+                        </Chip>
                     </div>
-                    <div className="flex justify-end w-full">
-                        {showAddToCart && stockStatus !== "out_of_stock" && (
-                            <Button
-                                size="sm"
-                                color="primary"
-                                variant="flat"
-                                startContent={<ShoppingCart className="w-4 h-4" />}
-                                onPress={() => onAddToCart?.(id)}
-                            >
-                                Add to Cart
-                            </Button>
-                        )}
-                    </div>
+                )}
+            </div>
+
+            {/* Content Section */}
+            <CardBody
+                className={`p-4 ${hasButton ? "cursor-pointer" : ""}`}
+                onClick={hasButton ? handleCardClick : undefined}
+            >
+                <h3 className="font-semibold line-clamp-1">{name}</h3>
+                <p className="text-lg font-bold text-primary">
+                    ${Number(price).toFixed(2)}
+                </p>
+            </CardBody>
+
+            {/* Add to Cart Button */}
+            {hasButton && (
+                <CardFooter className="pt-0">
+                    <Button
+                        color="primary"
+                        variant="flat"
+                        fullWidth
+                        startContent={<ShoppingCart size={18} />}
+                        onPress={handleAddToCart as unknown as () => void}
+                    >
+                        Add to Cart
+                    </Button>
                 </CardFooter>
-            </Card>
-        </Badge>
+            )}
+        </Card>
     );
 }

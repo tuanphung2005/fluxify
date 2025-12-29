@@ -3,7 +3,6 @@
 import { ProductGridConfig } from "@/types/shop";
 import { BaseComponentProps } from "@/types/shop-components";
 import ProductCard from "../../common/ProductCard";
-import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cart-store";
 
 interface ProductGridProps extends BaseComponentProps<ProductGridConfig> {
@@ -34,29 +33,14 @@ export default function ProductGrid({
         ? products
         : products.filter((p) => productIds.includes(p.id));
 
-    // demo products TODO: MAKE A REUSEABLE PRODUCT CARD COMPONENT
+    // Demo products for empty state
     const displayProducts =
         filteredProducts.length > 0
             ? filteredProducts
             : [
-                {
-                    id: "1",
-                    name: "Sample Product 1",
-                    price: 29.99,
-                    images: ["/api/placeholder/400/400"],
-                },
-                {
-                    id: "2",
-                    name: "Sample Product 2",
-                    price: 49.99,
-                    images: ["/api/placeholder/400/400"],
-                },
-                {
-                    id: "3",
-                    name: "Sample Product 3",
-                    price: 39.99,
-                    images: ["/api/placeholder/400/400"],
-                },
+                { id: "1", name: "Sample Product 1", price: 29.99, images: ["/placeholder.png"] },
+                { id: "2", name: "Sample Product 2", price: 49.99, images: ["/placeholder.png"] },
+                { id: "3", name: "Sample Product 3", price: 39.99, images: ["/placeholder.png"] },
             ];
 
     const gridCols = {
@@ -65,18 +49,20 @@ export default function ProductGrid({
         4: "grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
     }[columns] || "grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
 
-    const router = useRouter();
     const { addItem, setIsOpen } = useCartStore();
 
-    const handleAddToCart = (product: any) => {
-        addItem({
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image: product.images[0],
-            vendorId: "demo", // TODO: Get actual vendor ID
-        });
-        setIsOpen(true);
+    const handleAddToCart = (productId: string) => {
+        const product = displayProducts.find(p => p.id === productId);
+        if (product) {
+            addItem({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.images[0],
+                vendorId: vendorId || "demo",
+            });
+            setIsOpen(true);
+        }
     };
 
     return (
@@ -92,17 +78,13 @@ export default function ProductGrid({
                         name={product.name}
                         price={product.price}
                         images={product.images}
+                        vendorId={vendorId}
                         showAddToCart={showAddToCart}
-                        onAddToCart={() => handleAddToCart(product)}
-                        onPress={() => {
-                            if (vendorId) {
-                                router.push(`/shop/${vendorId}?productId=${product.id}`, { scroll: false });
-                            }
-                        }}
-                        variants={(product as any).variants}
+                        onAddToCart={handleAddToCart}
                     />
                 ))}
             </div>
         </div>
     );
 }
+

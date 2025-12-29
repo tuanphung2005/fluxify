@@ -1,25 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardBody, CardFooter } from "@heroui/card";
-import { Button } from "@heroui/button";
-import { Image } from "@heroui/image";
 import { Spinner } from "@heroui/spinner";
-import { ShoppingCart, Package } from "lucide-react";
+import { Package } from "lucide-react";
 import { api } from "@/lib/api/api";
+import ProductCard from "@/components/common/ProductCard";
 import type { FeaturedCollectionConfig } from "@/types/shop";
 import type { ProductData } from "@/types/api";
 
 interface FeaturedCollectionComponentProps {
     config: FeaturedCollectionConfig;
+    vendorId?: string;
 }
 
-export default function FeaturedCollectionComponent({ config }: FeaturedCollectionComponentProps) {
+export default function FeaturedCollectionComponent({
+    config,
+    vendorId,
+}: FeaturedCollectionComponentProps) {
     const {
         title,
         description,
         productIds,
-        layout = "grid",
         columns = 4,
         showAddToCart = true,
     } = config;
@@ -38,7 +39,6 @@ export default function FeaturedCollectionComponent({ config }: FeaturedCollecti
         }
 
         try {
-            // Fetch all products and filter by IDs
             // API returns { products, total, totalPages, currentPage }
             const response = await api.get<{ products: ProductData[] } | ProductData[]>("/api/products?limit=100");
 
@@ -106,72 +106,20 @@ export default function FeaturedCollectionComponent({ config }: FeaturedCollecti
                     )}
                 </div>
 
-                {/* Products */}
-                {layout === "list" ? (
-                    <div className="space-y-4">
-                        {products.map((product) => (
-                            <Card
-                                key={product.id}
-                                className="flex-row overflow-hidden"
-                                isPressable
-                            >
-                                <div className="w-32 h-32 flex-shrink-0">
-                                    <Image
-                                        src={product.images?.[0] || "/placeholder.png"}
-                                        alt={product.name}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                                <CardBody className="flex-1">
-                                    <h3 className="font-semibold">{product.name}</h3>
-                                    <p className="text-sm text-default-500 line-clamp-2">
-                                        {product.description}
-                                    </p>
-                                    <p className="text-lg font-bold text-primary mt-2">
-                                        ${Number(product.price).toFixed(2)}
-                                    </p>
-                                </CardBody>
-                            </Card>
-                        ))}
-                    </div>
-                ) : (
-                    <div className={`grid ${gridCols} gap-6`}>
-                        {products.map((product) => (
-                            <Card
-                                key={product.id}
-                                className="overflow-hidden group"
-                                isPressable={!showAddToCart}
-                            >
-                                <div className="relative aspect-square overflow-hidden">
-                                    <Image
-                                        src={product.images?.[0] || "/placeholder.png"}
-                                        alt={product.name}
-                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                        removeWrapper
-                                    />
-                                </div>
-                                <CardBody className="p-4">
-                                    <h3 className="font-semibold line-clamp-1">{product.name}</h3>
-                                    <p className="text-lg font-bold text-primary">
-                                        ${Number(product.price).toFixed(2)}
-                                    </p>
-                                </CardBody>
-                                {showAddToCart && (
-                                    <CardFooter className="pt-0">
-                                        <Button
-                                            color="primary"
-                                            variant="flat"
-                                            fullWidth
-                                            startContent={<ShoppingCart size={18} />}
-                                        >
-                                            Add to Cart
-                                        </Button>
-                                    </CardFooter>
-                                )}
-                            </Card>
-                        ))}
-                    </div>
-                )}
+                {/* Products Grid */}
+                <div className={`grid ${gridCols} gap-6`}>
+                    {products.map((product) => (
+                        <ProductCard
+                            key={product.id}
+                            id={product.id}
+                            name={product.name}
+                            price={Number(product.price)}
+                            images={product.images || []}
+                            vendorId={vendorId}
+                            showAddToCart={showAddToCart}
+                        />
+                    ))}
+                </div>
             </div>
         </section>
     );
