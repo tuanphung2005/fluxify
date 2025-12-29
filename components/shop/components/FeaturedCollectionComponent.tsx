@@ -39,8 +39,17 @@ export default function FeaturedCollectionComponent({ config }: FeaturedCollecti
 
         try {
             // Fetch all products and filter by IDs
-            const response = await api.get<{ data: ProductData[] }>("/api/products?limit=100");
-            const allProducts = response.data || [];
+            // API returns { products, total, totalPages, currentPage }
+            const response = await api.get<{ products: ProductData[] } | ProductData[]>("/api/products?limit=100");
+
+            // Handle both response formats
+            let allProducts: ProductData[] = [];
+            if (Array.isArray(response)) {
+                allProducts = response;
+            } else if (response && 'products' in response) {
+                allProducts = response.products || [];
+            }
+
             const selectedProducts = allProducts.filter(p => productIds.includes(p.id));
 
             // Sort by the order in productIds
@@ -131,7 +140,7 @@ export default function FeaturedCollectionComponent({ config }: FeaturedCollecti
                             <Card
                                 key={product.id}
                                 className="overflow-hidden group"
-                                isPressable
+                                isPressable={!showAddToCart}
                             >
                                 <div className="relative aspect-square overflow-hidden">
                                     <Image
