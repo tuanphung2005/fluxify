@@ -68,6 +68,7 @@ model User {
   wishlist      Wishlist?
   reviews       Review[]
   productViews  ProductView[]
+  favoriteShops FavoriteShop[]
 
   @@map("users")
 }
@@ -126,8 +127,22 @@ model VendorProfile {
   products     Product[]
   shopTemplate ShopTemplate?
   coupons      Coupon[]
+  favoritedBy  FavoriteShop[]
 
   @@map("vendor_profiles")
+}
+
+model FavoriteShop {
+  id        String   @id @default(cuid())
+  userId    String
+  vendorId  String
+  addedAt   DateTime @default(now())
+
+  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vendor VendorProfile @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, vendorId])
+  @@map("favorite_shops")
 }
 
 // Category model for product organization

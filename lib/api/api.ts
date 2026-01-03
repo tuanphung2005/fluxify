@@ -168,8 +168,8 @@ class ApiClient {
         return this.request<T>(url, { ...options, method: "PATCH", body: JSON.stringify(body) });
     }
 
-    delete<T>(url: string, options?: RequestOptions) {
-        return this.request<T>(url, { ...options, method: "DELETE" });
+    delete<T>(url: string, body?: unknown, options?: RequestOptions) {
+        return this.request<T>(url, { ...options, method: "DELETE", body: body ? JSON.stringify(body) : undefined });
     }
 }
 

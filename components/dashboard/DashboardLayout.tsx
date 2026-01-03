@@ -71,13 +71,20 @@ export default function DashboardLayout({
     const { data: session, status } = useSession();
     const router = useRouter();
 
+    // Helper to check if user has required role (ADMIN can access VENDOR features)
+    const hasRequiredRole = (userRole: string | undefined, required: UserRole | undefined) => {
+        if (!required) return true;
+        if (userRole === "ADMIN") return true; // ADMIN can access everything
+        return userRole === required;
+    };
+
     useEffect(() => {
         if (status === "unauthenticated") {
             router.push(loginRedirect);
         } else if (
             status === "authenticated" &&
             requiredRole &&
-            session?.user.role !== requiredRole
+            !hasRequiredRole(session?.user.role, requiredRole)
         ) {
             router.push(unauthorizedRedirect);
         }
@@ -97,7 +104,7 @@ export default function DashboardLayout({
     }
 
     // Show loading if role check fails (will redirect)
-    if (requiredRole && (!session || session.user.role !== requiredRole)) {
+    if (requiredRole && (!session || !hasRequiredRole(session.user.role, requiredRole))) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <Spinner size="lg" />

@@ -10,24 +10,22 @@ export default function CartButton() {
     const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
     return (
-        <div className="fixed bottom-6 right-6 z-50">
-            <Badge
-                content={itemCount}
+        <Badge
+            content={itemCount}
+            color="primary"
+            isInvisible={itemCount === 0}
+            placement="top-right"
+        >
+            <Button
+                isIconOnly
                 color="primary"
-                isInvisible={itemCount === 0}
-                placement="top-right"
+                size="lg"
+                className="shadow-lg"
+                onPress={() => setIsOpen(true)}
+                aria-label="Open cart"
             >
-                <Button
-                    isIconOnly
-                    color="primary"
-                    size="lg"
-                    className="shadow-lg"
-                    onPress={() => setIsOpen(true)}
-                    aria-label="Open cart"
-                >
-                    <ShoppingCart size={24} />
-                </Button>
-            </Badge>
-        </div>
+                <ShoppingCart size={24} />
+            </Button>
+        </Badge>
     );
 }
