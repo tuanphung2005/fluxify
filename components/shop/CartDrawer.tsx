@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useCartStore } from "@/store/cart-store";
-import { X, Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
+import { X, Minus, Plus, Trash2, ShoppingBag, Store } from "lucide-react";
 import { Button } from "@heroui/button";
 import { ScrollShadow } from "@heroui/scroll-shadow";
 import { Image as HeroUIImage } from "@heroui/image";
@@ -79,6 +79,12 @@ export default function CartDrawer() {
                                                 <div className="flex-1 flex flex-col justify-between">
                                                     <div>
                                                         <h3 className="font-medium line-clamp-1">{item.name}</h3>
+                                                        {item.vendorName && (
+                                                            <p className="text-xs text-default-400 flex items-center gap-1 mt-0.5">
+                                                                <Store size={12} />
+                                                                {item.vendorName}
+                                                            </p>
+                                                        )}
                                                         <p className="text-primary font-semibold">${Number(item.price).toFixed(2)}</p>
                                                     </div>
                                                     <div className="flex items-center justify-between">

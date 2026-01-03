@@ -19,6 +19,7 @@ interface ShopComponentWrapperProps {
         images: string[];
     }>;
     vendorId?: string;
+    vendorName?: string;
 }
 
 /**
@@ -33,6 +34,7 @@ export default function ShopComponentWrapper({
     isSelected = false,
     products,
     vendorId,
+    vendorName,
 }: ShopComponentWrapperProps) {
     const meta = COMPONENT_REGISTRY[type];
 
@@ -79,6 +81,7 @@ export default function ShopComponentWrapper({
                     config={config}
                     products={products}
                     vendorId={vendorId}
+                    vendorName={vendorName}
                 />
             </Suspense>
         </div>

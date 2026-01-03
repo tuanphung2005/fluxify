@@ -13,12 +13,14 @@ interface ProductGridProps extends BaseComponentProps<ProductGridConfig> {
         images: string[];
     }>;
     vendorId?: string;
+    vendorName?: string;
 }
 
 export default function ProductGrid({
     config,
     products = [],
     vendorId,
+    vendorName,
 }: ProductGridProps) {
     const {
         title,
@@ -59,7 +61,8 @@ export default function ProductGrid({
                 name: product.name,
                 price: product.price,
                 image: product.images[0],
-                vendorId: vendorId || "demo",
+                vendorId: vendorId || "unknown",
+                vendorName: vendorName || "Unknown Shop",
             });
             setIsOpen(true);
         }

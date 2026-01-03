@@ -20,11 +20,13 @@ interface Product {
 
 interface ProductModalProps {
     product: Product;
+    vendorId: string;
+    vendorName: string;
     isOpen: boolean;
     onClose: () => void;
 }
 
-export default function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
+export default function ProductModal({ product, vendorId, vendorName, isOpen, onClose }: ProductModalProps) {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     // Parse variants if they exist
@@ -193,6 +195,8 @@ export default function ProductModal({ product, isOpen, onClose }: ProductModalP
                                         price: Number(product.price),
                                         images: product.images,
                                     }}
+                                    vendorId={vendorId}
+                                    vendorName={vendorName}
                                     disabled={product.stock <= 0}
                                 />
                             </div>

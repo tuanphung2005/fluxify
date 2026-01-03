@@ -51,8 +51,7 @@ export default function ProductCard({
         }
     };
 
-    const handleAddToCart = (e: React.MouseEvent) => {
-        e.stopPropagation();
+    const handleAddToCart = () => {
         onAddToCart?.(id);
     };
 
@@ -127,7 +126,7 @@ export default function ProductCard({
                         variant="flat"
                         fullWidth
                         startContent={<ShoppingCart size={18} />}
-                        onPress={handleAddToCart as unknown as () => void}
+                        onPress={handleAddToCart}
                     >
                         Add to Cart
                     </Button>

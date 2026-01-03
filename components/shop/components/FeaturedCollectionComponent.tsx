@@ -5,17 +5,20 @@ import { Spinner } from "@heroui/spinner";
 import { Package } from "lucide-react";
 import { api } from "@/lib/api/api";
 import ProductCard from "@/components/common/ProductCard";
+import { useCartStore } from "@/store/cart-store";
 import type { FeaturedCollectionConfig } from "@/types/shop";
 import type { ProductData } from "@/types/api";
 
 interface FeaturedCollectionComponentProps {
     config: FeaturedCollectionConfig;
     vendorId?: string;
+    vendorName?: string;
 }
 
 export default function FeaturedCollectionComponent({
     config,
     vendorId,
+    vendorName,
 }: FeaturedCollectionComponentProps) {
     const {
         title,
@@ -27,6 +30,7 @@ export default function FeaturedCollectionComponent({
 
     const [products, setProducts] = useState<ProductData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { addItem, setIsOpen } = useCartStore();
 
     useEffect(() => {
         fetchProducts();
@@ -62,6 +66,21 @@ export default function FeaturedCollectionComponent({
             console.error("Failed to fetch products:", error);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleAddToCart = (productId: string) => {
+        const product = products.find(p => p.id === productId);
+        if (product) {
+            addItem({
+                id: product.id,
+                name: product.name,
+                price: Number(product.price),
+                image: product.images?.[0],
+                vendorId: vendorId || "unknown",
+                vendorName: vendorName || "Unknown Shop",
+            });
+            setIsOpen(true);
         }
     };
 
@@ -117,6 +136,7 @@ export default function FeaturedCollectionComponent({
                             images={product.images || []}
                             vendorId={vendorId}
                             showAddToCart={showAddToCart}
+                            onAddToCart={handleAddToCart}
                         />
                     ))}
                 </div>
@@ -124,3 +144,4 @@ export default function FeaturedCollectionComponent({
         </section>
     );
 }
+

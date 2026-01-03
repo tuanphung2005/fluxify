@@ -21,11 +21,20 @@ export default async function ProductPage(props: ProductPageProps) {
 
     const product = await prisma.product.findUnique({
         where: { id: productId },
+        include: {
+            vendor: {
+                select: {
+                    storeName: true,
+                },
+            },
+        },
     });
 
     if (!product || product.vendorId !== vendorId) {
         notFound();
     }
+
+    const vendorName = product.vendor.storeName;
 
     // Parse variants if they exist
     let variants: { name: string; values: string[] }[] = [];
@@ -128,6 +137,8 @@ export default async function ProductPage(props: ProductPageProps) {
                                     price: Number(product.price),
                                     images: product.images,
                                 }}
+                                vendorId={vendorId}
+                                vendorName={vendorName}
                                 disabled={product.stock <= 0}
                             />
                         </div>

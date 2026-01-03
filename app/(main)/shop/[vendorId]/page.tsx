@@ -26,7 +26,8 @@ export default async function ShopPage(props: ShopPageProps) {
             id: true,
             publishedComponents: true,
             vendor: {
-                include: {
+                select: {
+                    storeName: true,
                     products: true,
                 },
             },
@@ -39,6 +40,7 @@ export default async function ShopPage(props: ShopPageProps) {
 
     // Parse published components
     const components = (template.publishedComponents as any[]) || [];
+    const vendorName = template.vendor.storeName;
     const products = template.vendor.products.map(p => ({
         id: p.id,
         name: p.name,
@@ -59,6 +61,7 @@ export default async function ShopPage(props: ShopPageProps) {
                     isBuilder={false}
                     products={products}
                     vendorId={vendorId}
+                    vendorName={vendorName}
                 />
             ))}
 
@@ -75,7 +78,7 @@ export default async function ShopPage(props: ShopPageProps) {
                 </div>
             )}
 
-            <ShopProductModalManager products={products} />
+            <ShopProductModalManager products={products} vendorId={vendorId} vendorName={vendorName} />
 
             {/* Floating Action Buttons - Favorite and Cart */}
             <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">

@@ -14,7 +14,13 @@ interface Product {
     variants: any;
 }
 
-export default function ShopProductModalManager({ products }: { products: Product[] }) {
+interface ShopProductModalManagerProps {
+    products: Product[];
+    vendorId: string;
+    vendorName: string;
+}
+
+export default function ShopProductModalManager({ products, vendorId, vendorName }: ShopProductModalManagerProps) {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
@@ -48,8 +54,11 @@ export default function ShopProductModalManager({ products }: { products: Produc
     return (
         <ProductModal
             product={selectedProduct}
+            vendorId={vendorId}
+            vendorName={vendorName}
             isOpen={isOpen}
             onClose={handleClose}
         />
     );
 }
+
