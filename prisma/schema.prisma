@@ -188,6 +188,9 @@ model Product {
   wishlistItems WishlistItem[]
   views         ProductView[]
 
+  @@index([categoryId])
+  @@index([vendorId])
+  @@index([createdAt])
   @@map("products")
 }
 
@@ -235,6 +238,9 @@ model Order {
   coupon  Coupon?     @relation(fields: [couponId], references: [id], onDelete: SetNull)
   items   OrderItem[]
 
+  @@index([status])
+  @@index([userId])
+  @@index([createdAt])
   @@map("orders")
 }
 
@@ -283,6 +289,8 @@ model Review {
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([productId, userId])
+  @@index([productId])
+  @@index([userId])
   @@map("reviews")
 }
 
@@ -347,6 +355,8 @@ model ProductView {
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
+  @@index([productId])
+  @@index([viewedAt])
   @@map("product_views")
 }
 

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { errorResponse, successResponse } from "@/lib/api/responses";
 import { getAuthenticatedVendor } from "@/lib/api/auth-helpers";
 import { isErrorResult } from "@/lib/api/responses";
+import { logOrderStatusChange } from "@/lib/api/audit";
 import { z } from "zod";
 
 export async function GET(req: NextRequest) {
@@ -11,12 +12,6 @@ export async function GET(req: NextRequest) {
         if (isErrorResult(auth)) {
             return errorResponse(auth.error, auth.status);
         }
-
-        // Fetch orders for the vendor's products
-        // Since orders are linked to users and addresses, and contain items which link to products
-        // We need to find orders that contain at least one product from this vendor
-        // Prisma doesn't support direct "where order contains product with vendorId" easily in one go on Order model
-        // So we query OrderItem first or use nested query
 
         const orders = await prisma.order.findMany({
             where: {
@@ -54,7 +49,6 @@ export async function GET(req: NextRequest) {
 
         return successResponse(orders);
     } catch (error) {
-        console.error("Failed to fetch orders:", error);
         return errorResponse("Failed to fetch orders", 500, error);
     }
 }
@@ -98,14 +92,18 @@ export async function PATCH(req: NextRequest) {
             return errorResponse("Order not found or unauthorized", 404);
         }
 
+        const oldStatus = order.status;
+
         const updatedOrder = await prisma.order.update({
             where: { id: orderId },
             data: { status },
         });
 
+        // Log the status change for audit trail
+        logOrderStatusChange(orderId, oldStatus, status, auth.user.id);
+
         return successResponse(updatedOrder);
     } catch (error) {
-        console.error("Failed to update order:", error);
         return errorResponse("Failed to update order", 500, error);
     }
 }

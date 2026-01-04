@@ -1,36 +1,54 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { checkRateLimit, getClientIdentifier, rateLimitPresets, rateLimitExceededResponse } from "@/lib/api/rate-limit";
+import { errorResponse, successResponse } from "@/lib/api/responses";
+
+/**
+ * Password validation schema with security requirements:
+ * - Minimum 8 characters
+ * - At least one uppercase letter
+ * - At least one lowercase letter  
+ * - At least one number
+ */
+const passwordSchema = z.string()
+  .min(8, "Password must be at least 8 characters")
+  .regex(/[A-Z]/, "Password must contain an uppercase letter")
+  .regex(/[a-z]/, "Password must contain a lowercase letter")
+  .regex(/[0-9]/, "Password must contain a number");
 
 const registerSchema = z.object({
-  email: z.email(),
-  password: z.string().min(6),
-  name: z.string().min(2).optional(),
+  email: z.string().email("Invalid email address"),
+  password: passwordSchema,
+  name: z.string().min(2, "Name must be at least 2 characters").optional(),
   role: z.enum(["CUSTOMER", "VENDOR"]).default("CUSTOMER"),
 });
 
 export async function POST(req: NextRequest) {
+  // Apply strict rate limiting to auth endpoints
+  const rateLimit = checkRateLimit(getClientIdentifier(req), rateLimitPresets.auth);
+  if (!rateLimit.allowed) {
+    return rateLimitExceededResponse(rateLimit.resetTime);
+  }
+
   try {
     const body = await req.json();
     const validatedData = registerSchema.parse(body);
 
-    // check if user exists
+    // Check if user exists
     const existingUser = await prisma.user.findUnique({
       where: { email: validatedData.email },
     });
 
     if (existingUser) {
-      return NextResponse.json(
-        { error: "User already exists" },
-        { status: 400 }
-      );
+      return errorResponse("User already exists", 400);
     }
 
-    // hash password
-    const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+    // Hash password
+    const hashedPassword = await bcrypt.hash(validatedData.password, 12);
 
-    // create user
+    // Create user
     const user = await prisma.user.create({
       data: {
         email: validatedData.email,
@@ -46,7 +64,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // if vendor, create vendor profile
+    // If vendor, create vendor profile
     if (validatedData.role === "VENDOR") {
       await prisma.vendorProfile.create({
         data: {
@@ -56,22 +74,15 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    return NextResponse.json(
-      { message: "User created successfully", user },
-      { status: 201 }
-    );
+    return successResponse({ message: "User created successfully", user }, 201);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: "Invalid input", details: error.issues },
-        { status: 400 }
-      );
+      return errorResponse(error.issues[0].message, 400);
     }
 
-    console.error("Registration error:", error);
-    return NextResponse.json(
-      { error: "Something went wrong" },
-      { status: 500 }
-    );
+    return errorResponse("Registration failed", 500, error);
   }
 }
+
+// Export password schema for reuse
+export { passwordSchema };

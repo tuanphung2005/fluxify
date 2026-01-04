@@ -1,4 +1,18 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
+
+const MAX_PAGE_SIZE = 100;
+const DEFAULT_PAGE_SIZE = 10;
+
+/**
+ * Validate and normalize pagination parameters
+ */
+export function normalizePagination(options: { page?: number; limit?: number }) {
+    const page = Math.max(1, options.page || 1);
+    const limit = Math.min(Math.max(1, options.limit || DEFAULT_PAGE_SIZE), MAX_PAGE_SIZE);
+    const skip = (page - 1) * limit;
+    return { page, limit, skip };
+}
 
 export async function getVendorProducts(
     vendorId: string,
@@ -8,10 +22,10 @@ export async function getVendorProducts(
         search?: string;
     } = {}
 ) {
-    const { page = 1, limit = 10, search = "" } = options;
-    const skip = (page - 1) * limit;
+    const { page, limit, skip } = normalizePagination(options);
+    const { search = "" } = options;
 
-    const where: any = {
+    const where: Record<string, unknown> = {
         vendorId,
     };
 
@@ -50,7 +64,7 @@ export function createProduct(data: {
     price: number;
     stock: number;
     images: string[];
-    variants?: any;
+    variants?: Prisma.InputJsonValue;
     vendorId: string;
 }) {
     return prisma.product.create({
@@ -74,7 +88,7 @@ export function updateProduct(
         price?: number;
         stock?: number;
         images?: string[];
-        variants?: any;
+        variants?: Prisma.InputJsonValue;
     }
 ) {
     return prisma.product.update({
@@ -88,3 +102,6 @@ export function deleteProduct(id: string) {
         where: { id },
     });
 }
+
+// Export utilities for reuse
+export { MAX_PAGE_SIZE, DEFAULT_PAGE_SIZE };

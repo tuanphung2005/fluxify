@@ -18,6 +18,9 @@ const defaultConfig: RateLimitConfig = {
     maxRequests: 100,      // 100 requests per minute
 };
 
+// Maximum entries before forcing cleanup
+const MAX_ENTRIES = 10000;
+
 export interface RateLimitResult {
     allowed: boolean;
     remaining: number;
@@ -37,8 +40,8 @@ export function checkRateLimit(
     const { windowMs, maxRequests } = { ...defaultConfig, ...config };
     const now = Date.now();
 
-    // Clean up expired entries periodically
-    if (Math.random() < 0.01) {
+    // Clean up expired entries more frequently (5% of requests) or when map is too large
+    if (Math.random() < 0.05 || rateLimitStore.size > MAX_ENTRIES) {
         cleanupExpiredEntries(now);
     }
 

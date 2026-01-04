@@ -1,18 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/api/middleware";
+import { errorResponse, successResponse } from "@/lib/api/responses";
 
 export async function PATCH(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
+    const auth = await requireAdmin(request);
+    if (auth.error) return auth.error;
+
     try {
-        const session = await auth();
-
-        if (!session || session.user.role !== "ADMIN") {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
         const { isActive } = await request.json();
         const { id } = await params;
 
@@ -21,13 +19,8 @@ export async function PATCH(
             data: { isActive },
         });
 
-        return NextResponse.json(user);
+        return successResponse(user);
     } catch (error) {
-        console.error("Failed to update user status:", error);
-        return NextResponse.json(
-            { error: "Failed to update user status" },
-            { status: 500 }
-        );
+        return errorResponse("Failed to update user status", 500, error);
     }
 }
-
