@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { checkRateLimit, getClientIdentifier, rateLimitPresets, rateLimitExceededResponse } from "@/lib/api/rate-limit";
 import { errorResponse, successResponse } from "@/lib/api/responses";
+import { createVerificationToken, sendVerificationEmail } from "@/lib/api/email-verification";
 
 /**
  * Password validation schema with security requirements:
@@ -55,6 +56,7 @@ export async function POST(req: NextRequest) {
         password: hashedPassword,
         name: validatedData.name,
         role: validatedData.role,
+        // emailVerified is null - requires verification
       },
       select: {
         id: true,
@@ -74,7 +76,15 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    return successResponse({ message: "User created successfully", user }, 201);
+    // Send verification email
+    const token = await createVerificationToken(user.email);
+    await sendVerificationEmail(user.email, token);
+
+    return successResponse({
+      message: "User created successfully. Please check your email to verify your account.",
+      user,
+      requiresVerification: true,
+    }, 201);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return errorResponse(error.issues[0].message, 400);
@@ -83,6 +93,3 @@ export async function POST(req: NextRequest) {
     return errorResponse("Registration failed", 500, error);
   }
 }
-
-// Export password schema for reuse
-export { passwordSchema };

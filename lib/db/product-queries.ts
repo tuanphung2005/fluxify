@@ -20,13 +20,16 @@ export async function getVendorProducts(
         page?: number;
         limit?: number;
         search?: string;
+        includeDeleted?: boolean;
     } = {}
 ) {
     const { page, limit, skip } = normalizePagination(options);
-    const { search = "" } = options;
+    const { search = "", includeDeleted = false } = options;
 
     const where: Record<string, unknown> = {
         vendorId,
+        // Filter out soft-deleted products by default
+        ...(includeDeleted ? {} : { deletedAt: null }),
     };
 
     if (search) {
@@ -51,9 +54,12 @@ export async function getVendorProducts(
     };
 }
 
-export function getProductById(id: string) {
-    return prisma.product.findUnique({
-        where: { id },
+export function getProductById(id: string, includeDeleted = false) {
+    return prisma.product.findFirst({
+        where: {
+            id,
+            ...(includeDeleted ? {} : { deletedAt: null }),
+        },
         include: { vendor: true },
     });
 }
@@ -97,9 +103,32 @@ export function updateProduct(
     });
 }
 
+/**
+ * Soft delete a product by setting deletedAt timestamp
+ */
 export function deleteProduct(id: string) {
+    return prisma.product.update({
+        where: { id },
+        data: { deletedAt: new Date() },
+    });
+}
+
+/**
+ * Permanently delete a product (use with caution)
+ */
+export function hardDeleteProduct(id: string) {
     return prisma.product.delete({
         where: { id },
+    });
+}
+
+/**
+ * Restore a soft-deleted product
+ */
+export function restoreProduct(id: string) {
+    return prisma.product.update({
+        where: { id },
+        data: { deletedAt: null },
     });
 }
 

@@ -164,21 +164,22 @@ model Category {
 }
 
 model Product {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   name        String
-  description String?  @db.Text
-  price       Decimal  @db.Decimal(10, 2)
-  stock       Int      @default(0)
+  description String?   @db.Text
+  price       Decimal   @db.Decimal(10, 2)
+  stock       Int       @default(0)
   images      String[]
-  variants    Json?    // Product variants (e.g., size, color options)
-  tags        String[] // Product tags for filtering
+  variants    Json?     // Product variants (e.g., size, color options)
+  tags        String[]  // Product tags for filtering
   vendorId    String
   categoryId  String?
-  viewCount   Int      @default(0)
-  avgRating   Decimal? @db.Decimal(2, 1)
-  reviewCount Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  viewCount   Int       @default(0)
+  avgRating   Decimal?  @db.Decimal(2, 1)
+  reviewCount Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // Soft delete - null means not deleted
 
   vendor        VendorProfile  @relation(fields: [vendorId], references: [id], onDelete: Cascade)
   category      Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
@@ -191,6 +192,7 @@ model Product {
   @@index([categoryId])
   @@index([vendorId])
   @@index([createdAt])
+  @@index([deletedAt])
   @@map("products")
 }
 
