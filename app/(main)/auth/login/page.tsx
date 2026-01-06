@@ -31,7 +31,12 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError("Invalid email or password");
+        // Check for account deactivation error (custom error code from auth.ts)
+        if (result.code === "account_deactivated") {
+          setError("Your account has been disabled. Please contact support for assistance.");
+        } else {
+          setError("Invalid email or password");
+        }
       } else {
         router.push("/");
         router.refresh();
