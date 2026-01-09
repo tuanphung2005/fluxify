@@ -65,7 +65,7 @@
     "@heroui/tooltip": "2.2.24",
     "@heroui/user": "2.2.22",
     "@prisma/adapter-pg": "^7.0.0",
-    "@prisma/client": "^7.0.0",
+    "@prisma/client": "^7.2.0",
     "@prisma/extension-accelerate": "^3.0.0",
     "@react-aria/ssr": "3.9.10",
     "@react-aria/visually-hidden": "3.8.28",
