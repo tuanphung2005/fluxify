@@ -125,6 +125,7 @@ export default function CheckoutModal({ isOpen, onOpenChange }: CheckoutModalPro
                                                 placeholder="New York"
                                                 value={formData.city}
                                                 onValueChange={(v) => handleChange('city', v)}
+                                                isRequired
                                             />
                                         </div>
                                         <div className="grid grid-cols-3 gap-2">
@@ -133,18 +134,21 @@ export default function CheckoutModal({ isOpen, onOpenChange }: CheckoutModalPro
                                                 placeholder="NY"
                                                 value={formData.state}
                                                 onValueChange={(v) => handleChange('state', v)}
+                                                isRequired
                                             />
                                             <Input
                                                 label="Zip Code"
                                                 placeholder="10001"
                                                 value={formData.zipCode}
                                                 onValueChange={(v) => handleChange('zipCode', v)}
+                                                isRequired
                                             />
                                             <Input
                                                 label="Country"
                                                 placeholder="USA"
                                                 value={formData.country}
                                                 onValueChange={(v) => handleChange('country', v)}
+                                                isRequired
                                             />
                                         </div>
 
