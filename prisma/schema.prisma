@@ -123,6 +123,11 @@ model VendorProfile {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // Payment settings (VietQR for Vietnam)
+  bankId          String?  // Bank code (e.g., "VCB", "TCB", "MB")
+  bankAccount     String?  // Account number
+  bankAccountName String?  // Account holder name (no diacritics, uppercase)
+
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   products     Product[]
   shopTemplate ShopTemplate?

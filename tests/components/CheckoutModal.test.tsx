@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { useCartStore } from "@/store/cart-store";
+import { api } from "@/lib/api/api";
+import { toast } from "@/lib/toast";
 
 // Mock HeroUI components
 vi.mock("@heroui/react", () => ({
@@ -19,7 +21,7 @@ vi.mock("@heroui/react", () => ({
                 placeholder={placeholder}
                 value={value}
                 onChange={(e) => onValueChange(e.target.value)}
-                data-testid={`input-${label?.toLowerCase().replace(/\s/g, "-")}`}
+                data-testid={`input-${label?.toLowerCase().replace(/\s|\//g, "-")}`}
             />
         </div>
     ),
@@ -36,26 +38,46 @@ vi.mock("@/lib/toast", () => ({
 // Mock API
 vi.mock("@/lib/api/api", () => ({
     api: {
+        get: vi.fn(),
         post: vi.fn(),
     },
 }));
 
+// Mock VietQR library
+vi.mock("@/lib/vietqr", () => ({
+    generateVietQRUrl: vi.fn().mockReturnValue("https://img.vietqr.io/image/test.png"),
+    hasPaymentConfigured: vi.fn().mockReturnValue(true),
+    getBankByCode: vi.fn().mockResolvedValue({
+        id: 1,
+        code: "VCB",
+        shortName: "Vietcombank",
+        name: "Ngân hàng Ngoại thương",
+        logo: ""
+    }),
+}));
+
 import CheckoutModal from "@/components/shop/CheckoutModal";
-import { toast } from "@/lib/toast";
-import { api } from "@/lib/api/api";
 
 describe("CheckoutModal", () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        // Mock cart store
         useCartStore.setState({
             currentVendorId: "vendor-1",
             currentVendorName: "Test Shop",
             carts: {
                 "vendor-1": [
-                    { id: "1", name: "Product 1", price: 29.99, quantity: 2 },
+                    { id: "1", name: "Product 1", price: 29990, quantity: 2, image: "" },
                 ],
             },
             isOpen: false,
+        });
+
+        // Mock API responses
+        vi.mocked(api.get).mockResolvedValue({
+            bankId: "VCB",
+            bankAccount: "123456789",
+            bankAccountName: "TEST ACCOUNT"
         });
     });
 
@@ -67,31 +89,31 @@ describe("CheckoutModal", () => {
     it("should render when open", () => {
         render(<CheckoutModal isOpen={true} onOpenChange={vi.fn()} />);
         expect(screen.getByTestId("modal")).toBeInTheDocument();
-        expect(screen.getByText("Checkout")).toBeInTheDocument();
+        expect(screen.getByText("Thanh toán")).toBeInTheDocument();
     });
 
     it("should display total amount", () => {
         render(<CheckoutModal isOpen={true} onOpenChange={vi.fn()} />);
-        // 29.99 * 2 = 59.98
-        expect(screen.getByText("$59.98")).toBeInTheDocument();
+        // 29990 * 2 = 59980. Format: 59.980₫
+        expect(screen.getByText(/59.980₫/)).toBeInTheDocument();
     });
 
     it("should show required fields", () => {
         render(<CheckoutModal isOpen={true} onOpenChange={vi.fn()} />);
 
         expect(screen.getByText(/Email/)).toBeInTheDocument();
-        expect(screen.getByText(/Street Address/)).toBeInTheDocument();
-        expect(screen.getByText(/City/)).toBeInTheDocument();
+        expect(screen.getByText(/Địa chỉ/)).toBeInTheDocument();
+        expect(screen.getByText(/Thành phố/)).toBeInTheDocument();
     });
 
     it("should show error for invalid email", async () => {
         render(<CheckoutModal isOpen={true} onOpenChange={vi.fn()} />);
 
         // Try to submit without valid email
-        const payButton = screen.getByRole("button", { name: /Pay/ });
+        const payButton = screen.getByRole("button", { name: /Tiếp tục thanh toán/ });
         fireEvent.click(payButton);
 
-        expect(toast.error).toHaveBeenCalledWith("Please enter a valid email address");
+        expect(toast.error).toHaveBeenCalledWith("Vui lòng nhập email hợp lệ");
     });
 
     it("should show error for missing required fields", async () => {
@@ -101,10 +123,10 @@ describe("CheckoutModal", () => {
         const emailInput = screen.getByTestId("input-email");
         fireEvent.change(emailInput, { target: { value: "test@example.com" } });
 
-        const payButton = screen.getByRole("button", { name: /Pay/ });
+        const payButton = screen.getByRole("button", { name: /Tiếp tục thanh toán/ });
         fireEvent.click(payButton);
 
-        expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
+        expect(toast.error).toHaveBeenCalledWith("Vui lòng điền đầy đủ thông tin địa chỉ");
     });
 
     it("should submit order successfully", async () => {
@@ -116,23 +138,17 @@ describe("CheckoutModal", () => {
         fireEvent.change(screen.getByTestId("input-email"), {
             target: { value: "test@example.com" },
         });
-        fireEvent.change(screen.getByTestId("input-street-address"), {
+        fireEvent.change(screen.getByTestId("input-địa-chỉ"), {
             target: { value: "123 Main St" },
         });
-        fireEvent.change(screen.getByTestId("input-city"), {
+        fireEvent.change(screen.getByTestId("input-thành-phố"), {
             target: { value: "New York" },
         });
-        fireEvent.change(screen.getByTestId("input-state"), {
+        fireEvent.change(screen.getByTestId("input-quận-huyện"), {
             target: { value: "NY" },
         });
-        fireEvent.change(screen.getByTestId("input-zip-code"), {
-            target: { value: "10001" },
-        });
-        fireEvent.change(screen.getByTestId("input-country"), {
-            target: { value: "USA" },
-        });
 
-        const payButton = screen.getByRole("button", { name: /Pay/ });
+        const payButton = screen.getByRole("button", { name: /Tiếp tục thanh toán/ });
         fireEvent.click(payButton);
 
         await waitFor(() => {
@@ -156,26 +172,48 @@ describe("CheckoutModal", () => {
         fireEvent.change(screen.getByTestId("input-email"), {
             target: { value: "test@example.com" },
         });
-        fireEvent.change(screen.getByTestId("input-street-address"), {
+        fireEvent.change(screen.getByTestId("input-địa-chỉ"), {
             target: { value: "123 Main St" },
         });
-        fireEvent.change(screen.getByTestId("input-city"), {
+        fireEvent.change(screen.getByTestId("input-thành-phố"), {
             target: { value: "NYC" },
         });
-        fireEvent.change(screen.getByTestId("input-state"), {
-            target: { value: "NY" },
-        });
-        fireEvent.change(screen.getByTestId("input-zip-code"), {
-            target: { value: "10001" },
-        });
-        fireEvent.change(screen.getByTestId("input-country"), {
-            target: { value: "USA" },
-        });
 
-        fireEvent.click(screen.getByRole("button", { name: /Pay/ }));
+        fireEvent.click(screen.getByRole("button", { name: /Tiếp tục thanh toán/ }));
 
         await waitFor(() => {
             expect(toast.error).toHaveBeenCalledWith("Stock error");
         });
+    });
+
+    it("should open zoom modal when clicking QR code", async () => {
+        vi.mocked(api.post).mockResolvedValue({ id: "order-123" });
+        render(<CheckoutModal isOpen={true} onOpenChange={vi.fn()} />);
+
+        // Fill required fields to proceed to payment
+        fireEvent.change(screen.getByTestId("input-email"), {
+            target: { value: "test@example.com" },
+        });
+        fireEvent.change(screen.getByTestId("input-địa-chỉ"), {
+            target: { value: "123 Main St" },
+        });
+        fireEvent.change(screen.getByTestId("input-thành-phố"), {
+            target: { value: "New York" },
+        });
+
+        // Click to proceed to payment
+        const payButton = screen.getByRole("button", { name: /Tiếp tục thanh toán/ });
+        fireEvent.click(payButton);
+
+        // Wait for QR code to appear (now in payment step)
+        const qrImage = await screen.findByAltText("VietQR Payment Code");
+        expect(qrImage).toBeInTheDocument();
+
+        // Click to zoom
+        fireEvent.click(qrImage);
+
+        // Check for zoomed image
+        const zoomedImage = await screen.findByAltText("VietQR Full Size");
+        expect(zoomedImage).toBeInTheDocument();
     });
 });

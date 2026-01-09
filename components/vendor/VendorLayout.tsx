@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, Package, ShoppingBag, Store } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingBag, Store, CreditCard } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard";
 import type { SidebarMenuItem } from "@/components/common/DashboardSidebar";
 
@@ -9,6 +9,7 @@ const VENDOR_MENU_ITEMS: SidebarMenuItem[] = [
     { key: "products", label: "Products", icon: Package, path: "/vendor/products" },
     { key: "orders", label: "Orders", icon: ShoppingBag, path: "/vendor/orders" },
     { key: "builder", label: "Shop Builder", icon: Store, path: "/vendor/shop-builder" },
+    { key: "payment", label: "Payment Settings", icon: CreditCard, path: "/vendor/payment" },
 ];
 
 export default function VendorLayout({ children }: { children: React.ReactNode }) {
