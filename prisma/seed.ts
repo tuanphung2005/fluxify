@@ -1,4 +1,4 @@
-simport { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 // Create a fresh Prisma client for seeding

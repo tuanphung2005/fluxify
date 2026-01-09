@@ -13,7 +13,8 @@ interface CheckoutModalProps {
 }
 
 export default function CheckoutModal({ isOpen, onOpenChange }: CheckoutModalProps) {
-    const { items, total, clearCart } = useCartStore();
+    const { getItems, total, clearCart } = useCartStore();
+    const items = getItems();
     const [step, setStep] = useState<'details' | 'success'>('details');
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({

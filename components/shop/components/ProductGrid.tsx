@@ -61,8 +61,6 @@ export default function ProductGrid({
                 name: product.name,
                 price: product.price,
                 image: product.images[0],
-                vendorId: vendorId || "unknown",
-                vendorName: vendorName || "Unknown Shop",
             });
             setIsOpen(true);
         }

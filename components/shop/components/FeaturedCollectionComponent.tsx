@@ -109,8 +109,6 @@ export default function FeaturedCollectionComponent({
                 name: product.name,
                 price: Number(product.price),
                 image: product.images?.[0],
-                vendorId: vendorId || "unknown",
-                vendorName: vendorName || "Unknown Shop",
             });
             setIsOpen(true);
         }
