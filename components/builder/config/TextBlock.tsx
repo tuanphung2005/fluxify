@@ -10,7 +10,7 @@ export default function TextBlock({
     return (
         <>
             <Textarea
-                label="Content (HTML - sanitized for security)"
+                label="Content (HTML)"
                 placeholder="<p>Your content here...</p>"
                 description="Only safe HTML tags allowed (p, h1-h6, strong, em, ul, ol, li, a)"
                 value={config.content || ""}
