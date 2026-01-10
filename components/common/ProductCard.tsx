@@ -6,6 +6,8 @@ import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { hasVariants } from "@/lib/variant-utils";
+import { formatVND } from "@/lib/format";
 
 type StockStatus = "in_stock" | "low_stock" | "out_of_stock";
 
@@ -21,7 +23,8 @@ interface ProductCardProps {
     showAddToCart?: boolean;
     onAddToCart?: (id: string) => void;
     onPress?: () => void;
-    variants?: Record<string, unknown>;
+    variants?: any;
+    variantStock?: any;
 }
 
 /**
@@ -39,8 +42,11 @@ export default function ProductCard({
     showAddToCart = false,
     onAddToCart,
     onPress,
+    variants,
+    variantStock,
 }: ProductCardProps) {
     const router = useRouter();
+    const productHasVariants = hasVariants({ variants });
 
     const handleCardClick = () => {
         if (onPress) {
@@ -52,7 +58,12 @@ export default function ProductCard({
     };
 
     const handleAddToCart = () => {
-        onAddToCart?.(id);
+        // If product has variants, open modal instead of adding directly
+        if (productHasVariants) {
+            handleCardClick();
+        } else {
+            onAddToCart?.(id);
+        }
     };
 
     const isOutOfStock = stockStatus === "out_of_stock";
@@ -83,7 +94,7 @@ export default function ProductCard({
                         className="absolute top-2 left-2 z-10"
                         size="sm"
                     >
-                        Sale
+                        Giảm giá
                     </Chip>
                 )}
                 {/* Low Stock Badge */}
@@ -94,14 +105,14 @@ export default function ProductCard({
                         className="absolute top-2 right-2 z-10"
                         size="sm"
                     >
-                        Low Stock
+                        Sắp hết
                     </Chip>
                 )}
                 {/* Out of Stock Overlay */}
                 {isOutOfStock && (
                     <div className="absolute inset-0 bg-background/60 z-10 flex items-center justify-center">
                         <Chip color="default" variant="solid">
-                            Out of Stock
+                            Hết hàng
                         </Chip>
                     </div>
                 )}
@@ -114,8 +125,18 @@ export default function ProductCard({
             >
                 <h3 className="font-semibold line-clamp-1">{name}</h3>
                 <p className="text-lg font-bold text-primary">
-                    ${Number(price).toFixed(2)}
+                    {formatVND(price)}
                 </p>
+                {productHasVariants && (
+                    <div className="mt-1 space-y-1">
+                        <p className="text-xs text-default-500">Nhiều tùy chọn</p>
+                        {variantStock && typeof variantStock === 'object' && (
+                            <p className="text-xs text-default-600">
+                                Tồn kho: {Object.values(variantStock as Record<string, number>).reduce((sum: number, stock) => sum + (typeof stock === 'number' ? stock : 0), 0)} sản phẩm
+                            </p>
+                        )}
+                    </div>
+                )}
             </CardBody>
 
             {/* Add to Cart Button */}
@@ -128,7 +149,7 @@ export default function ProductCard({
                         startContent={<ShoppingCart size={18} />}
                         onPress={handleAddToCart}
                     >
-                        Add to Cart
+                        {productHasVariants ? "Chọn tùy chọn" : "Thêm vào giỏ"}
                     </Button>
                 </CardFooter>
             )}

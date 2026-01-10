@@ -1,4 +1,18 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
+
+const MAX_PAGE_SIZE = 100;
+const DEFAULT_PAGE_SIZE = 10;
+
+/**
+ * Validate and normalize pagination parameters
+ */
+export function normalizePagination(options: { page?: number; limit?: number }) {
+    const page = Math.max(1, options.page || 1);
+    const limit = Math.min(Math.max(1, options.limit || DEFAULT_PAGE_SIZE), MAX_PAGE_SIZE);
+    const skip = (page - 1) * limit;
+    return { page, limit, skip };
+}
 
 export async function getVendorProducts(
     vendorId: string,
@@ -6,13 +20,16 @@ export async function getVendorProducts(
         page?: number;
         limit?: number;
         search?: string;
+        includeDeleted?: boolean;
     } = {}
 ) {
-    const { page = 1, limit = 10, search = "" } = options;
-    const skip = (page - 1) * limit;
+    const { page, limit, skip } = normalizePagination(options);
+    const { search = "", includeDeleted = false } = options;
 
-    const where: any = {
+    const where: Record<string, unknown> = {
         vendorId,
+        // Filter out soft-deleted products by default
+        ...(includeDeleted ? {} : { deletedAt: null }),
     };
 
     if (search) {
@@ -37,9 +54,12 @@ export async function getVendorProducts(
     };
 }
 
-export function getProductById(id: string) {
-    return prisma.product.findUnique({
-        where: { id },
+export function getProductById(id: string, includeDeleted = false) {
+    return prisma.product.findFirst({
+        where: {
+            id,
+            ...(includeDeleted ? {} : { deletedAt: null }),
+        },
         include: { vendor: true },
     });
 }
@@ -50,7 +70,8 @@ export function createProduct(data: {
     price: number;
     stock: number;
     images: string[];
-    variants?: any;
+    variants?: Prisma.InputJsonValue;
+    variantStock?: Prisma.InputJsonValue;
     vendorId: string;
 }) {
     return prisma.product.create({
@@ -61,6 +82,7 @@ export function createProduct(data: {
             stock: data.stock,
             images: data.images,
             variants: data.variants,
+            variantStock: data.variantStock,
             vendorId: data.vendorId,
         },
     });
@@ -74,7 +96,8 @@ export function updateProduct(
         price?: number;
         stock?: number;
         images?: string[];
-        variants?: any;
+        variants?: Prisma.InputJsonValue;
+        variantStock?: Prisma.InputJsonValue;
     }
 ) {
     return prisma.product.update({
@@ -83,8 +106,34 @@ export function updateProduct(
     });
 }
 
+/**
+ * Soft delete a product by setting deletedAt timestamp
+ */
 export function deleteProduct(id: string) {
+    return prisma.product.update({
+        where: { id },
+        data: { deletedAt: new Date() },
+    });
+}
+
+/**
+ * Permanently delete a product (use with caution)
+ */
+export function hardDeleteProduct(id: string) {
     return prisma.product.delete({
         where: { id },
     });
 }
+
+/**
+ * Restore a soft-deleted product
+ */
+export function restoreProduct(id: string) {
+    return prisma.product.update({
+        where: { id },
+        data: { deletedAt: null },
+    });
+}
+
+// Export utilities for reuse
+export { MAX_PAGE_SIZE, DEFAULT_PAGE_SIZE };

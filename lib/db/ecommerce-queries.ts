@@ -302,6 +302,16 @@ export async function getOrCreateWishlist(userId: string) {
 }
 
 export async function addToWishlist(userId: string, productId: string) {
+    // Verify product exists before adding
+    const product = await prisma.product.findUnique({
+        where: { id: productId },
+        select: { id: true },
+    });
+
+    if (!product) {
+        throw new Error("Product not found");
+    }
+
     const wishlist = await getOrCreateWishlist(userId);
 
     // Check if already in wishlist

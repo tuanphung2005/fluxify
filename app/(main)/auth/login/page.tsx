@@ -4,15 +4,11 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Input, Link, Card, CardBody, CardHeader } from "@heroui/react";
-import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const toggleVisibility = () => setIsVisible(!isVisible);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,7 +27,12 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError("Invalid email or password");
+        // Check for account deactivation error (custom error code from auth.ts)
+        if (result.code === "account_deactivated") {
+          setError("Your account has been disabled. Please contact support for assistance.");
+        } else {
+          setError("Invalid email or password");
+        }
       } else {
         router.push("/");
         router.refresh();
@@ -66,20 +67,7 @@ export default function LoginPage() {
               name="password"
               placeholder="Enter your password"
               variant="bordered"
-              endContent={
-                <button
-                  className="focus:outline-none"
-                  type="button"
-                  onClick={toggleVisibility}
-                >
-                  {isVisible ? (
-                    <EyeOff className="text-2xl text-default-400 pointer-events-none" />
-                  ) : (
-                    <Eye className="text-2xl text-default-400 pointer-events-none" />
-                  )}
-                </button>
-              }
-              type={isVisible ? "text" : "password"}
+              type="password"
             />
 
             {error && (

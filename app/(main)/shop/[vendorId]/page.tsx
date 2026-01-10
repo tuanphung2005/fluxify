@@ -5,6 +5,7 @@ import CartDrawer from "@/components/shop/CartDrawer";
 import CartButton from "@/components/shop/CartButton";
 import FavoriteShopButton from "@/components/shop/FavoriteShopButton";
 import ShopProductModalManager from "@/components/shop/ShopProductModalManager";
+import VendorCartProvider from "@/components/shop/VendorCartProvider";
 
 interface ShopPageProps {
     params: Promise<{
@@ -49,45 +50,48 @@ export default async function ShopPage(props: ShopPageProps) {
         stock: p.stock,
         images: p.images,
         variants: p.variants,
+        variantStock: p.variantStock,
     }));
 
     return (
-        <div className="min-h-screen">
-            {components.map((component) => (
-                <ShopComponentWrapper
-                    key={component.id}
-                    type={component.type}
-                    config={component.config}
-                    isBuilder={false}
-                    products={products}
-                    vendorId={vendorId}
-                    vendorName={vendorName}
-                />
-            ))}
+        <VendorCartProvider vendorId={vendorId} vendorName={vendorName}>
+            <div className="min-h-screen">
+                {components.map((component) => (
+                    <ShopComponentWrapper
+                        key={component.id}
+                        type={component.type}
+                        config={component.config}
+                        isBuilder={false}
+                        products={products}
+                        vendorId={vendorId}
+                        vendorName={vendorName}
+                    />
+                ))}
 
-            {components.length === 0 && (
-                <div className="flex items-center justify-center min-h-[60vh]">
-                    <div className="text-center">
-                        <h2 className="text-2xl font-bold text-default-500 mb-2">
-                            Shop Coming Soon
-                        </h2>
-                        <p className="text-default-400">
-                            This shop is currently being set up. Check back later!
-                        </p>
+                {components.length === 0 && (
+                    <div className="flex items-center justify-center min-h-[60vh]">
+                        <div className="text-center">
+                            <h2 className="text-2xl font-bold text-default-500 mb-2">
+                                Shop Coming Soon
+                            </h2>
+                            <p className="text-default-400">
+                                This shop is currently being set up. Check back later!
+                            </p>
+                        </div>
                     </div>
+                )}
+
+                <ShopProductModalManager products={products} vendorId={vendorId} vendorName={vendorName} />
+
+                {/* Floating Action Buttons - Favorite and Cart */}
+                <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+                    <FavoriteShopButton vendorId={vendorId} />
+                    <CartButton />
                 </div>
-            )}
 
-            <ShopProductModalManager products={products} vendorId={vendorId} vendorName={vendorName} />
-
-            {/* Floating Action Buttons - Favorite and Cart */}
-            <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
-                <FavoriteShopButton vendorId={vendorId} />
-                <CartButton />
+                <CartDrawer />
             </div>
-
-            <CartDrawer />
-        </div>
+        </VendorCartProvider>
     );
 }
 

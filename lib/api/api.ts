@@ -35,8 +35,11 @@ class ApiClient {
             ...rest
         } = options;
 
-        // Build URL with query params
-        const urlObj = new URL(url, window.location.origin);
+        // Build URL with query params - handle SSR where window is undefined
+        const baseUrl = typeof window !== "undefined"
+            ? window.location.origin
+            : process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+        const urlObj = new URL(url, baseUrl);
         if (params) {
             Object.entries(params).forEach(([key, value]) => {
                 if (value !== undefined && value !== null) {

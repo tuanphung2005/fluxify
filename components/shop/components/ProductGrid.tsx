@@ -11,6 +11,8 @@ interface ProductGridProps extends BaseComponentProps<ProductGridConfig> {
         name: string;
         price: number;
         images: string[];
+        variants?: any;
+        variantStock?: any;
     }>;
     vendorId?: string;
     vendorName?: string;
@@ -61,8 +63,6 @@ export default function ProductGrid({
                 name: product.name,
                 price: product.price,
                 image: product.images[0],
-                vendorId: vendorId || "unknown",
-                vendorName: vendorName || "Unknown Shop",
             });
             setIsOpen(true);
         }
@@ -84,6 +84,8 @@ export default function ProductGrid({
                         vendorId={vendorId}
                         showAddToCart={showAddToCart}
                         onAddToCart={handleAddToCart}
+                        variants={product.variants}
+                        variantStock={product.variantStock}
                     />
                 ))}
             </div>

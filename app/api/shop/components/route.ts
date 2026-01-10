@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ComponentType } from "@prisma/client";
 import { getAuthenticatedVendor, verifyTemplateOwnership } from "@/lib/api/auth-helpers";
 import { errorResponse, successResponse, isErrorResult } from "@/lib/api/responses";
 import { getTemplateComponents } from "@/lib/db/shop-queries";
+import { validateComponentConfig, sanitizeComponentConfig } from "@/lib/shop/component-config";
 
 // GET - Fetch all components for a template
 export async function GET(req: NextRequest) {
@@ -33,6 +34,18 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const { templateId, type, config, order } = body;
 
+        // Validate component type
+        if (!Object.values(ComponentType).includes(type)) {
+            return errorResponse(`Invalid component type: ${type}`, 400);
+        }
+
+        // Validate and sanitize config
+        const configValidation = validateComponentConfig(type, config);
+        if (!configValidation.success) {
+            return errorResponse(`Invalid config: ${configValidation.error}`, 400);
+        }
+        const sanitizedConfig = sanitizeComponentConfig(type, config);
+
         // Verify template ownership
         const ownershipCheck = await verifyTemplateOwnership(templateId, auth.vendor.id);
         if (isErrorResult(ownershipCheck)) {
@@ -49,13 +62,13 @@ export async function POST(req: NextRequest) {
             newOrder = (lastComponent?.order ?? -1) + 1;
         }
 
-        // Create component
+        // Create component with validated config
         const component = await prisma.shopComponent.create({
             data: {
                 templateId,
                 type: type as ComponentType,
                 order: newOrder,
-                config: config || {},
+                config: sanitizedConfig || {},
             },
         });
 

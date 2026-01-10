@@ -123,6 +123,11 @@ model VendorProfile {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // Payment settings (VietQR for Vietnam)
+  bankId          String?  // Bank code (e.g., "VCB", "TCB", "MB")
+  bankAccount     String?  // Account number
+  bankAccountName String?  // Account holder name (no diacritics, uppercase)
+
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   products     Product[]
   shopTemplate ShopTemplate?
@@ -164,21 +169,23 @@ model Category {
 }
 
 model Product {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   name        String
-  description String?  @db.Text
-  price       Decimal  @db.Decimal(10, 2)
-  stock       Int      @default(0)
+  description String?   @db.Text
+  price       Decimal   @db.Decimal(10, 2)
+  stock       Int       @default(0)
   images      String[]
-  variants    Json?    // Product variants (e.g., size, color options)
-  tags        String[] // Product tags for filtering
+  variants    Json?     // Product variants (e.g., size, color options)
+  variantStock Json?    // Stock per variant combination (e.g., {"Size:M,Color:Red": 10})
+  tags        String[]  // Product tags for filtering
   vendorId    String
   categoryId  String?
-  viewCount   Int      @default(0)
-  avgRating   Decimal? @db.Decimal(2, 1)
-  reviewCount Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  viewCount   Int       @default(0)
+  avgRating   Decimal?  @db.Decimal(2, 1)
+  reviewCount Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // Soft delete - null means not deleted
 
   vendor        VendorProfile  @relation(fields: [vendorId], references: [id], onDelete: Cascade)
   category      Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
@@ -188,6 +195,10 @@ model Product {
   wishlistItems WishlistItem[]
   views         ProductView[]
 
+  @@index([categoryId])
+  @@index([vendorId])
+  @@index([createdAt])
+  @@index([deletedAt])
   @@map("products")
 }
 
@@ -204,21 +215,24 @@ model Cart {
 }
 
 model CartItem {
-  id        String @id @default(cuid())
-  cartId    String
-  productId String
-  quantity  Int    @default(1)
+  id              String  @id @default(cuid())
+  cartId          String
+  productId       String
+  quantity        Int     @default(1)
+  selectedVariant String? // Selected variant combination (e.g., "Size:M,Color:Red")
 
   cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@unique([cartId, productId])
+  @@unique([cartId, productId, selectedVariant])
   @@map("cart_items")
 }
 
 model Order {
   id                String      @id @default(cuid())
   userId            String
+  fullName          String?     // Buyer's full name
+  phoneNumber       String?     // Buyer's phone number
   total             Decimal     @db.Decimal(10, 2)
   status            OrderStatus @default(PENDING)
   addressId         String
@@ -235,15 +249,19 @@ model Order {
   coupon  Coupon?     @relation(fields: [couponId], references: [id], onDelete: SetNull)
   items   OrderItem[]
 
+  @@index([status])
+  @@index([userId])
+  @@index([createdAt])
   @@map("orders")
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  productId String
-  quantity  Int
-  price     Decimal @db.Decimal(10, 2)
+  id              String  @id @default(cuid())
+  orderId         String
+  productId       String
+  quantity        Int
+  price           Decimal @db.Decimal(10, 2)
+  selectedVariant String? // Selected variant combination (e.g., "Size:M,Color:Red")
 
   order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])
@@ -283,6 +301,8 @@ model Review {
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([productId, userId])
+  @@index([productId])
+  @@index([userId])
   @@map("reviews")
 }
 
@@ -347,6 +367,8 @@ model ProductView {
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
+  @@index([productId])
+  @@index([viewedAt])
   @@map("product_views")
 }
 

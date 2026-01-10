@@ -11,12 +11,12 @@ interface AddToCartButtonProps {
         price: number;
         images: string[];
     };
-    vendorId: string;
-    vendorName: string;
+    vendorId?: string;  // Kept for compatibility but no longer needed
+    vendorName?: string;  // Kept for compatibility but no longer needed
     disabled?: boolean;
 }
 
-export default function AddToCartButton({ product, vendorId, vendorName, disabled }: AddToCartButtonProps) {
+export default function AddToCartButton({ product, disabled }: AddToCartButtonProps) {
     const { addItem, setIsOpen } = useCartStore();
 
     const handleAddToCart = () => {
@@ -25,8 +25,6 @@ export default function AddToCartButton({ product, vendorId, vendorName, disable
             name: product.name,
             price: product.price,
             image: product.images[0],
-            vendorId,
-            vendorName,
         });
         setIsOpen(true);
     };

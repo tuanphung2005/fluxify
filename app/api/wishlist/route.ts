@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { successResponse, errorResponse } from "@/lib/api/responses";
-import { auth } from "@/lib/auth";
+import { requireUser } from "@/lib/api/middleware";
 import {
     getOrCreateWishlist,
     addToWishlist,
@@ -8,14 +8,12 @@ import {
 } from "@/lib/db/ecommerce-queries";
 
 // GET - Get user's wishlist
-export async function GET() {
-    try {
-        const session = await auth();
-        if (!session?.user) {
-            return errorResponse("Please log in to view wishlist", 401);
-        }
+export async function GET(req: NextRequest) {
+    const auth = await requireUser(req);
+    if (auth.error) return auth.error;
 
-        const wishlist = await getOrCreateWishlist(session.user.id);
+    try {
+        const wishlist = await getOrCreateWishlist(auth.user.id);
         return successResponse(wishlist);
     } catch (error) {
         return errorResponse("Failed to fetch wishlist", 500, error);
@@ -24,34 +22,31 @@ export async function GET() {
 
 // POST - Add item to wishlist
 export async function POST(req: NextRequest) {
-    try {
-        const session = await auth();
-        if (!session?.user) {
-            return errorResponse("Please log in to add to wishlist", 401);
-        }
+    const auth = await requireUser(req);
+    if (auth.error) return auth.error;
 
+    try {
         const body = await req.json();
         const { productId } = body;
 
-        if (!productId) {
+        if (!productId || typeof productId !== "string") {
             return errorResponse("Product ID is required", 400);
         }
 
-        const item = await addToWishlist(session.user.id, productId);
+        const item = await addToWishlist(auth.user.id, productId);
         return successResponse(item, 201);
     } catch (error) {
-        return errorResponse("Failed to add to wishlist", 500, error);
+        const message = error instanceof Error ? error.message : "Failed to add to wishlist";
+        return errorResponse(message, 500, error);
     }
 }
 
 // DELETE - Remove item from wishlist
 export async function DELETE(req: NextRequest) {
-    try {
-        const session = await auth();
-        if (!session?.user) {
-            return errorResponse("Please log in", 401);
-        }
+    const auth = await requireUser(req);
+    if (auth.error) return auth.error;
 
+    try {
         const { searchParams } = new URL(req.url);
         const productId = searchParams.get("productId");
 
@@ -59,7 +54,7 @@ export async function DELETE(req: NextRequest) {
             return errorResponse("Product ID is required", 400);
         }
 
-        await removeFromWishlist(session.user.id, productId);
+        await removeFromWishlist(auth.user.id, productId);
         return successResponse({ message: "Removed from wishlist" });
     } catch (error) {
         return errorResponse("Failed to remove from wishlist", 500, error);

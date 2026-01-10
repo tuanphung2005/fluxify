@@ -15,6 +15,7 @@ export interface Product {
     images: string[];
     description?: string;
     variants?: any;
+    variantStock?: any;
 }
 
 interface ProductFormModalProps {
@@ -36,6 +37,7 @@ export default function ProductFormModal({
     const [stock, setStock] = useState("");
     const [images, setImages] = useState("");
     const [variants, setVariants] = useState("");
+    const [variantStock, setVariantStock] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -56,6 +58,15 @@ export default function ProductFormModal({
                 } else {
                     setVariants("");
                 }
+                // Handle variant stock
+                if (product.variantStock) {
+                    const stockString = typeof product.variantStock === 'string'
+                        ? product.variantStock
+                        : JSON.stringify(product.variantStock, null, 2);
+                    setVariantStock(stockString);
+                } else {
+                    setVariantStock("");
+                }
             } else {
                 setName("");
                 setDescription("");
@@ -63,6 +74,7 @@ export default function ProductFormModal({
                 setStock("");
                 setImages("");
                 setVariants("");
+                setVariantStock("");
             }
             setError("");
         }
@@ -75,11 +87,21 @@ export default function ProductFormModal({
         try {
             const imageUrls = images.split("\n").filter((url) => url.trim() !== "");
             let variantsData = null;
+            let variantStockData = null;
+            
             if (variants.trim()) {
                 try {
                     variantsData = JSON.parse(variants);
                 } catch {
-                    throw new Error("Invalid JSON for variants");
+                    throw new Error("Dữ liệu tùy chọn không hợp lệ");
+                }
+            }
+            
+            if (variantStock.trim()) {
+                try {
+                    variantStockData = JSON.parse(variantStock);
+                } catch {
+                    throw new Error("Dữ liệu tồn kho không hợp lệ");
                 }
             }
 
@@ -90,6 +112,7 @@ export default function ProductFormModal({
                 stock: parseInt(stock),
                 images: imageUrls,
                 variants: variantsData,
+                variantStock: variantStockData,
             };
 
             if (product) {
@@ -105,6 +128,7 @@ export default function ProductFormModal({
             setStock("");
             setImages("");
             setVariants("");
+            setVariantStock("");
             onSaved();
         } catch (err: any) {
             setError(err.message || "Failed to save product");
@@ -118,54 +142,56 @@ export default function ProductFormModal({
             <ModalContent>
                 {(onClose) => (
                     <>
-                        <ModalHeader>{product ? "Edit Product" : "Add Product"}</ModalHeader>
+                        <ModalHeader>{product ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm"}</ModalHeader>
                         <ModalBody>
                             <div className="flex flex-col gap-4">
                                 <Input
-                                    label="Product Name"
+                                    label="Tên sản phẩm"
                                     value={name}
                                     onValueChange={setName}
                                     isRequired
 
                                 />
                                 <Textarea
-                                    label="Description"
+                                    label="Mô tả"
                                     value={description}
                                     onValueChange={setDescription}
 
                                 />
                                 <div className="flex gap-4">
                                     <Input
-                                        label="Price"
+                                        label="Giá (₫)"
                                         type="number"
                                         value={price}
                                         onValueChange={setPrice}
-                                        startContent="$"
+                                        endContent="₫"
                                         isRequired
 
                                     />
                                     <Input
-                                        label="Stock"
+                                        label="Tồn kho (chung)"
                                         type="number"
                                         value={stock}
                                         onValueChange={setStock}
                                         isRequired
-
+                                        description="Tồn kho mặc định nếu không có tùy chọn"
                                     />
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <span className="text-small font-medium">Product Images</span>
+                                    <span className="text-small font-medium">Hình ảnh sản phẩm</span>
                                     <ImageBuilder
                                         value={images}
                                         onChange={setImages}
                                     />
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <span className="text-small font-medium">Variants</span>
+                                    <span className="text-small font-medium">Tùy chọn sản phẩm</span>
                                     <VariantBuilder
                                         key={product?.id || 'new'}
                                         value={variants}
+                                        stockValue={variantStock}
                                         onChange={setVariants}
+                                        onStockChange={setVariantStock}
                                     />
                                 </div>
                                 {error && (
@@ -180,14 +206,14 @@ export default function ProductFormModal({
                                 onPress={onClose}
                                 isDisabled={isLoading}
                             >
-                                Cancel
+                                Hủy
                             </Button>
                             <Button
                                 color="primary"
                                 onPress={handleSubmit}
                                 isLoading={isLoading}
                             >
-                                {product ? "Save Changes" : "Add Product"}
+                                {product ? "Lưu thay đổi" : "Thêm sản phẩm"}
                             </Button>
                         </ModalFooter>
                     </>

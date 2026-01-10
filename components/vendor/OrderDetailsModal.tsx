@@ -13,10 +13,13 @@ interface OrderItem {
     };
     quantity: number;
     price: number;
+    selectedVariant?: string | null;
 }
 
 interface Order {
     id: string;
+    fullName?: string | null;
+    phoneNumber?: string | null;
     status: string;
     total: number;
     createdAt: string;
@@ -128,15 +131,14 @@ export default function OrderDetailsModal({ order, isOpen, onClose, onStatusUpda
                             </Select>
                         </div>
 
-                        {/* Customer Info */}
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <h4 className="text-sm font-semibold text-default-500 mb-2">Customer</h4>
-                                <p>{order.user.name || "Guest"}</p>
-                                <p className="text-sm text-default-400">{order.user.email}</p>
+                                <h4 className="text-sm font-semibold text-default-500 mb-2">Khách hàng</h4>
+                                <p>{order.fullName || order.user.name || "Khách"}</p>
+                                <p className="text-sm text-default-400">{order.phoneNumber || order.user.email}</p>
                             </div>
                             <div>
-                                <h4 className="text-sm font-semibold text-default-500 mb-2">Shipping Address</h4>
+                                <h4 className="text-sm font-semibold text-default-500 mb-2">Địa chỉ giao hàng</h4>
                                 <p>{order.address.street}</p>
                                 <p>{order.address.city}, {order.address.state} {order.address.zipCode}</p>
                                 <p>{order.address.country}</p>
@@ -145,20 +147,28 @@ export default function OrderDetailsModal({ order, isOpen, onClose, onStatusUpda
 
                         {/* Order Items */}
                         <div>
-                            <h4 className="text-sm font-semibold text-default-500 mb-2">Items</h4>
+                            <h4 className="text-sm font-semibold text-default-500 mb-2">Sản phẩm</h4>
                             <div className="border rounded-lg divide-y">
                                 {order.items.map((item) => (
                                     <div key={item.id} className="p-3 flex justify-between items-center">
                                         <div>
                                             <p className="font-medium">{item.product.name}</p>
-                                            <p className="text-sm text-default-400">Qty: {item.quantity} x ${Number(item.price).toFixed(2)}</p>
+                                            {item.selectedVariant && (
+                                                <p className="text-xs text-default-500">
+                                                    {item.selectedVariant.split(',').map(part => {
+                                                        const [name, value] = part.split(':');
+                                                        return `${name}: ${value}`;
+                                                    }).join(', ')}
+                                                </p>
+                                            )}
+                                            <p className="text-sm text-default-400">SL: {item.quantity} x {Number(item.price).toLocaleString('vi-VN')}₫</p>
                                         </div>
-                                        <p className="font-semibold">${(Number(item.price) * item.quantity).toFixed(2)}</p>
+                                        <p className="font-semibold">{(Number(item.price) * item.quantity).toLocaleString('vi-VN')}₫</p>
                                     </div>
                                 ))}
                                 <div className="p-3 bg-default-50 flex justify-between items-center font-bold">
-                                    <span>Total</span>
-                                    <span>${Number(order.total).toFixed(2)}</span>
+                                    <span>Tổng cộng</span>
+                                    <span>{Number(order.total).toLocaleString('vi-VN')}₫</span>
                                 </div>
                             </div>
                         </div>

@@ -5,6 +5,14 @@ export default auth((req) => {
   const { pathname } = req.nextUrl;
   const session = req.auth;
 
+  // Skip check for the disabled page itself to prevent redirect loops
+  const isDisabledPage = pathname === "/auth/account-disabled";
+
+  // If user is authenticated but account is disabled, redirect to disabled page
+  if (session && session.user.isActive === false && !isDisabledPage) {
+    return NextResponse.redirect(new URL("/auth/account-disabled", req.url));
+  }
+
   // protected routes
   const isAdminRoute = pathname.startsWith("/admin");
   const isVendorRoute = pathname.startsWith("/vendor");

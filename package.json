@@ -7,12 +7,18 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint --fix",
-    "test": "vitest",
+    "test": "npm run test:unit && npm run test:components",
+    "test:unit": "bun test tests/edge-cases.test.ts tests/session-features.test.ts tests/order-display.test.ts",
+    "test:components": "vitest run tests/components",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "db:seed": "npx tsx prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
@@ -61,7 +67,7 @@
     "@heroui/tooltip": "2.2.24",
     "@heroui/user": "2.2.22",
     "@prisma/adapter-pg": "^7.0.0",
-    "@prisma/client": "^7.0.0",
+    "@prisma/client": "^7.2.0",
     "@prisma/extension-accelerate": "^3.0.0",
     "@react-aria/ssr": "3.9.10",
     "@react-aria/visually-hidden": "3.8.28",

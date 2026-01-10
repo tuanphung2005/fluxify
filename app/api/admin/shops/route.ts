@@ -1,15 +1,20 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/api/middleware";
+import { errorResponse, successResponse } from "@/lib/api/responses";
 
 export async function GET(req: NextRequest) {
+    const auth = await requireAdmin(req);
+    if (auth.error) return auth.error;
+
     try {
         const { searchParams } = new URL(req.url);
         const page = parseInt(searchParams.get("page") || "1");
-        const limit = parseInt(searchParams.get("limit") || "10");
+        const limit = Math.min(parseInt(searchParams.get("limit") || "10"), 100);
         const search = searchParams.get("search") || "";
         const skip = (page - 1) * limit;
 
-        const where: any = {};
+        const where: Record<string, unknown> = {};
         if (search) {
             where.OR = [
                 { storeName: { contains: search, mode: "insensitive" } },
@@ -46,28 +51,23 @@ export async function GET(req: NextRequest) {
             prisma.vendorProfile.count({ where })
         ]);
 
-        // Transform data to match frontend expectation
         const formattedShops = shops.map(shop => ({
             id: shop.id,
             name: shop.storeName,
-            slug: shop.userId, // Using userId as slug for now as per existing logic
+            slug: shop.userId,
             isPublished: shop.shopTemplate?.isPublished || false,
             createdAt: shop.createdAt,
             user: shop.user,
             _count: shop._count
         }));
 
-        return NextResponse.json({
+        return successResponse({
             shops: formattedShops,
             total,
             totalPages: Math.ceil(total / limit),
             currentPage: page
         });
     } catch (error) {
-        console.error("Failed to fetch shops:", error);
-        return NextResponse.json(
-            { error: "Failed to fetch shops" },
-            { status: 500 }
-        );
+        return errorResponse("Failed to fetch shops", 500, error);
     }
 }

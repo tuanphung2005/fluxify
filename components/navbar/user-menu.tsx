@@ -64,13 +64,6 @@ export const NavbarUserMenu = ({ user }: NavbarUserMenuProps) => {
           >
             my orders
           </DropdownItem>
-          <DropdownItem
-            key="settings"
-            href="/settings"
-            startContent={<Settings size={16} />}
-          >
-            settings
-          </DropdownItem>
           <DropdownItem key="logout" color="danger" startContent={<LogOut size={16} />}>
             <SignOutButton />
           </DropdownItem>

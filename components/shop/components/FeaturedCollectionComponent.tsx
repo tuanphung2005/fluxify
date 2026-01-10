@@ -13,12 +13,22 @@ interface FeaturedCollectionComponentProps {
     config: FeaturedCollectionConfig;
     vendorId?: string;
     vendorName?: string;
+    products?: Array<{
+        id: string;
+        name: string;
+        price: number;
+        description?: string | null;
+        stock?: number;
+        images: string[];
+        variants?: unknown;
+    }>;
 }
 
 export default function FeaturedCollectionComponent({
     config,
     vendorId,
     vendorName,
+    products: productsFromParent,
 }: FeaturedCollectionComponentProps) {
     const {
         title,
@@ -28,25 +38,48 @@ export default function FeaturedCollectionComponent({
         showAddToCart = true,
     } = config;
 
-    const [products, setProducts] = useState<ProductData[]>([]);
+    const [displayProducts, setDisplayProducts] = useState<ProductData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const { addItem, setIsOpen } = useCartStore();
 
     useEffect(() => {
-        fetchProducts();
-    }, [productIds]);
+        loadProducts();
+    }, [productIds, productsFromParent]);
 
-    const fetchProducts = async () => {
+    const loadProducts = async () => {
         if (!productIds || productIds.length === 0) {
             setIsLoading(false);
             return;
         }
 
+        // If products are provided from parent (public shop page), use them directly
+        if (productsFromParent && productsFromParent.length > 0) {
+            const selectedProducts = productsFromParent
+                .filter(p => productIds.includes(p.id))
+                .map(p => ({
+                    id: p.id,
+                    name: p.name,
+                    price: p.price,
+                    description: p.description,
+                    stock: p.stock,
+                    images: p.images,
+                    variants: p.variants,
+                })) as ProductData[];
+
+            // Sort by the order in productIds
+            selectedProducts.sort((a, b) =>
+                productIds.indexOf(a.id) - productIds.indexOf(b.id)
+            );
+
+            setDisplayProducts(selectedProducts);
+            setIsLoading(false);
+            return;
+        }
+
+        // Otherwise, fetch from API (builder mode where vendor is authenticated)
         try {
-            // API returns { products, total, totalPages, currentPage }
             const response = await api.get<{ products: ProductData[] } | ProductData[]>("/api/products?limit=100");
 
-            // Handle both response formats
             let allProducts: ProductData[] = [];
             if (Array.isArray(response)) {
                 allProducts = response;
@@ -56,12 +89,11 @@ export default function FeaturedCollectionComponent({
 
             const selectedProducts = allProducts.filter(p => productIds.includes(p.id));
 
-            // Sort by the order in productIds
             selectedProducts.sort((a, b) =>
                 productIds.indexOf(a.id) - productIds.indexOf(b.id)
             );
 
-            setProducts(selectedProducts);
+            setDisplayProducts(selectedProducts);
         } catch (error) {
             console.error("Failed to fetch products:", error);
         } finally {
@@ -70,15 +102,13 @@ export default function FeaturedCollectionComponent({
     };
 
     const handleAddToCart = (productId: string) => {
-        const product = products.find(p => p.id === productId);
+        const product = displayProducts.find(p => p.id === productId);
         if (product) {
             addItem({
                 id: product.id,
                 name: product.name,
                 price: Number(product.price),
                 image: product.images?.[0],
-                vendorId: vendorId || "unknown",
-                vendorName: vendorName || "Unknown Shop",
             });
             setIsOpen(true);
         }
@@ -94,7 +124,7 @@ export default function FeaturedCollectionComponent({
         );
     }
 
-    if (products.length === 0) {
+    if (displayProducts.length === 0) {
         return (
             <section className="py-16 px-4 bg-default-50">
                 <div className="max-w-7xl mx-auto text-center text-default-500">
@@ -127,7 +157,7 @@ export default function FeaturedCollectionComponent({
 
                 {/* Products Grid */}
                 <div className={`grid ${gridCols} gap-6`}>
-                    {products.map((product) => (
+                    {displayProducts.map((product) => (
                         <ProductCard
                             key={product.id}
                             id={product.id}
@@ -137,6 +167,8 @@ export default function FeaturedCollectionComponent({
                             vendorId={vendorId}
                             showAddToCart={showAddToCart}
                             onAddToCart={handleAddToCart}
+                            variants={product.variants}
+                            variantStock={(product as any).variantStock}
                         />
                     ))}
                 </div>

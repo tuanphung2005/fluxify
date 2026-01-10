@@ -8,7 +8,7 @@ export default function MainLayout({
     return (
         <div className="relative flex flex-col h-screen">
             <Navbar />
-            <main className="container max-w-full pt-16 flex-grow">
+            <main className="container max-w-full flex-grow">
                 {children}
             </main>
         </div>
