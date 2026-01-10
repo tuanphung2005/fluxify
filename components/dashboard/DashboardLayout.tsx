@@ -121,7 +121,7 @@ export default function DashboardLayout({
                     className="w-full justify-start text-default-500"
                     startContent={<Settings size={20} />}
                 >
-                    Settings
+                    Cài đặt
                 </Button>
             )}
             {showLogout && (
@@ -132,7 +132,7 @@ export default function DashboardLayout({
                     startContent={<LogOut size={20} />}
                     onPress={handleLogout}
                 >
-                    Logout
+                    Đăng xuất
                 </Button>
             )}
         </>
@@ -165,10 +165,10 @@ export function getVendorMenuItems(): SidebarMenuItem[] {
     // Import dynamically to avoid circular deps
     const { LayoutDashboard, Package, ShoppingBag, Store } = require("lucide-react");
     return [
-        { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/vendor" },
-        { key: "products", label: "Products", icon: Package, path: "/vendor/products" },
-        { key: "orders", label: "Orders", icon: ShoppingBag, path: "/vendor/orders" },
-        { key: "builder", label: "Shop Builder", icon: Store, path: "/vendor/shop-builder" },
+        { key: "dashboard", label: "Tổng quan", icon: LayoutDashboard, path: "/vendor" },
+        { key: "products", label: "Sản phẩm", icon: Package, path: "/vendor/products" },
+        { key: "orders", label: "Đơn hàng", icon: ShoppingBag, path: "/vendor/orders" },
+        { key: "builder", label: "Thiết kế cửa hàng", icon: Store, path: "/vendor/shop-builder" },
     ];
 }
 
@@ -178,9 +178,9 @@ export function getVendorMenuItems(): SidebarMenuItem[] {
 export function getAdminMenuItems(): SidebarMenuItem[] {
     const { LayoutDashboard, Users, ShoppingBag } = require("lucide-react");
     return [
-        { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
-        { key: "users", label: "Users", icon: Users, path: "/admin/users" },
-        { key: "shops", label: "Shops", icon: ShoppingBag, path: "/admin/shops" },
+        { key: "dashboard", label: "Tổng quan", icon: LayoutDashboard, path: "/admin/dashboard" },
+        { key: "users", label: "Người dùng", icon: Users, path: "/admin/users" },
+        { key: "shops", label: "Cửa hàng", icon: ShoppingBag, path: "/admin/shops" },
     ];
 }
 

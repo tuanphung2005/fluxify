@@ -108,7 +108,7 @@ export default function ProductManagerContent({
         <>
             <div className="flex justify-between items-center mb-4 gap-4">
                 <Input
-                    placeholder="Search products..."
+                    placeholder="Tìm kiếm sản phẩm..."
                     startContent={<Search size={18} />}
                     value={searchQuery}
                     onValueChange={handleSearchChange}
@@ -119,7 +119,7 @@ export default function ProductManagerContent({
                     startContent={<Plus />}
                     onPress={handleAddProduct}
                 >
-                    Add Product
+                    Thêm sản phẩm
                 </Button>
             </div>
 
@@ -152,10 +152,10 @@ export default function ProductManagerContent({
                 isOpen={deleteModal.isOpen}
                 onClose={deleteModal.onClose}
                 onConfirm={confirmDelete}
-                title="Delete Product"
-                message="Are you sure you want to delete this product? This action cannot be undone."
-                confirmText="Delete"
-                cancelText="Cancel"
+                title="Xóa sản phẩm"
+                message="Bạn có chắc chắn muốn xóa sản phẩm này không? Hành động này không thể hoàn tác."
+                confirmText="Xóa"
+                cancelText="Hủy"
             />
         </>
     );

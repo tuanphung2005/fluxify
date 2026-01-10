@@ -53,7 +53,7 @@ export default function ImageBuilder({ value, onChange }: ImageBuilderProps) {
             {/* Add Image Input */}
             <div className="flex gap-2">
                 <Input
-                    placeholder="Enter image URL"
+                    placeholder="Nhập URL hình ảnh"
                     value={newImageUrl}
                     onValueChange={setNewImageUrl}
                     onKeyDown={(e) => {
@@ -111,7 +111,7 @@ export default function ImageBuilder({ value, onChange }: ImageBuilderProps) {
 
             {images.length === 0 && (
                 <div className="text-center py-4 text-small text-default-400">
-                    No images added yet
+                    Chưa có ảnh nào
                 </div>
             )}
         </div>

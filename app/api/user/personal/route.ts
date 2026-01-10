@@ -12,7 +12,7 @@ export async function GET() {
         const session = await auth();
 
         if (!session?.user?.email) {
-            return errorResponse("Unauthorized", 401);
+            return errorResponse("Chưa xác thực", 401);
         }
 
         const user = await prisma.user.findUnique({
@@ -20,7 +20,7 @@ export async function GET() {
         });
 
         if (!user) {
-            return errorResponse("User not found", 404);
+            return errorResponse("Không tìm thấy người dùng", 404);
         }
 
         // Fetch all data in parallel
@@ -101,6 +101,6 @@ export async function GET() {
         });
     } catch (error) {
         console.error("Failed to fetch personal data:", error);
-        return errorResponse("Failed to fetch personal data", 500, error);
+        return errorResponse("Không thể lấy dữ liệu cá nhân", 500, error);
     }
 }
