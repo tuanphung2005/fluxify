@@ -45,11 +45,11 @@ interface OrderDetailsModalProps {
 }
 
 const ORDER_STATUSES = [
-    { value: "PENDING", label: "Pending", color: "warning" },
-    { value: "PROCESSING", label: "Processing", color: "primary" },
-    { value: "SHIPPED", label: "Shipped", color: "secondary" },
-    { value: "DELIVERED", label: "Delivered", color: "success" },
-    { value: "CANCELLED", label: "Cancelled", color: "danger" },
+    { value: "PENDING", label: "Chờ xác nhận", color: "warning" },
+    { value: "PROCESSING", label: "Đang xử lý", color: "primary" },
+    { value: "SHIPPED", label: "Đang giao", color: "secondary" },
+    { value: "DELIVERED", label: "Đã giao", color: "success" },
+    { value: "CANCELLED", label: "Đã hủy", color: "danger" },
 ] as const;
 
 export default function OrderDetailsModal({ order, isOpen, onClose, onStatusUpdate }: OrderDetailsModalProps) {
@@ -73,12 +73,12 @@ export default function OrderDetailsModal({ order, isOpen, onClose, onStatusUpda
                 orderId: order.id,
                 status: selectedStatus
             });
-            toast.success("Order status updated successfully");
+            toast.success("Cập nhật trạng thái đơn hàng thành công");
             onStatusUpdate();
             onClose();
         } catch (error) {
             console.error("Failed to update order status:", error);
-            toast.error("Failed to update order status");
+            toast.error("Cập nhật trạng thái thất bại");
         } finally {
             setIsLoading(false);
         }
@@ -88,9 +88,9 @@ export default function OrderDetailsModal({ order, isOpen, onClose, onStatusUpda
         <Modal isOpen={isOpen} onClose={onClose} size="2xl">
             <ModalContent>
                 <ModalHeader className="flex flex-col gap-1">
-                    Order Details #{order.id.slice(-6)}
+                    Chi tiết đơn hàng #{order.id.slice(-6)}
                     <span className="text-sm font-normal text-default-500">
-                        Placed on {new Date(order.createdAt).toLocaleString()}
+                        Đặt ngày {new Date(order.createdAt).toLocaleString()}
                     </span>
                 </ModalHeader>
                 <ModalBody>
@@ -98,7 +98,7 @@ export default function OrderDetailsModal({ order, isOpen, onClose, onStatusUpda
                         {/* Status Management */}
                         <div className="p-4 bg-default-50 rounded-lg space-y-3">
                             <div className="flex items-center justify-between">
-                                <span className="font-semibold">Current Status</span>
+                                <span className="font-semibold">Trạng thái hiện tại</span>
                                 <Chip
                                     color={
                                         order.status === 'PENDING' ? 'warning' :
@@ -113,8 +113,8 @@ export default function OrderDetailsModal({ order, isOpen, onClose, onStatusUpda
                                 </Chip>
                             </div>
                             <Select
-                                label="Update Status"
-                                placeholder="Select new status"
+                                label="Cập nhật trạng thái"
+                                placeholder="Chọn trạng thái mới"
                                 selectedKeys={selectedStatus ? [selectedStatus] : []}
                                 onSelectionChange={(keys) => {
                                     const selected = Array.from(keys)[0] as string;
@@ -176,7 +176,7 @@ export default function OrderDetailsModal({ order, isOpen, onClose, onStatusUpda
                 </ModalBody>
                 <ModalFooter>
                     <Button variant="light" onPress={onClose}>
-                        Close
+                        Đóng
                     </Button>
                     <Button
                         color="primary"
@@ -184,7 +184,7 @@ export default function OrderDetailsModal({ order, isOpen, onClose, onStatusUpda
                         isLoading={isLoading}
                         isDisabled={!selectedStatus || selectedStatus === order.status}
                     >
-                        Update Status
+                        Cập nhật
                     </Button>
                 </ModalFooter>
             </ModalContent>

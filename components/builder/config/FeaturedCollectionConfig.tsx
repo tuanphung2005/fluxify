@@ -79,63 +79,63 @@ export default function FeaturedCollectionConfigPanel({ config, onUpdate }: Feat
     return (
         <div className="space-y-4">
             <Input
-                label="Collection Title"
+                label="Tiêu đề bộ sưu tập"
                 value={config.title || ""}
                 onValueChange={(v) => onUpdate("title", v)}
-                placeholder="Featured Products"
+                placeholder="Sản phẩm nổi bật"
             />
 
             <Textarea
-                label="Description"
+                label="Mô tả"
                 value={config.description || ""}
                 onValueChange={(v) => onUpdate("description", v)}
-                placeholder="Hand-picked products just for you"
+                placeholder="Các sản phẩm được tuyển chọn dành riêng cho bạn"
                 minRows={2}
             />
 
             <Divider />
 
             <Select
-                label="Layout"
+                label="Bố cục"
                 selectedKeys={[config.layout || "grid"]}
                 onSelectionChange={(keys) => onUpdate("layout", Array.from(keys)[0])}
             >
-                <SelectItem key="grid">Grid</SelectItem>
-                <SelectItem key="list">List</SelectItem>
+                <SelectItem key="grid">Lưới</SelectItem>
+                <SelectItem key="list">Danh sách</SelectItem>
             </Select>
 
             <Select
-                label="Columns"
+                label="Số cột"
                 selectedKeys={[String(config.columns || 4)]}
                 onSelectionChange={(keys) => onUpdate("columns", Number(Array.from(keys)[0]))}
             >
-                <SelectItem key="2">2 columns</SelectItem>
-                <SelectItem key="3">3 columns</SelectItem>
-                <SelectItem key="4">4 columns</SelectItem>
-                <SelectItem key="5">5 columns</SelectItem>
+                <SelectItem key="2">2 cột</SelectItem>
+                <SelectItem key="3">3 cột</SelectItem>
+                <SelectItem key="4">4 cột</SelectItem>
+                <SelectItem key="5">5 cột</SelectItem>
             </Select>
 
             <Switch
                 isSelected={config.showAddToCart !== false}
                 onValueChange={(v) => onUpdate("showAddToCart", v)}
             >
-                Show Add to Cart
+                Hiển thị nút Thêm vào giỏ
             </Switch>
 
             <Divider />
 
             <div>
                 <div className="flex justify-between items-center mb-2">
-                    <h4 className="font-semibold">Products ({productIds.length})</h4>
+                    <h4 className="font-semibold">Sản phẩm ({productIds.length})</h4>
                     <Button size="sm" color="primary" variant="flat" onPress={onOpen}>
-                        <Plus size={16} /> Select
+                        <Plus size={16} /> Chọn
                     </Button>
                 </div>
 
                 {productIds.length === 0 ? (
                     <div className="text-center py-6 bg-default-50 rounded-lg text-default-400">
                         <Package size={32} className="mx-auto mb-2 opacity-50" />
-                        <p className="text-sm">No products selected</p>
+                        <p className="text-sm">Chưa chọn sản phẩm nào</p>
                     </div>
                 ) : (
                     <div className="space-y-2">

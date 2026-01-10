@@ -129,7 +129,7 @@ export default function FeaturedCollectionComponent({
             <section className="py-16 px-4 bg-default-50">
                 <div className="max-w-7xl mx-auto text-center text-default-500">
                     <Package size={48} className="mx-auto mb-4 opacity-50" />
-                    <p>No products in this collection yet.</p>
+                    <p>Chưa có sản phẩm nào trong bộ sưu tập này.</p>
                 </div>
             </section>
         );

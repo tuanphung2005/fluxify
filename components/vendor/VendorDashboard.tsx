@@ -32,14 +32,14 @@ export default function VendorDashboard({
             id: "total-sales",
             type: "stats",
             size: "sm",
-            title: "Total Sales",
+            title: "Tổng doanh số",
             value: initialData.totalSales.toString(),
             icon: Package,
             color: "primary",
             subtext: (
                 <div className="flex items-center text-success font-medium">
                     <TrendingUp size={16} className="mr-1" />
-                    <span>Orders count</span>
+                    <span>số đơn hàng</span>
                 </div>
             ),
             className: "bg-gradient-to-br from-primary-50 to-background",
@@ -48,21 +48,21 @@ export default function VendorDashboard({
             id: "pending-orders",
             type: "stats",
             size: "sm",
-            title: "Pending Orders",
+            title: "Đơn chờ xử lý",
             value: initialData.pendingOrders.toString(),
             icon: ShoppingCart,
             color: "warning",
-            subtext: "Orders to fulfill" as unknown as React.ReactNode,
+            subtext: "Đơn cần giao" as unknown as React.ReactNode,
         },
         {
             id: "total-revenue",
             type: "stats",
             size: "sm",
-            title: "Total Revenue",
+            title: "Tổng doanh thu",
             value: `$${initialData.totalRevenue.toLocaleString()}`,
             icon: DollarSign,
             color: "success",
-            subtext: "Lifetime earnings" as unknown as React.ReactNode,
+            subtext: "Tổng thu nhập" as unknown as React.ReactNode,
         },
         // Chart - spans 2 columns
         {
@@ -76,23 +76,25 @@ export default function VendorDashboard({
             id: "recent-activity",
             type: "list",
             size: "md",
-            title: "Recent Activity",
+            type: "list",
+            size: "md",
+            title: "Hoạt động gần đây",
             items: initialData.recentActivity.map((item) => ({
                 id: item.id,
                 icon: ShoppingCart,
                 iconColor: "bg-primary/10 text-primary",
-                primary: `New order for ${item.product.name}`,
+                primary: `Đơn hàng mới: ${item.product.name}`,
                 secondary: new Date(item.order.createdAt).toLocaleDateString(),
                 trailing: `$${Number(item.price).toFixed(2)}`,
             })),
             emptyIcon: Package,
-            emptyMessage: "No recent activity",
+            emptyMessage: "Chưa có hoạt động nào",
         },
     ];
 
     return (
         <>
-            <BentoDashboard title="Dashboard" widgets={widgets} columns={3} />
+            <BentoDashboard title="Tổng quan" widgets={widgets} columns={3} />
             <ProductManager
                 isOpen={productModal.isOpen}
                 onOpenChange={productModal.onOpenChange}

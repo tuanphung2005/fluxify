@@ -17,8 +17,8 @@ export default function FaqAccordionConfigPanel({ config, onUpdate }: FaqAccordi
 
     const addItem = () => {
         const newItem = {
-            question: "New Question?",
-            answer: "Your answer here...",
+            question: "Câu hỏi mới?",
+            answer: "Câu trả lời của bạn...",
         };
         onUpdate("items", [...items, newItem]);
     };
@@ -37,14 +37,14 @@ export default function FaqAccordionConfigPanel({ config, onUpdate }: FaqAccordi
     return (
         <div className="space-y-4">
             <Input
-                label="Section Title"
+                label="Tiêu đề"
                 value={config.title || ""}
                 onValueChange={(v) => onUpdate("title", v)}
-                placeholder="Frequently Asked Questions"
+                placeholder="Câu hỏi thường gặp"
             />
 
             <Input
-                label="Background Color"
+                label="Màu nền"
                 type="color"
                 value={config.backgroundColor || "#ffffff"}
                 onChange={(e) => onUpdate("backgroundColor", e.target.value)}
@@ -53,9 +53,9 @@ export default function FaqAccordionConfigPanel({ config, onUpdate }: FaqAccordi
             <Divider />
 
             <div className="flex justify-between items-center">
-                <h4 className="font-semibold">Questions ({items.length})</h4>
+                <h4 className="font-semibold">Câu hỏi ({items.length})</h4>
                 <Button size="sm" color="primary" variant="flat" onPress={addItem}>
-                    <Plus size={16} /> Add
+                    <Plus size={16} /> Thêm
                 </Button>
             </div>
 
@@ -78,14 +78,14 @@ export default function FaqAccordionConfigPanel({ config, onUpdate }: FaqAccordi
 
                     <Input
                         size="sm"
-                        label="Question"
+                        label="Câu hỏi"
                         value={item.question}
                         onValueChange={(v) => updateItem(index, "question", v)}
                     />
 
                     <Textarea
                         size="sm"
-                        label="Answer"
+                        label="Câu trả lời"
                         value={item.answer}
                         onValueChange={(v) => updateItem(index, "answer", v)}
                         minRows={2}
@@ -96,7 +96,7 @@ export default function FaqAccordionConfigPanel({ config, onUpdate }: FaqAccordi
             {items.length === 0 && (
                 <div className="text-center py-6 bg-default-50 rounded-lg text-default-400">
                     <HelpCircle size={32} className="mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">No FAQs added yet</p>
+                    <p className="text-sm">Chưa có câu hỏi nào</p>
                 </div>
             )}
         </div>

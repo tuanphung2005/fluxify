@@ -102,15 +102,15 @@ export default function ProductSelectorModal({
                 {(onClose) => (
                     <>
                         <ModalHeader className="flex flex-col gap-1">
-                            <h3>Select Products</h3>
+                            <h3>Chọn sản phẩm</h3>
                             <p className="text-sm text-default-500 font-normal">
-                                {localSelection.length} product{localSelection.length !== 1 ? "s" : ""} selected
+                                {localSelection.length} sản phẩm đã chọn
                             </p>
                         </ModalHeader>
                         <ModalBody>
                             <div className="flex gap-2 mb-4">
                                 <Input
-                                    placeholder="Search products..."
+                                    placeholder="Tìm kiếm sản phẩm..."
                                     value={searchQuery}
                                     onValueChange={setSearchQuery}
                                     startContent={<Search size={18} className="text-default-400" />}
@@ -122,7 +122,7 @@ export default function ProductSelectorModal({
                                     onPress={handleSelectAll}
                                     isDisabled={filteredProducts.length === 0}
                                 >
-                                    {allFilteredSelected ? "Deselect All" : "Select All"}
+                                    {allFilteredSelected ? "Bỏ chọn tất cả" : "Chọn tất cả"}
                                 </Button>
                             </div>
 
@@ -135,8 +135,8 @@ export default function ProductSelectorModal({
                                     <Package size={48} className="mb-4 opacity-50" />
                                     <p>
                                         {searchQuery
-                                            ? "No products match your search"
-                                            : "No products available"}
+                                            ? "Không tìm thấy sản phẩm nào"
+                                            : "Không có sản phẩm nào"}
                                     </p>
                                 </div>
                             ) : (
@@ -192,14 +192,14 @@ export default function ProductSelectorModal({
                                 onPress={handleClear}
                                 isDisabled={localSelection.length === 0}
                             >
-                                Clear Selection
+                                Xóa lựa chọn
                             </Button>
                             <div className="flex-1" />
                             <Button variant="flat" onPress={onClose}>
-                                Cancel
+                                Hủy
                             </Button>
                             <Button color="primary" onPress={handleConfirm}>
-                                Confirm Selection
+                                Xác nhận
                             </Button>
                         </ModalFooter>
                     </>

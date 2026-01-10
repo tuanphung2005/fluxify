@@ -93,7 +93,7 @@ export default function AnalyticsDashboard() {
         return (
             <div className="space-y-8 p-6">
                 <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-bold">Analytics</h2>
+                    <h2 className="text-2xl font-bold">Thống kê</h2>
                 </div>
                 <DashboardStatsSkeleton />
                 <ChartSkeleton />
@@ -106,7 +106,7 @@ export default function AnalyticsDashboard() {
         return (
             <div className="text-center py-12 text-default-500">
                 <BarChart3 size={48} className="mx-auto mb-4 opacity-50" />
-                <p>Failed to load analytics data</p>
+                <p>Không thể tải dữ liệu thống kê</p>
             </div>
         );
     }
@@ -115,7 +115,7 @@ export default function AnalyticsDashboard() {
         <div className="space-y-8 p-6">
             {/* Header */}
             <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Analytics</h2>
+                <h2 className="text-2xl font-bold">Thống kê</h2>
                 <Select
                     aria-label="Time range"
                     size="sm"
@@ -123,9 +123,9 @@ export default function AnalyticsDashboard() {
                     onSelectionChange={(keys) => setDays(Array.from(keys)[0] as string)}
                     className="w-40"
                 >
-                    <SelectItem key="7">Last 7 days</SelectItem>
-                    <SelectItem key="30">Last 30 days</SelectItem>
-                    <SelectItem key="90">Last 90 days</SelectItem>
+                    <SelectItem key="7">7 ngày qua</SelectItem>
+                    <SelectItem key="30">30 ngày qua</SelectItem>
+                    <SelectItem key="90">90 ngày qua</SelectItem>
                 </Select>
             </div>
 
@@ -138,30 +138,30 @@ export default function AnalyticsDashboard() {
                     subtext={
                         <div className="flex items-center text-success">
                             <TrendingUp size={14} className="mr-1" />
-                            <span>{days} day total</span>
+                            <span>Tổng {days} ngày</span>
                         </div>
                     }
                     color="success"
                 />
                 <StatsCard
-                    title="Orders"
+                    title="Đơn hàng"
                     value={formatNumber(data.totalOrders)}
                     icon={ShoppingCart}
-                    subtext="Total orders"
+                    subtext="Tổng đơn hàng"
                     color="primary"
                 />
                 <StatsCard
-                    title="Product Views"
+                    title="Lượt xem"
                     value={formatNumber(data.totalViews)}
                     icon={Eye}
-                    subtext="All-time views"
+                    subtext="Tổng lượt xem"
                     color="secondary"
                 />
                 <StatsCard
-                    title="Conversion Rate"
+                    title="Tỷ lệ chuyển đổi"
                     value={`${data.conversionRate}%`}
                     icon={Percent}
-                    subtext={`Avg order: ${formatCurrency(data.averageOrderValue)}`}
+                    subtext={`Trung bình: ${formatCurrency(data.averageOrderValue)}`}
                     color="warning"
                 />
             </div>
@@ -174,8 +174,8 @@ export default function AnalyticsDashboard() {
                             selectedKey={chartType}
                             onSelectionChange={(key) => setChartType(key as "revenue" | "orders")}
                         >
-                            <Tab key="revenue" title="Revenue" />
-                            <Tab key="orders" title="Orders" />
+                            <Tab key="revenue" title="Doanh thu" />
+                            <Tab key="orders" title="Đơn hàng" />
                         </Tabs>
                     </CardHeader>
                     <CardBody>
@@ -192,13 +192,13 @@ export default function AnalyticsDashboard() {
                 {/* Top Products */}
                 <Card>
                     <CardHeader>
-                        <h3 className="font-semibold">Top Products</h3>
+                        <h3 className="font-semibold">Sản phẩm bán chạy</h3>
                     </CardHeader>
                     <CardBody className="space-y-4">
                         {data.topProducts.length === 0 ? (
                             <div className="text-center py-8 text-default-400">
                                 <Package size={32} className="mx-auto mb-2 opacity-50" />
-                                <p className="text-sm">No sales data yet</p>
+                                <p className="text-sm">Chưa có dữ liệu bán hàng</p>
                             </div>
                         ) : (
                             data.topProducts.map((item, index) => (
@@ -220,7 +220,7 @@ export default function AnalyticsDashboard() {
                                     <div className="flex-1 min-w-0">
                                         <p className="font-medium truncate">{item.product.name}</p>
                                         <p className="text-xs text-default-400">
-                                            {item.totalSold} sold · {formatCurrency(item.totalRevenue)}
+                                            {item.totalSold} đã bán · {formatCurrency(item.totalRevenue)}
                                         </p>
                                     </div>
                                 </div>

@@ -31,18 +31,18 @@ export interface ComponentMeta {
 // =============================================================================
 
 const COMPONENT_DESCRIPTIONS: Record<ComponentType, string> = {
-    HERO: "Full-width hero banner with title, subtitle, and call-to-action",
-    PRODUCT_GRID: "Display products in a customizable grid layout",
-    IMAGE_GALLERY: "Showcase images in a gallery format",
-    VIDEO_EMBED: "Embed YouTube, Vimeo, or custom videos",
-    TEXT_BLOCK: "Rich text content with customizable styling",
-    SPACER: "Add vertical spacing between components",
-    TESTIMONIALS: "Display customer reviews and testimonials",
-    FEATURED_COLLECTION: "Highlight a curated collection of products",
-    COUNTDOWN_TIMER: "Create urgency with countdown timers",
-    NEWSLETTER_SIGNUP: "Collect email subscriptions",
-    FAQ_ACCORDION: "Expandable FAQ sections",
-    BANNER_CAROUSEL: "Rotating banners with auto-play support",
+    HERO: "Banner toàn chiều rộng với tiêu đề, phụ đề và nút kêu gọi hành động",
+    PRODUCT_GRID: "Hiển thị sản phẩm theo dạng lưới tùy chỉnh",
+    IMAGE_GALLERY: "Trưng bày hình ảnh theo dạng thư viện",
+    VIDEO_EMBED: "Nhúng video từ YouTube, Vimeo hoặc tùy chỉnh",
+    TEXT_BLOCK: "Nội dung văn bản phong phú với kiểu dáng tùy chỉnh",
+    SPACER: "Thêm khoảng cách dọc giữa các thành phần",
+    TESTIMONIALS: "Hiển thị đánh giá và nhận xét của khách hàng",
+    FEATURED_COLLECTION: "Nổi bật bộ sưu tập sản phẩm được chọn lọc",
+    COUNTDOWN_TIMER: "Tạo sự khẩn cấp với đồng hồ đếm ngược",
+    NEWSLETTER_SIGNUP: "Thu thập đăng ký email",
+    FAQ_ACCORDION: "Danh mục câu hỏi thường gặp có thể mở rộng",
+    BANNER_CAROUSEL: "Banner xoay vòng với chế độ tự động",
 };
 
 // =============================================================================

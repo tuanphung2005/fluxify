@@ -45,7 +45,7 @@ export default function ShopSettings({
             onUpdate();
             onOpenChange(false);
         } catch (err: any) {
-            setError(err.message || "Failed to update shop settings");
+            setError(err.message || "Không thể cập nhật cài đặt cửa hàng");
         } finally {
             setIsLoading(false);
         }
@@ -56,11 +56,11 @@ export default function ShopSettings({
             <ModalContent>
                 {(onClose) => (
                     <>
-                        <ModalHeader>Shop Settings</ModalHeader>
+                        <ModalHeader>Cài đặt cửa hàng</ModalHeader>
                         <ModalBody>
                             <div className="flex flex-col gap-4">
                                 <Input
-                                    label="Store Name"
+                                    label="Tên cửa hàng"
                                     value={storeName}
                                     onValueChange={setStoreName}
                                     isRequired
@@ -83,14 +83,14 @@ export default function ShopSettings({
                                 onPress={onClose}
                                 isDisabled={isLoading}
                             >
-                                Cancel
+                                Hủy
                             </Button>
                             <Button
                                 color="primary"
                                 onPress={handleSave}
                                 isLoading={isLoading}
                             >
-                                Save
+                                Lưu
                             </Button>
                         </ModalFooter>
                     </>

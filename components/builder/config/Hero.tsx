@@ -6,39 +6,39 @@ export default function Hero({ config, onUpdate }: BaseComponentConfigProps<Hero
     return (
         <>
             <Input
-                label="Title"
+                label="Tiêu đề"
                 value={config.title || ""}
                 onValueChange={(value) => onUpdate("title", value)}
             />
             <Input
-                label="Subtitle"
+                label="Phụ đề"
                 value={config.subtitle || ""}
                 onValueChange={(value) => onUpdate("subtitle", value)}
             />
             <Input
-                label="Image URL"
+                label="URL Hình ảnh"
                 value={config.imageUrl || ""}
                 onValueChange={(value) => onUpdate("imageUrl", value)}
             />
             <Input
-                label="CTA Text (Optional)"
+                label="Nút CTA (Tùy chọn)"
                 value={config.ctaText || ""}
                 onValueChange={(value) => onUpdate("ctaText", value)}
             />
             <Input
-                label="CTA Link (Optional)"
+                label="Liên kết CTA (Tùy chọn)"
                 value={config.ctaLink || ""}
                 onValueChange={(value) => onUpdate("ctaLink", value)}
             />
             <Input
                 type="color"
-                label="Background Color"
+                label="Màu nền"
                 value={config.backgroundColor || "#000000"}
                 onValueChange={(value) => onUpdate("backgroundColor", value)}
             />
             <Input
                 type="color"
-                label="Text Color"
+                label="Màu chữ"
                 value={config.textColor || "#FFFFFF"}
                 onValueChange={(value) => onUpdate("textColor", value)}
             />

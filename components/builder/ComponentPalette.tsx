@@ -18,7 +18,7 @@ export default function ComponentPalette({ onSelectComponent }: ComponentPalette
 
     return (
         <div className="w-64 bg-content1 border-r border-divider p-4 overflow-y-auto">
-            <h3 className="text-lg font-bold mb-4">components</h3>
+            <h3 className="text-lg font-bold mb-4">thành phần</h3>
             <div className="space-y-2">
                 {componentTypes.map((type) => {
                     const meta = COMPONENT_REGISTRY[type];

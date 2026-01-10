@@ -94,39 +94,39 @@ export default function ProductGrid({
     return (
         <>
             <Input
-                label="Section Title (Optional)"
+                label="Tiêu đề (Tùy chọn)"
                 value={config.title || ""}
                 onValueChange={(value) => onUpdate("title", value)}
             />
             <Select
-                label="Columns"
+                label="Số cột"
                 selectedKeys={[String(config.columns || 3)]}
                 onSelectionChange={(keys) => {
                     const value = Array.from(keys)[0];
                     onUpdate("columns", Number(value));
                 }}
             >
-                <SelectItem key="2">2 Columns</SelectItem>
-                <SelectItem key="3">3 Columns</SelectItem>
-                <SelectItem key="4">4 Columns</SelectItem>
+                <SelectItem key="2">2 Cột</SelectItem>
+                <SelectItem key="3">3 Cột</SelectItem>
+                <SelectItem key="4">4 Cột</SelectItem>
             </Select>
             <Switch
                 isSelected={config.showAddToCart ?? true}
                 onValueChange={(value) => onUpdate("showAddToCart", value)}
             >
-                Show Add to Cart Button
+                Hiển thị nút Thêm vào giỏ
             </Switch>
             <Switch
                 isSelected={showAllProducts}
                 onValueChange={handleShowAllProductsChange}
             >
-                Show All Products
+                Hiển thị tất cả sản phẩm
             </Switch>
 
             {!showAllProducts && (
                 <div className="mt-4 space-y-3">
                     <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium">Selected Products</p>
+                        <p className="text-sm font-medium">Sản phẩm đã chọn</p>
                         <Button
                             size="sm"
                             color="primary"
@@ -134,18 +134,18 @@ export default function ProductGrid({
                             startContent={<Package size={16} />}
                             onPress={onOpen}
                         >
-                            Select Products
+                            Chọn sản phẩm
                         </Button>
                     </div>
 
                     {selectedProducts.length === 0 ? (
                         <p className="text-xs text-default-500 bg-default-100 rounded-lg p-3 text-center">
-                            No products selected. Click "Select Products" to choose which products to display.
+                            Chưa chọn sản phẩm nào. Nhấn "Chọn sản phẩm" để chọn sản phẩm muốn hiển thị.
                         </p>
                     ) : (
                         <div className="bg-default-100 rounded-lg p-3">
                             <p className="text-xs text-default-500 mb-2">
-                                {selectedProducts.length} product{selectedProducts.length !== 1 ? "s" : ""} selected:
+                                {selectedProducts.length} sản phẩm đã chọn:
                             </p>
                             <div className="flex flex-wrap gap-1">
                                 {selectedProductNames.slice(0, 5).map((name, index) => (
@@ -158,7 +158,7 @@ export default function ProductGrid({
                                 ))}
                                 {selectedProductNames.length > 5 && (
                                     <span className="text-xs text-default-500 px-2 py-1">
-                                        +{selectedProductNames.length - 5} more
+                                        + thêm {selectedProductNames.length - 5}
                                     </span>
                                 )}
                             </div>

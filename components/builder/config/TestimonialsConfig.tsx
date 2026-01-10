@@ -18,10 +18,10 @@ export default function TestimonialsConfigPanel({ config, onUpdate }: Testimonia
 
     const addTestimonial = () => {
         const newTestimonial = {
-            name: "New Customer",
+            name: "Khách hàng mới",
             rating: 5,
-            comment: "Great product!",
-            role: "Verified Buyer",
+            comment: "Sản phẩm tuyệt vời!",
+            role: "Khách đã mua hàng",
         };
         onUpdate("testimonials", [...testimonials, newTestimonial]);
     };
@@ -40,23 +40,23 @@ export default function TestimonialsConfigPanel({ config, onUpdate }: Testimonia
     return (
         <div className="space-y-4">
             <Input
-                label="Section Title"
+                label="Tiêu đề"
                 value={config.title || ""}
                 onValueChange={(v) => onUpdate("title", v)}
-                placeholder="What Our Customers Say"
+                placeholder="Khách hàng nói gì về chúng tôi"
             />
 
             <Select
-                label="Layout"
+                label="Bố cục"
                 selectedKeys={[config.layout || "carousel"]}
                 onSelectionChange={(keys) => onUpdate("layout", Array.from(keys)[0])}
             >
-                <SelectItem key="carousel">Carousel</SelectItem>
-                <SelectItem key="grid">Grid</SelectItem>
+                <SelectItem key="carousel">Trượt (Carousel)</SelectItem>
+                <SelectItem key="grid">Lưới (Grid)</SelectItem>
             </Select>
 
             <Input
-                label="Background Color"
+                label="Màu nền"
                 type="color"
                 value={config.backgroundColor || "#ffffff"}
                 onChange={(e) => onUpdate("backgroundColor", e.target.value)}
@@ -65,9 +65,9 @@ export default function TestimonialsConfigPanel({ config, onUpdate }: Testimonia
             <Divider />
 
             <div className="flex justify-between items-center">
-                <h4 className="font-semibold">Testimonials ({testimonials.length})</h4>
+                <h4 className="font-semibold">Đánh giá ({testimonials.length})</h4>
                 <Button size="sm" color="primary" variant="flat" onPress={addTestimonial}>
-                    <Plus size={16} /> Add
+                    <Plus size={16} /> Thêm
                 </Button>
             </div>
 
@@ -90,22 +90,22 @@ export default function TestimonialsConfigPanel({ config, onUpdate }: Testimonia
 
                     <Input
                         size="sm"
-                        label="Name"
+                        label="Tên"
                         value={testimonial.name}
                         onValueChange={(v) => updateTestimonial(index, "name", v)}
                     />
 
                     <Input
                         size="sm"
-                        label="Role"
+                        label="Vai trò"
                         value={testimonial.role || ""}
                         onValueChange={(v) => updateTestimonial(index, "role", v)}
-                        placeholder="e.g., Verified Buyer"
+                        placeholder="VD: Khách đã mua hàng"
                     />
 
                     <Select
                         size="sm"
-                        label="Rating"
+                        label="Đánh giá"
                         selectedKeys={[String(testimonial.rating)]}
                         onSelectionChange={(keys) => updateTestimonial(index, "rating", Number(Array.from(keys)[0]))}
                     >
@@ -116,7 +116,7 @@ export default function TestimonialsConfigPanel({ config, onUpdate }: Testimonia
 
                     <Textarea
                         size="sm"
-                        label="Comment"
+                        label="Bình luận"
                         value={testimonial.comment}
                         onValueChange={(v) => updateTestimonial(index, "comment", v)}
                         minRows={2}
@@ -124,7 +124,7 @@ export default function TestimonialsConfigPanel({ config, onUpdate }: Testimonia
 
                     <Input
                         size="sm"
-                        label="Avatar URL (optional)"
+                        label="URL Avatar (tùy chọn)"
                         value={testimonial.avatar || ""}
                         onValueChange={(v) => updateTestimonial(index, "avatar", v)}
                         placeholder="https://..."

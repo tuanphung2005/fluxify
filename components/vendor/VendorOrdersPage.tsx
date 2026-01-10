@@ -39,14 +39,14 @@ export default function VendorOrdersPage() {
     return (
         <div className="space-y-6 p-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Orders</h2>
+                <h2 className="text-2xl font-bold">Đơn hàng</h2>
                 <Button
                     variant="flat"
                     startContent={<RefreshCw size={18} />}
                     onPress={fetchOrders}
                     isLoading={isLoading}
                 >
-                    Refresh
+                    Làm mới
                 </Button>
             </div>
 
@@ -55,12 +55,12 @@ export default function VendorOrdersPage() {
                     {orders.length > 0 ? (
                         <Table aria-label="Orders table" removeWrapper>
                             <TableHeader>
-                                <TableColumn>Order ID</TableColumn>
-                                <TableColumn>Date</TableColumn>
-                                <TableColumn>Customer</TableColumn>
-                                <TableColumn>Status</TableColumn>
-                                <TableColumn>Total</TableColumn>
-                                <TableColumn align="end">Actions</TableColumn>
+                                <TableColumn>Mã đơn</TableColumn>
+                                <TableColumn>Ngày đặt</TableColumn>
+                                <TableColumn>Khách hàng</TableColumn>
+                                <TableColumn>Trạng thái</TableColumn>
+                                <TableColumn>Tổng tiền</TableColumn>
+                                <TableColumn align="end">Thao tác</TableColumn>
                             </TableHeader>
                             <TableBody>
                                 {orders.map((order) => (
@@ -107,8 +107,8 @@ export default function VendorOrdersPage() {
                     ) : (
                         <div className="text-center py-12 text-default-500">
                             <ListOrdered size={48} className="mx-auto mb-4 opacity-50" />
-                            <h3 className="text-lg font-medium">No orders found</h3>
-                            <p>When you receive orders, they will appear here.</p>
+                            <h3 className="text-lg font-medium">Chưa có đơn hàng nào</h3>
+                            <p>Khi có đơn hàng mới, chúng sẽ xuất hiện ở đây.</p>
                         </div>
                     )}
                 </CardBody>

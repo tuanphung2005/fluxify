@@ -134,10 +134,10 @@ export default function BuilderCanvas({
                 <div className="max-w-6xl mx-auto">
                     <div className="border-2 border-dashed border-default-300 rounded-lg p-12 text-center">
                         <h3 className="text-xl font-semibold text-default-500 mb-2">
-                            Start Building Your Shop
+                            Bắt đầu xây dựng cửa hàng
                         </h3>
                         <p className="text-default-400">
-                            Select a component from the left to add it to your shop
+                            Chọn một thành phần từ bên trái để thêm vào cửa hàng của bạn
                         </p>
                     </div>
                 </div>
