@@ -12,6 +12,7 @@ const createProductSchema = z.object({
     stock: z.number().int().min(0, "Stock must be non-negative"),
     images: z.array(z.string().url("Each image must be a valid URL")),
     variants: z.any().optional(),
+    variantStock: z.any().optional(),
 });
 
 // GET - List vendor's products

@@ -9,11 +9,14 @@ import bcrypt from "bcryptjs";
 const MAX_QUANTITY_PER_ITEM = 999;
 
 const orderSchema = z.object({
+    fullName: z.string().min(2, "Full name is required"),
+    phoneNumber: z.string().regex(/^0\d{9}$/, "Invalid Vietnamese phone number"),
     email: z.string().email(),
     items: z.array(z.object({
         productId: z.string(),
         quantity: z.number().min(1).max(MAX_QUANTITY_PER_ITEM, `Maximum ${MAX_QUANTITY_PER_ITEM} items per product`),
         price: z.number().min(0),
+        selectedVariant: z.string().optional(),
     })).min(1, "At least one item is required"),
     address: z.object({
         street: z.string().min(1),
@@ -39,7 +42,7 @@ export async function POST(req: NextRequest) {
             return errorResponse(validation.error.issues[0].message, 400);
         }
 
-        const { email, items, address } = validation.data;
+        const { fullName, phoneNumber, email, items, address } = validation.data;
 
         // Start transaction
         const result = await prisma.$transaction(async (tx) => {
@@ -70,30 +73,45 @@ export async function POST(req: NextRequest) {
 
             // 3. Calculate total and verify products exist with sufficient stock
             let total = 0;
-            const stockUpdates: Array<{ productId: string; quantity: number }> = [];
+            const stockUpdates: Array<{ productId: string; quantity: number; selectedVariant?: string }> = [];
 
             for (const item of items) {
                 const product = await tx.product.findUnique({
                     where: { id: item.productId },
-                    select: { id: true, stock: true, name: true, price: true }
+                    select: { id: true, stock: true, variantStock: true, name: true, price: true }
                 });
 
                 if (!product) {
                     throw new Error(`Product not found: ${item.productId}`);
                 }
 
-                if (product.stock < item.quantity) {
-                    throw new Error(`Insufficient stock for product: ${product.name}`);
+                // Check variant stock if variant is selected
+                let availableStock = product.stock;
+                if (item.selectedVariant && product.variantStock) {
+                    const variantStockData = typeof product.variantStock === 'object' 
+                        ? product.variantStock as Record<string, number>
+                        : {};
+                    availableStock = variantStockData[item.selectedVariant] || 0;
+                }
+
+                if (availableStock < item.quantity) {
+                    throw new Error(`Insufficient stock for product: ${product.name}${item.selectedVariant ? ` (${item.selectedVariant})` : ''}`);
                 }
 
                 total += item.price * item.quantity;
-                stockUpdates.push({ productId: item.productId, quantity: item.quantity });
+                stockUpdates.push({ 
+                    productId: item.productId, 
+                    quantity: item.quantity,
+                    selectedVariant: item.selectedVariant 
+                });
             }
 
             // 4. Create order
             const order = await tx.order.create({
                 data: {
                     userId: user.id,
+                    fullName,
+                    phoneNumber,
                     addressId: newAddress.id,
                     total,
                     status: "PROCESSING",
@@ -102,6 +120,7 @@ export async function POST(req: NextRequest) {
                             productId: item.productId,
                             quantity: item.quantity,
                             price: item.price,
+                            selectedVariant: item.selectedVariant,
                         })),
                     },
                 },
@@ -109,14 +128,35 @@ export async function POST(req: NextRequest) {
 
             // 5. Update stock in batch (within transaction for atomicity)
             for (const update of stockUpdates) {
-                await tx.product.update({
+                const product = await tx.product.findUnique({
                     where: { id: update.productId },
-                    data: {
-                        stock: {
-                            decrement: update.quantity,
-                        },
-                    },
+                    select: { variantStock: true }
                 });
+
+                if (update.selectedVariant && product?.variantStock) {
+                    // Update variant stock
+                    const variantStockData = typeof product.variantStock === 'object'
+                        ? product.variantStock as Record<string, number>
+                        : {};
+                    
+                    variantStockData[update.selectedVariant] = 
+                        (variantStockData[update.selectedVariant] || 0) - update.quantity;
+
+                    await tx.product.update({
+                        where: { id: update.productId },
+                        data: { variantStock: variantStockData },
+                    });
+                } else {
+                    // Update general stock
+                    await tx.product.update({
+                        where: { id: update.productId },
+                        data: {
+                            stock: {
+                                decrement: update.quantity,
+                            },
+                        },
+                    });
+                }
             }
 
             return order;

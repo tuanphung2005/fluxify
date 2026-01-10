@@ -176,6 +176,7 @@ model Product {
   stock       Int       @default(0)
   images      String[]
   variants    Json?     // Product variants (e.g., size, color options)
+  variantStock Json?    // Stock per variant combination (e.g., {"Size:M,Color:Red": 10})
   tags        String[]  // Product tags for filtering
   vendorId    String
   categoryId  String?
@@ -214,21 +215,24 @@ model Cart {
 }
 
 model CartItem {
-  id        String @id @default(cuid())
-  cartId    String
-  productId String
-  quantity  Int    @default(1)
+  id              String  @id @default(cuid())
+  cartId          String
+  productId       String
+  quantity        Int     @default(1)
+  selectedVariant String? // Selected variant combination (e.g., "Size:M,Color:Red")
 
   cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@unique([cartId, productId])
+  @@unique([cartId, productId, selectedVariant])
   @@map("cart_items")
 }
 
 model Order {
   id                String      @id @default(cuid())
   userId            String
+  fullName          String?     // Buyer's full name
+  phoneNumber       String?     // Buyer's phone number
   total             Decimal     @db.Decimal(10, 2)
   status            OrderStatus @default(PENDING)
   addressId         String
@@ -252,11 +256,12 @@ model Order {
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  productId String
-  quantity  Int
-  price     Decimal @db.Decimal(10, 2)
+  id              String  @id @default(cuid())
+  orderId         String
+  productId       String
+  quantity        Int
+  price           Decimal @db.Decimal(10, 2)
+  selectedVariant String? // Selected variant combination (e.g., "Size:M,Color:Red")
 
   order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])

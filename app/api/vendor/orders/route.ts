@@ -23,7 +23,14 @@ export async function GET(req: NextRequest) {
                     }
                 }
             },
-            include: {
+            select: {
+                id: true,
+                fullName: true,
+                phoneNumber: true,
+                total: true,
+                status: true,
+                createdAt: true,
+                updatedAt: true,
                 items: {
                     where: {
                         product: {

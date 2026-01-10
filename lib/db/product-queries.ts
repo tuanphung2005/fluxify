@@ -71,6 +71,7 @@ export function createProduct(data: {
     stock: number;
     images: string[];
     variants?: Prisma.InputJsonValue;
+    variantStock?: Prisma.InputJsonValue;
     vendorId: string;
 }) {
     return prisma.product.create({
@@ -81,6 +82,7 @@ export function createProduct(data: {
             stock: data.stock,
             images: data.images,
             variants: data.variants,
+            variantStock: data.variantStock,
             vendorId: data.vendorId,
         },
     });
@@ -95,6 +97,7 @@ export function updateProduct(
         stock?: number;
         images?: string[];
         variants?: Prisma.InputJsonValue;
+        variantStock?: Prisma.InputJsonValue;
     }
 ) {
     return prisma.product.update({

@@ -167,6 +167,8 @@ export default function FeaturedCollectionComponent({
                             vendorId={vendorId}
                             showAddToCart={showAddToCart}
                             onAddToCart={handleAddToCart}
+                            variants={product.variants}
+                            variantStock={(product as any).variantStock}
                         />
                     ))}
                 </div>

@@ -7,6 +7,8 @@ export interface CartItem {
     price: number;
     image?: string;
     quantity: number;
+    selectedVariant?: string; // Variant key like "Size:M,Color:Red"
+    variantDisplay?: string; // Human-readable variant like "Size: M, Color: Red"
 }
 
 interface CartState {
@@ -22,8 +24,8 @@ interface CartState {
 
     // Cart operations (operate on current vendor's cart)
     addItem: (item: Omit<CartItem, 'quantity'>) => void;
-    removeItem: (id: string) => void;
-    updateQuantity: (id: string, quantity: number) => void;
+    removeItem: (id: string, selectedVariant?: string) => void;
+    updateQuantity: (id: string, quantity: number, selectedVariant?: string) => void;
     clearCart: () => void;
 
     // Getters
@@ -54,14 +56,19 @@ export const useCartStore = create<CartState>()(
                 if (!currentVendorId) return;
 
                 const vendorCart = carts[currentVendorId] || [];
-                const existingItem = vendorCart.find((i) => i.id === item.id);
+                
+                // Find existing item with same ID AND variant
+                const existingItem = vendorCart.find(
+                    (i) => i.id === item.id && i.selectedVariant === item.selectedVariant
+                );
 
                 if (existingItem) {
+                    // Increment quantity of existing item
                     set({
                         carts: {
                             ...carts,
                             [currentVendorId]: vendorCart.map((i) =>
-                                i.id === item.id
+                                i.id === item.id && i.selectedVariant === item.selectedVariant
                                     ? { ...i, quantity: i.quantity + 1 }
                                     : i
                             ),
@@ -69,6 +76,7 @@ export const useCartStore = create<CartState>()(
                         isOpen: true,
                     });
                 } else {
+                    // Add new item
                     set({
                         carts: {
                             ...carts,
@@ -79,7 +87,7 @@ export const useCartStore = create<CartState>()(
                 }
             },
 
-            removeItem: (id) => {
+            removeItem: (id, selectedVariant) => {
                 const { currentVendorId, carts } = get();
                 if (!currentVendorId) return;
 
@@ -87,14 +95,16 @@ export const useCartStore = create<CartState>()(
                 set({
                     carts: {
                         ...carts,
-                        [currentVendorId]: vendorCart.filter((i) => i.id !== id),
+                        [currentVendorId]: vendorCart.filter(
+                            (i) => !(i.id === id && i.selectedVariant === selectedVariant)
+                        ),
                     },
                 });
             },
 
-            updateQuantity: (id, quantity) => {
+            updateQuantity: (id, quantity, selectedVariant) => {
                 if (quantity <= 0) {
-                    get().removeItem(id);
+                    get().removeItem(id, selectedVariant);
                     return;
                 }
 
@@ -106,7 +116,9 @@ export const useCartStore = create<CartState>()(
                     carts: {
                         ...carts,
                         [currentVendorId]: vendorCart.map((i) =>
-                            i.id === id ? { ...i, quantity } : i
+                            i.id === id && i.selectedVariant === selectedVariant
+                                ? { ...i, quantity }
+                                : i
                         ),
                     },
                 });
@@ -141,7 +153,7 @@ export const useCartStore = create<CartState>()(
             setIsOpen: (isOpen) => set({ isOpen }),
         }),
         {
-            name: 'fluxify-cart-v2',
+            name: 'fluxify-cart-v3', // Changed version to clear old cart data
         }
     )
 );

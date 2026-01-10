@@ -69,8 +69,8 @@ export default function VendorOrdersPage() {
                                         <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
                                         <TableCell>
                                             <div className="flex flex-col">
-                                                <span>{order.user.name || "Guest"}</span>
-                                                <span className="text-xs text-default-400">{order.user.email}</span>
+                                                <span>{order.fullName || order.user?.name || "Khách"}</span>
+                                                <span className="text-xs text-default-400">{order.phoneNumber || order.user?.email || ""}</span>
                                             </div>
                                         </TableCell>
                                         <TableCell>
@@ -87,7 +87,7 @@ export default function VendorOrdersPage() {
                                                 {order.status}
                                             </Chip>
                                         </TableCell>
-                                        <TableCell>${Number(order.total).toFixed(2)}</TableCell>
+                                        <TableCell>{Number(order.total).toLocaleString('vi-VN')}₫</TableCell>
                                         <TableCell>
                                             <div className="flex justify-end">
                                                 <Button

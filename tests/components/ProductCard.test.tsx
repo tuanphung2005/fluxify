@@ -56,7 +56,7 @@ describe("ProductCard", () => {
         render(<ProductCard {...defaultProps} />);
 
         expect(screen.getByText("Test Product")).toBeInTheDocument();
-        expect(screen.getByText("$29.99")).toBeInTheDocument();
+        expect(screen.getByText("29,99₫")).toBeInTheDocument();
     });
 
     it("should display product image", () => {
@@ -76,25 +76,25 @@ describe("ProductCard", () => {
     it("should show sale badge when isSale is true", () => {
         render(<ProductCard {...defaultProps} isSale={true} />);
 
-        expect(screen.getByText("Sale")).toBeInTheDocument();
+        expect(screen.getByText("Giảm giá")).toBeInTheDocument();
     });
 
     it("should show low stock badge", () => {
         render(<ProductCard {...defaultProps} stockStatus="low_stock" />);
 
-        expect(screen.getByText("Low Stock")).toBeInTheDocument();
+        expect(screen.getByText("Sắp hết")).toBeInTheDocument();
     });
 
     it("should show out of stock overlay", () => {
         render(<ProductCard {...defaultProps} stockStatus="out_of_stock" />);
 
-        expect(screen.getByText("Out of Stock")).toBeInTheDocument();
+        expect(screen.getByText("Hết hàng")).toBeInTheDocument();
     });
 
     it("should show add to cart button when enabled and in stock", () => {
         render(<ProductCard {...defaultProps} showAddToCart={true} />);
 
-        expect(screen.getByText("Add to Cart")).toBeInTheDocument();
+        expect(screen.getByText("Thêm vào giỏ")).toBeInTheDocument();
     });
 
     it("should not show add to cart button when out of stock", () => {
@@ -106,7 +106,7 @@ describe("ProductCard", () => {
             />
         );
 
-        expect(screen.queryByText("Add to Cart")).not.toBeInTheDocument();
+        expect(screen.queryByText("Thêm vào giỏ")).not.toBeInTheDocument();
     });
 
     it("should call onAddToCart when add to cart is clicked", () => {
@@ -119,7 +119,7 @@ describe("ProductCard", () => {
             />
         );
 
-        fireEvent.click(screen.getByText("Add to Cart"));
+        fireEvent.click(screen.getByText("Thêm vào giỏ"));
         expect(onAddToCart).toHaveBeenCalledWith("product-1");
     });
 

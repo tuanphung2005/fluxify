@@ -50,6 +50,7 @@ export default async function ShopPage(props: ShopPageProps) {
         stock: p.stock,
         images: p.images,
         variants: p.variants,
+        variantStock: p.variantStock,
     }));
 
     return (

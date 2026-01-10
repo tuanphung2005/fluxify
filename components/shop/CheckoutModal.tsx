@@ -29,6 +29,8 @@ export default function CheckoutModal({ isOpen, onOpenChange }: CheckoutModalPro
     const [isZoomOpen, setIsZoomOpen] = useState(false);
     const [orderId, setOrderId] = useState<string>("");
     const [formData, setFormData] = useState({
+        fullName: "",
+        phoneNumber: "",
         email: "",
         street: "",
         city: "",
@@ -36,11 +38,29 @@ export default function CheckoutModal({ isOpen, onOpenChange }: CheckoutModalPro
         zipCode: "",
         country: "Việt Nam",
     });
+    const [saveDetails, setSaveDetails] = useState(false);
 
     // Fetch vendor payment info when modal opens
     useEffect(() => {
         if (isOpen && currentVendorId) {
             fetchVendorPayment();
+            
+            // Load saved buyer details from localStorage
+            const saved = localStorage.getItem('fluxify-buyer-details');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    setFormData(prev => ({
+                        ...prev,
+                        fullName: parsed.fullName || "",
+                        phoneNumber: parsed.phoneNumber || "",
+                        email: parsed.email || "",
+                    }));
+                    setSaveDetails(true);
+                } catch (e) {
+                    console.error("Failed to load saved details", e);
+                }
+            }
         }
     }, [isOpen, currentVendorId]);
 
@@ -59,6 +79,19 @@ export default function CheckoutModal({ isOpen, onOpenChange }: CheckoutModalPro
     };
 
     const handleProceedToPayment = async () => {
+        // Full name validation
+        if (!formData.fullName || formData.fullName.trim().length < 2) {
+            toast.error("Vui lòng nhập họ tên đầy đủ");
+            return;
+        }
+
+        // Phone validation (Vietnamese format)
+        const phoneRegex = /^0\d{9}$/;
+        if (!formData.phoneNumber || !phoneRegex.test(formData.phoneNumber.replace(/\s/g, ''))) {
+            toast.error("Vui lòng nhập số điện thoại hợp lệ (10 số, bắt đầu bằng 0)");
+            return;
+        }
+
         // Email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!formData.email || !emailRegex.test(formData.email)) {
@@ -71,14 +104,28 @@ export default function CheckoutModal({ isOpen, onOpenChange }: CheckoutModalPro
             return;
         }
 
+        // Save details if checkbox is checked
+        if (saveDetails) {
+            localStorage.setItem('fluxify-buyer-details', JSON.stringify({
+                fullName: formData.fullName,
+                phoneNumber: formData.phoneNumber,
+                email: formData.email,
+            }));
+        } else {
+            localStorage.removeItem('fluxify-buyer-details');
+        }
+
         setIsLoading(true);
         try {
             const result = await api.post("/api/orders", {
+                fullName: formData.fullName,
+                phoneNumber: formData.phoneNumber,
                 email: formData.email,
                 items: items.map(item => ({
                     productId: item.id,
                     quantity: item.quantity,
-                    price: item.price
+                    price: item.price,
+                    selectedVariant: item.selectedVariant,
                 })),
                 address: {
                     street: formData.street,
@@ -110,14 +157,18 @@ export default function CheckoutModal({ isOpen, onOpenChange }: CheckoutModalPro
         setTimeout(() => {
             setStep('details');
             setOrderId("");
-            setFormData({
-                email: "",
-                street: "",
-                city: "",
-                state: "",
-                zipCode: "",
-                country: "Việt Nam",
-            });
+            if (!saveDetails) {
+                setFormData({
+                    fullName: "",
+                    phoneNumber: "",
+                    email: "",
+                    street: "",
+                    city: "",
+                    state: "",
+                    zipCode: "",
+                    country: "Việt Nam",
+                });
+            }
         }, 300);
     };
 
@@ -132,7 +183,7 @@ export default function CheckoutModal({ isOpen, onOpenChange }: CheckoutModalPro
         bankId: vendorPayment.bankId!,
         accountNo: vendorPayment.bankAccount!,
         accountName: vendorPayment.bankAccountName!,
-        amount: Math.round(total() * 1000), // Convert to VND (assuming price is in USD*1000 or already VND)
+        amount: Math.max(1000, Math.round(total())), // Ensure minimum 1000 VND
         description: `DH${orderId}`,
     }) : null;
 
@@ -164,6 +215,21 @@ export default function CheckoutModal({ isOpen, onOpenChange }: CheckoutModalPro
                                             )}
                                         </div>
                                         <div className="space-y-2">
+                                            <Input
+                                                label="Họ và tên"
+                                                placeholder="Nguyễn Văn A"
+                                                value={formData.fullName}
+                                                onValueChange={(v) => handleChange('fullName', v)}
+                                                isRequired
+                                            />
+                                            <Input
+                                                label="Số điện thoại"
+                                                placeholder="0987654321"
+                                                value={formData.phoneNumber}
+                                                onValueChange={(v) => handleChange('phoneNumber', v)}
+                                                isRequired
+                                                type="tel"
+                                            />
                                             <Input
                                                 label="Email"
                                                 placeholder="email@example.com"
@@ -203,6 +269,19 @@ export default function CheckoutModal({ isOpen, onOpenChange }: CheckoutModalPro
                                                 </p>
                                             </div>
                                         )}
+
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                id="save-details"
+                                                checked={saveDetails}
+                                                onChange={(e) => setSaveDetails(e.target.checked)}
+                                                className="w-4 h-4 text-primary bg-default-100 border-default-300 rounded focus:ring-primary"
+                                            />
+                                            <label htmlFor="save-details" className="text-sm text-default-600 cursor-pointer">
+                                                Lưu thông tin cho lần mua sau
+                                            </label>
+                                        </div>
                                     </div>
                                 )}
 
