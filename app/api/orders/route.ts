@@ -126,28 +126,24 @@ export async function POST(req: NextRequest) {
                 },
             });
 
-            // 5. Update stock in batch (within transaction for atomicity)
+            // 5. Update stock atomically (prevents race conditions)
             for (const update of stockUpdates) {
-                const product = await tx.product.findUnique({
-                    where: { id: update.productId },
-                    select: { variantStock: true }
-                });
-
-                if (update.selectedVariant && product?.variantStock) {
-                    // Update variant stock
-                    const variantStockData = typeof product.variantStock === 'object'
-                        ? product.variantStock as Record<string, number>
-                        : {};
-                    
-                    variantStockData[update.selectedVariant] = 
-                        (variantStockData[update.selectedVariant] || 0) - update.quantity;
-
-                    await tx.product.update({
-                        where: { id: update.productId },
-                        data: { variantStock: variantStockData },
-                    });
+                if (update.selectedVariant) {
+                    // Use raw SQL for atomic variant stock update with PostgreSQL jsonb_set
+                    // This atomically decrements the variant stock without read-modify-write race
+                    await tx.$executeRaw`
+                        UPDATE "Product"
+                        SET "variantStock" = jsonb_set(
+                            COALESCE("variantStock", '{}'::jsonb),
+                            ${[update.selectedVariant]}::text[],
+                            to_jsonb(
+                                COALESCE(("variantStock"->${update.selectedVariant})::int, 0) - ${update.quantity}
+                            )
+                        )
+                        WHERE id = ${update.productId}
+                    `;
                 } else {
-                    // Update general stock
+                    // General stock uses Prisma's atomic decrement (already race-safe)
                     await tx.product.update({
                         where: { id: update.productId },
                         data: {

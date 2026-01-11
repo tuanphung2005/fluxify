@@ -105,36 +105,33 @@ export async function PATCH(req: NextRequest) {
         const updatedOrder = await prisma.$transaction(async (tx) => {
             // Restore stock if order is being cancelled (and wasn't already cancelled)
             if (status === "CANCELLED" && oldStatus !== "CANCELLED") {
-                // Fetch order items with product info
+                // Fetch order items
                 const orderItems = await tx.orderItem.findMany({
                     where: { orderId },
                     select: {
                         productId: true,
                         quantity: true,
                         selectedVariant: true,
-                        product: {
-                            select: { variantStock: true }
-                        }
                     }
                 });
 
-                // Restore stock for each item
+                // Restore stock atomically for each item
                 for (const item of orderItems) {
-                    if (item.selectedVariant && item.product.variantStock) {
-                        // Restore variant stock
-                        const variantStockData = typeof item.product.variantStock === 'object'
-                            ? item.product.variantStock as Record<string, number>
-                            : {};
-                        
-                        variantStockData[item.selectedVariant] = 
-                            (variantStockData[item.selectedVariant] || 0) + item.quantity;
-
-                        await tx.product.update({
-                            where: { id: item.productId },
-                            data: { variantStock: variantStockData },
-                        });
+                    if (item.selectedVariant) {
+                        // Use raw SQL for atomic variant stock restoration with PostgreSQL jsonb_set
+                        await tx.$executeRaw`
+                            UPDATE "Product"
+                            SET "variantStock" = jsonb_set(
+                                COALESCE("variantStock", '{}'::jsonb),
+                                ${[item.selectedVariant]}::text[],
+                                to_jsonb(
+                                    COALESCE(("variantStock"->${item.selectedVariant})::int, 0) + ${item.quantity}
+                                )
+                            )
+                            WHERE id = ${item.productId}
+                        `;
                     } else {
-                        // Restore general stock
+                        // General stock uses Prisma's atomic increment (already race-safe)
                         await tx.product.update({
                             where: { id: item.productId },
                             data: {
