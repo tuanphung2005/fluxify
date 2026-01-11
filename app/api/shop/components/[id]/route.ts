@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedVendor, verifyComponentOwnership } from "@/lib/api/auth-helpers";
 import { errorResponse, successResponse, isErrorResult } from "@/lib/api/responses";
+import { validateComponentConfig, sanitizeComponentConfig } from "@/lib/shop/component-config";
 
 interface RouteContext {
     params: Promise<{ id: string }>;
@@ -20,16 +21,23 @@ export async function PUT(req: NextRequest, context: RouteContext) {
         const body = await req.json();
         const { config } = body;
 
-        // Verify ownership
+        // Verify ownership and get component type
         const ownershipCheck = await verifyComponentOwnership(id, auth.vendor.id);
         if (isErrorResult(ownershipCheck)) {
             return errorResponse(ownershipCheck.error, ownershipCheck.status);
         }
 
-        // Update component
+        // Validate and sanitize config (same as POST endpoint)
+        const configValidation = validateComponentConfig(ownershipCheck.component.type, config);
+        if (!configValidation.success) {
+            return errorResponse(`Invalid config: ${configValidation.error}`, 400);
+        }
+        const sanitizedConfig = sanitizeComponentConfig(ownershipCheck.component.type, config);
+
+        // Update component with validated and sanitized config
         const updatedComponent = await prisma.shopComponent.update({
             where: { id },
-            data: { config: config || {} },
+            data: { config: sanitizedConfig || {} },
         });
 
         return successResponse(updatedComponent);
