@@ -71,15 +71,22 @@ export async function POST(req: NextRequest) {
                 },
             });
 
-            // 3. Calculate total and verify products exist with sufficient stock
+            // 3. Batch fetch all products to avoid N+1 queries
+            const productIds = items.map(item => item.productId);
+            const products = await tx.product.findMany({
+                where: { id: { in: productIds } },
+                select: { id: true, stock: true, variantStock: true, name: true, price: true }
+            });
+            
+            // Create lookup map for O(1) access
+            const productMap = new Map(products.map(p => [p.id, p]));
+
+            // 4. Calculate total and verify products exist with sufficient stock
             let total = 0;
             const stockUpdates: Array<{ productId: string; quantity: number; selectedVariant?: string }> = [];
 
             for (const item of items) {
-                const product = await tx.product.findUnique({
-                    where: { id: item.productId },
-                    select: { id: true, stock: true, variantStock: true, name: true, price: true }
-                });
+                const product = productMap.get(item.productId);
 
                 if (!product) {
                     throw new Error(`Product not found: ${item.productId}`);
