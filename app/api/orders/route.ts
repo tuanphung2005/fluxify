@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { errorResponse, successResponse } from "@/lib/api/responses";
 import { checkRateLimit, getClientIdentifier, rateLimitPresets, rateLimitExceededResponse } from "@/lib/api/rate-limit";
+import { getVariantStockForKey } from "@/lib/variant-utils";
 import { z } from "zod";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
@@ -93,13 +94,9 @@ export async function POST(req: NextRequest) {
                 }
 
                 // Check variant stock if variant is selected
-                let availableStock = product.stock;
-                if (item.selectedVariant && product.variantStock) {
-                    const variantStockData = typeof product.variantStock === 'object' 
-                        ? product.variantStock as Record<string, number>
-                        : {};
-                    availableStock = variantStockData[item.selectedVariant] || 0;
-                }
+                const availableStock = item.selectedVariant 
+                    ? getVariantStockForKey(product.variantStock, item.selectedVariant)
+                    : product.stock;
 
                 if (availableStock < item.quantity) {
                     throw new Error(`Insufficient stock for product: ${product.name}${item.selectedVariant ? ` (${item.selectedVariant})` : ''}`);

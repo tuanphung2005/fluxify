@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { errorResponse, successResponse } from "@/lib/api/responses";
+import { checkRateLimit, getClientIdentifier, rateLimitPresets, rateLimitExceededResponse } from "@/lib/api/rate-limit";
 import { NextRequest } from "next/server";
 
 /**
@@ -127,6 +128,12 @@ export async function GET(request: NextRequest) {
  * Start a new conversation with a vendor or get existing one
  */
 export async function POST(request: NextRequest) {
+    // Rate limit conversation creation
+    const rateLimit = checkRateLimit(getClientIdentifier(request), rateLimitPresets.write);
+    if (!rateLimit.allowed) {
+        return rateLimitExceededResponse(rateLimit.resetTime);
+    }
+
     try {
         const session = await auth();
 

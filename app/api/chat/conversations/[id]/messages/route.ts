@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { errorResponse, successResponse } from "@/lib/api/responses";
+import { checkRateLimit, getClientIdentifier, rateLimitPresets, rateLimitExceededResponse } from "@/lib/api/rate-limit";
 import { NextRequest } from "next/server";
 
 interface RouteParams {
@@ -50,7 +51,7 @@ export async function GET(request: NextRequest, props: RouteParams) {
         // Parse pagination params
         const searchParams = request.nextUrl.searchParams;
         const cursor = searchParams.get("cursor");
-        const limit = parseInt(searchParams.get("limit") || "50");
+        const limit = Math.min(parseInt(searchParams.get("limit") || "50"), 100);
 
         // Fetch messages
         const messages = await prisma.chatMessage.findMany({
@@ -95,6 +96,12 @@ export async function GET(request: NextRequest, props: RouteParams) {
  * Send a new message
  */
 export async function POST(request: NextRequest, props: RouteParams) {
+    // Rate limit message sending
+    const rateLimit = checkRateLimit(getClientIdentifier(request), rateLimitPresets.write);
+    if (!rateLimit.allowed) {
+        return rateLimitExceededResponse(rateLimit.resetTime);
+    }
+
     try {
         const session = await auth();
 
