@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { isErrorResult } from "./responses";
 
 export interface AuthResult {
     vendor: {
@@ -115,4 +116,61 @@ export async function verifyComponentOwnership(
     }
 
     return { component };
+}
+
+export interface UserAuthResult {
+    user: {
+        id: string;
+        email: string;
+        name: string | null;
+        role: string;
+    };
+}
+
+/**
+ * Authenticates the current session and retrieves the full user from database
+ * Use this for routes that need authenticated user data but not vendor-specific
+ * @returns UserAuthResult on success, AuthError on failure
+ */
+export async function getAuthenticatedUser(): Promise<UserAuthResult | AuthError> {
+    const session = await auth();
+
+    if (!session?.user?.email) {
+        return { error: "Unauthorized", status: 401 };
+    }
+
+    const user = await prisma.user.findUnique({
+        where: { email: session.user.email },
+    });
+
+    if (!user) {
+        return { error: "User not found", status: 404 };
+    }
+
+    return {
+        user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+        },
+    };
+}
+
+/**
+ * Requires admin role for the current session
+ * @returns UserAuthResult on success, AuthError on failure
+ */
+export async function requireAdmin(): Promise<UserAuthResult | AuthError> {
+    const result = await getAuthenticatedUser();
+    
+    if (isErrorResult(result)) {
+        return result;
+    }
+
+    if (result.user.role !== "ADMIN") {
+        return { error: "Admin access required", status: 403 };
+    }
+
+    return result;
 }

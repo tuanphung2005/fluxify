@@ -83,7 +83,6 @@ export async function GET(request: NextRequest, props: RouteParams) {
             role: isVendor ? "vendor" : "user",
         });
     } catch (error) {
-        console.error("Failed to fetch conversation:", error);
         return errorResponse("Không thể lấy cuộc trò chuyện", 500, error);
     }
 }

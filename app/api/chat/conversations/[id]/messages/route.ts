@@ -86,7 +86,6 @@ export async function GET(request: NextRequest, props: RouteParams) {
             nextCursor: hasMore ? messages[messages.length - 1]?.id : null,
         });
     } catch (error) {
-        console.error("Failed to fetch messages:", error);
         return errorResponse("Không thể lấy tin nhắn", 500, error);
     }
 }
@@ -160,7 +159,6 @@ export async function POST(request: NextRequest, props: RouteParams) {
 
         return successResponse({ message }, 201);
     } catch (error) {
-        console.error("Failed to send message:", error);
         return errorResponse("Không thể gửi tin nhắn", 500, error);
     }
 }

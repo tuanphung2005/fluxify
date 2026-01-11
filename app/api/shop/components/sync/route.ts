@@ -96,7 +96,6 @@ export async function POST(req: NextRequest) {
         return successResponse(finalComponents);
 
     } catch (error) {
-        console.error("Sync error:", error);
         return errorResponse("Failed to sync components", 500, error);
     }
 }

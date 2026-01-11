@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
-import { successResponse, errorResponse } from "@/lib/api/responses";
-import { auth } from "@/lib/auth";
+import { successResponse, errorResponse, isErrorResult } from "@/lib/api/responses";
+import { requireAdmin } from "@/lib/api/auth-helpers";
 import {
     getCategoryById,
     updateCategory,
@@ -39,9 +39,9 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 // PUT - Update category (Admin only)
 export async function PUT(req: NextRequest, { params }: RouteParams) {
     try {
-        const session = await auth();
-        if (!session?.user || session.user.role !== "ADMIN") {
-            return errorResponse("Unauthorized", 401);
+        const auth = await requireAdmin();
+        if (isErrorResult(auth)) {
+            return errorResponse(auth.error, auth.status);
         }
 
         const { id } = await params;
@@ -62,9 +62,9 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
 // DELETE - Delete category (Admin only)
 export async function DELETE(req: NextRequest, { params }: RouteParams) {
     try {
-        const session = await auth();
-        if (!session?.user || session.user.role !== "ADMIN") {
-            return errorResponse("Unauthorized", 401);
+        const auth = await requireAdmin();
+        if (isErrorResult(auth)) {
+            return errorResponse(auth.error, auth.status);
         }
 
         const { id } = await params;

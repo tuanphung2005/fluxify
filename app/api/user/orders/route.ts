@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { errorResponse, successResponse } from "@/lib/api/responses";
+import { errorResponse, successResponse, isErrorResult } from "@/lib/api/responses";
+import { getAuthenticatedUser } from "@/lib/api/auth-helpers";
 import { z } from "zod";
 
 /**
@@ -10,22 +10,13 @@ import { z } from "zod";
  */
 export async function GET() {
     try {
-        const session = await auth();
-
-        if (!session?.user?.email) {
-            return errorResponse("Unauthorized", 401);
-        }
-
-        const user = await prisma.user.findUnique({
-            where: { email: session.user.email },
-        });
-
-        if (!user) {
-            return errorResponse("User not found", 404);
+        const auth = await getAuthenticatedUser();
+        if (isErrorResult(auth)) {
+            return errorResponse(auth.error, auth.status);
         }
 
         const orders = await prisma.order.findMany({
-            where: { userId: user.id },
+            where: { userId: auth.user.id },
             include: {
                 items: {
                     include: {
@@ -46,7 +37,6 @@ export async function GET() {
 
         return successResponse(orders);
     } catch (error) {
-        console.error("Failed to fetch user orders:", error);
         return errorResponse("Failed to fetch orders", 500, error);
     }
 }
@@ -61,10 +51,9 @@ const cancelOrderSchema = z.object({
  */
 export async function PATCH(req: NextRequest) {
     try {
-        const session = await auth();
-
-        if (!session?.user?.email) {
-            return errorResponse("Unauthorized", 401);
+        const auth = await getAuthenticatedUser();
+        if (isErrorResult(auth)) {
+            return errorResponse(auth.error, auth.status);
         }
 
         const body = await req.json();
@@ -76,14 +65,6 @@ export async function PATCH(req: NextRequest) {
 
         const { orderId } = validation.data;
 
-        const user = await prisma.user.findUnique({
-            where: { email: session.user.email },
-        });
-
-        if (!user) {
-            return errorResponse("User not found", 404);
-        }
-
         // Find the order and verify ownership
         const order = await prisma.order.findUnique({
             where: { id: orderId },
@@ -94,7 +75,7 @@ export async function PATCH(req: NextRequest) {
             return errorResponse("Order not found", 404);
         }
 
-        if (order.userId !== user.id) {
+        if (order.userId !== auth.user.id) {
             return errorResponse("Unauthorized", 403);
         }
 
@@ -106,18 +87,34 @@ export async function PATCH(req: NextRequest) {
             );
         }
 
-        // Cancel the order and restore stock
+        // Cancel the order and restore stock atomically
         const updatedOrder = await prisma.$transaction(async (tx) => {
             // Restore stock for each item
             for (const item of order.items) {
-                await tx.product.update({
-                    where: { id: item.productId },
-                    data: {
-                        stock: {
-                            increment: item.quantity,
+                if (item.selectedVariant) {
+                    // Use raw SQL for atomic variant stock restoration
+                    await tx.$executeRaw`
+                        UPDATE "Product"
+                        SET "variantStock" = jsonb_set(
+                            COALESCE("variantStock", '{}'::jsonb),
+                            ${[item.selectedVariant]}::text[],
+                            to_jsonb(
+                                COALESCE(("variantStock"->${item.selectedVariant})::int, 0) + ${item.quantity}
+                            )
+                        )
+                        WHERE id = ${item.productId}
+                    `;
+                } else {
+                    // General stock uses Prisma's atomic increment
+                    await tx.product.update({
+                        where: { id: item.productId },
+                        data: {
+                            stock: {
+                                increment: item.quantity,
+                            },
                         },
-                    },
-                });
+                    });
+                }
             }
 
             // Update order status
@@ -144,7 +141,6 @@ export async function PATCH(req: NextRequest) {
 
         return successResponse(updatedOrder);
     } catch (error) {
-        console.error("Failed to cancel order:", error);
         return errorResponse("Failed to cancel order", 500, error);
     }
 }

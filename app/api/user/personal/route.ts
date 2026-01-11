@@ -1,6 +1,6 @@
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { errorResponse, successResponse } from "@/lib/api/responses";
+import { errorResponse, successResponse, isErrorResult } from "@/lib/api/responses";
+import { getAuthenticatedUser } from "@/lib/api/auth-helpers";
 
 /**
  * GET /api/user/personal
@@ -9,25 +9,22 @@ import { errorResponse, successResponse } from "@/lib/api/responses";
  */
 export async function GET() {
     try {
-        const session = await auth();
-
-        if (!session?.user?.email) {
-            return errorResponse("Chưa xác thực", 401);
-        }
-
-        const user = await prisma.user.findUnique({
-            where: { email: session.user.email },
-        });
-
-        if (!user) {
-            return errorResponse("Không tìm thấy người dùng", 404);
+        const auth = await getAuthenticatedUser();
+        if (isErrorResult(auth)) {
+            return errorResponse(auth.error, auth.status);
         }
 
         // Fetch all data in parallel
-        const [orders, favoriteShops, stats] = await Promise.all([
+        const [user, orders, favoriteShops, stats] = await Promise.all([
+            // Get full user data
+            prisma.user.findUnique({
+                where: { id: auth.user.id },
+                select: { name: true, email: true, createdAt: true }
+            }),
+            
             // Orders with items and address
             prisma.order.findMany({
-                where: { userId: user.id },
+                where: { userId: auth.user.id },
                 include: {
                     items: {
                         include: {
@@ -48,7 +45,7 @@ export async function GET() {
 
             // Favorite shops
             prisma.favoriteShop.findMany({
-                where: { userId: user.id },
+                where: { userId: auth.user.id },
                 include: {
                     vendor: {
                         select: {
@@ -68,7 +65,7 @@ export async function GET() {
             // Calculate stats
             prisma.order.aggregate({
                 where: {
-                    userId: user.id,
+                    userId: auth.user.id,
                     status: { not: "CANCELLED" },
                 },
                 _count: { id: true },
@@ -78,9 +75,9 @@ export async function GET() {
 
         return successResponse({
             user: {
-                name: user.name,
-                email: user.email,
-                memberSince: user.createdAt,
+                name: user?.name,
+                email: user?.email,
+                memberSince: user?.createdAt,
             },
             stats: {
                 totalOrders: stats._count.id || 0,
@@ -100,7 +97,7 @@ export async function GET() {
             })),
         });
     } catch (error) {
-        console.error("Failed to fetch personal data:", error);
         return errorResponse("Không thể lấy dữ liệu cá nhân", 500, error);
     }
 }
+

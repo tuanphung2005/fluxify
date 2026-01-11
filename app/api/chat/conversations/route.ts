@@ -118,7 +118,6 @@ export async function GET(request: NextRequest) {
             });
         }
     } catch (error) {
-        console.error("Failed to fetch conversations:", error);
         return errorResponse("Không thể lấy danh sách cuộc trò chuyện", 500, error);
     }
 }
@@ -209,7 +208,6 @@ export async function POST(request: NextRequest) {
             },
         });
     } catch (error) {
-        console.error("Failed to start conversation:", error);
         return errorResponse("Không thể bắt đầu cuộc trò chuyện", 500, error);
     }
 }

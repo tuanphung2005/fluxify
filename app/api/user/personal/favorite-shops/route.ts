@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { errorResponse, successResponse } from "@/lib/api/responses";
+import { errorResponse, successResponse, isErrorResult } from "@/lib/api/responses";
+import { getAuthenticatedUser } from "@/lib/api/auth-helpers";
 import { z } from "zod";
 
 const favoriteShopSchema = z.object({
@@ -14,10 +14,9 @@ const favoriteShopSchema = z.object({
  */
 export async function POST(req: NextRequest) {
     try {
-        const session = await auth();
-
-        if (!session?.user?.email) {
-            return errorResponse("Unauthorized", 401);
+        const auth = await getAuthenticatedUser();
+        if (isErrorResult(auth)) {
+            return errorResponse(auth.error, auth.status);
         }
 
         const body = await req.json();
@@ -28,14 +27,6 @@ export async function POST(req: NextRequest) {
         }
 
         const { vendorId } = validation.data;
-
-        const user = await prisma.user.findUnique({
-            where: { email: session.user.email },
-        });
-
-        if (!user) {
-            return errorResponse("User not found", 404);
-        }
 
         // Check if vendor exists
         const vendor = await prisma.vendorProfile.findUnique({
@@ -50,12 +41,12 @@ export async function POST(req: NextRequest) {
         const favoriteShop = await prisma.favoriteShop.upsert({
             where: {
                 userId_vendorId: {
-                    userId: user.id,
+                    userId: auth.user.id,
                     vendorId: vendorId,
                 },
             },
             create: {
-                userId: user.id,
+                userId: auth.user.id,
                 vendorId: vendorId,
             },
             update: {},
@@ -73,7 +64,6 @@ export async function POST(req: NextRequest) {
 
         return successResponse(favoriteShop, 201);
     } catch (error) {
-        console.error("Failed to add favorite shop:", error);
         return errorResponse("Failed to add favorite shop", 500, error);
     }
 }
@@ -84,10 +74,9 @@ export async function POST(req: NextRequest) {
  */
 export async function DELETE(req: NextRequest) {
     try {
-        const session = await auth();
-
-        if (!session?.user?.email) {
-            return errorResponse("Unauthorized", 401);
+        const auth = await getAuthenticatedUser();
+        if (isErrorResult(auth)) {
+            return errorResponse(auth.error, auth.status);
         }
 
         const body = await req.json();
@@ -99,25 +88,16 @@ export async function DELETE(req: NextRequest) {
 
         const { vendorId } = validation.data;
 
-        const user = await prisma.user.findUnique({
-            where: { email: session.user.email },
-        });
-
-        if (!user) {
-            return errorResponse("User not found", 404);
-        }
-
         // Remove from favorites
         await prisma.favoriteShop.deleteMany({
             where: {
-                userId: user.id,
+                userId: auth.user.id,
                 vendorId: vendorId,
             },
         });
 
         return successResponse({ message: "Shop removed from favorites" });
     } catch (error) {
-        console.error("Failed to remove favorite shop:", error);
         return errorResponse("Failed to remove favorite shop", 500, error);
     }
 }
