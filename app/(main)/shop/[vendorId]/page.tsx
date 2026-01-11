@@ -3,9 +3,11 @@ import { prisma } from "@/lib/prisma";
 import ShopComponentWrapper from "@/components/shop/ShopComponentWrapper";
 import CartDrawer from "@/components/shop/CartDrawer";
 import CartButton from "@/components/shop/CartButton";
+import ChatButton from "@/components/shop/ChatButton";
 import FavoriteShopButton from "@/components/shop/FavoriteShopButton";
 import ShopProductModalManager from "@/components/shop/ShopProductModalManager";
 import VendorCartProvider from "@/components/shop/VendorCartProvider";
+
 
 interface ShopPageProps {
     params: Promise<{
@@ -83,8 +85,9 @@ export default async function ShopPage(props: ShopPageProps) {
 
                 <ShopProductModalManager products={products} vendorId={vendorId} vendorName={vendorName} />
 
-                {/* Floating Action Buttons - Favorite and Cart */}
+                {/* Floating Action Buttons - Chat, Favorite and Cart */}
                 <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+                    <ChatButton vendorId={vendorId} />
                     <FavoriteShopButton vendorId={vendorId} />
                     <CartButton />
                 </div>
