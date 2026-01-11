@@ -9,8 +9,6 @@ import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 
 
-import { Heart, Space } from "lucide-react";
-
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
@@ -35,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning lang="en">
+    <html suppressHydrationWarning lang="vi">
       <head />
       <body
         className={clsx(

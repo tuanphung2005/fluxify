@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
-import { successResponse, errorResponse } from "@/lib/api/responses";
-import { auth } from "@/lib/auth";
+import { successResponse, errorResponse, isErrorResult } from "@/lib/api/responses";
+import { requireAdmin } from "@/lib/api/auth-helpers";
 import { z } from "zod";
 import {
     getAllCategories,
@@ -38,9 +38,9 @@ export async function GET(req: NextRequest) {
 // POST - Create a new category (Admin only)
 export async function POST(req: NextRequest) {
     try {
-        const session = await auth();
-        if (!session?.user || session.user.role !== "ADMIN") {
-            return errorResponse("Unauthorized", 401);
+        const auth = await requireAdmin();
+        if (isErrorResult(auth)) {
+            return errorResponse(auth.error, auth.status);
         }
 
         const body = await req.json();

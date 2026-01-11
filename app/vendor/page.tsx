@@ -47,7 +47,7 @@ export default async function VendorPage() {
 
   // 4. Prepare Chart Data (Monthly) - cancelled orders already excluded
   const chartDataMap = new Map<string, number>();
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const months = ["Thg 1", "Thg 2", "Thg 3", "Thg 4", "Thg 5", "Thg 6", "Thg 7", "Thg 8", "Thg 9", "Thg 10", "Thg 11", "Thg 12"];
 
   // Initialize last 7 months
   const today = new Date();

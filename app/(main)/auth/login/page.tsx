@@ -29,16 +29,16 @@ export default function LoginPage() {
       if (result?.error) {
         // Check for account deactivation error (custom error code from auth.ts)
         if (result.code === "account_deactivated") {
-          setError("Your account has been disabled. Please contact support for assistance.");
+          setError("Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ hỗ trợ.");
         } else {
-          setError("Invalid email or password");
+          setError("Email hoặc mật khẩu không chính xác");
         }
       } else {
         router.push("/");
         router.refresh();
       }
     } catch (error) {
-      setError("Something went wrong. Please try again.");
+      setError("Đã xảy ra lỗi. Vui lòng thử lại.");
     } finally {
       setIsLoading(false);
     }
@@ -48,8 +48,8 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
       <Card className="w-full max-w-md">
         <CardHeader className="flex flex-col gap-1 items-center">
-          <h1 className="text-2xl font-bold">Welcome Back</h1>
-          <p className="text-sm text-default-500">Sign in to your account</p>
+          <h1 className="text-2xl font-bold">Chào mừng trở lại</h1>
+          <p className="text-sm text-default-500">Đăng nhập vào tài khoản của bạn</p>
         </CardHeader>
         <CardBody>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -58,14 +58,14 @@ export default function LoginPage() {
               label="Email"
               name="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="Nhập email của bạn"
               variant="bordered"
             />
             <Input
               isRequired
-              label="Password"
+              label="Mật khẩu"
               name="password"
-              placeholder="Enter your password"
+              placeholder="Nhập mật khẩu"
               variant="bordered"
               type="password"
             />
@@ -80,13 +80,13 @@ export default function LoginPage() {
               isLoading={isLoading}
               className="w-full"
             >
-              Sign In
+              Đăng nhập
             </Button>
 
             <div className="text-center text-sm">
-              Don't have an account?{" "}
+              Chưa có tài khoản?{" "}
               <Link href="/auth/register" size="sm">
-                Sign up
+                Đăng ký
               </Link>
             </div>
           </form>

@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/api/middleware";
 import { errorResponse, successResponse } from "@/lib/api/responses";
+import { normalizePagination } from "@/lib/db/product-queries";
 
 export async function GET(req: NextRequest) {
     const auth = await requireAdmin(req);
@@ -9,10 +10,11 @@ export async function GET(req: NextRequest) {
 
     try {
         const { searchParams } = new URL(req.url);
-        const page = parseInt(searchParams.get("page") || "1");
-        const limit = Math.min(parseInt(searchParams.get("limit") || "10"), 100);
+        const { page, limit, skip } = normalizePagination({
+            page: parseInt(searchParams.get("page") || "1"),
+            limit: parseInt(searchParams.get("limit") || "10"),
+        });
         const search = searchParams.get("search") || "";
-        const skip = (page - 1) * limit;
 
         const where: Record<string, unknown> = {};
         if (search) {

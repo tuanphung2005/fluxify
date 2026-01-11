@@ -48,9 +48,9 @@ export default function ConfigurationPanel({
     if (!componentType || !localConfig) {
         return (
             <div className="w-80 bg-content1 border-l border-divider p-4">
-                <h3 className="text-lg font-bold mb-4">configuration</h3>
+                <h3 className="text-lg font-bold mb-4">cấu hình</h3>
                 <p className="text-sm text-default-500">
-                    select a component to configure
+                    chọn một thành phần để cấu hình
                 </p>
             </div>
         );
@@ -61,9 +61,9 @@ export default function ConfigurationPanel({
     if (!meta) {
         return (
             <div className="w-80 bg-content1 border-l border-divider p-4">
-                <h3 className="text-lg font-bold mb-4">configuration</h3>
+                <h3 className="text-lg font-bold mb-4">cấu hình</h3>
                 <p className="text-sm text-default-500">
-                    Unknown component type: {componentType}
+                    Loại thành phần không xác định: {componentType}
                 </p>
             </div>
         );
@@ -73,7 +73,7 @@ export default function ConfigurationPanel({
 
     return (
         <div className="w-80 bg-content1 border-l border-divider p-4 overflow-y-auto">
-            <h3 className="text-lg font-bold mb-4">configuration</h3>
+            <h3 className="text-lg font-bold mb-4">cấu hình</h3>
             <div className="space-y-4">
                 <Suspense
                     fallback={

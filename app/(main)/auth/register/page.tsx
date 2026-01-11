@@ -47,7 +47,7 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Something went wrong");
+        setError(data.error || "Đã xảy ra lỗi");
         setIsLoading(false);
         return;
       }
@@ -60,13 +60,13 @@ export default function RegisterPage() {
       });
 
       if (result?.error) {
-        setError("Account created but sign in failed. Please try logging in.");
+        setError("Tài khoản đã tạo thành công nhưng đăng nhập thất bại. Vui lòng thử đăng nhập lại.");
       } else {
         router.push("/");
         router.refresh();
       }
     } catch (error) {
-      setError("Something went wrong. Please try again.");
+      setError("Đã xảy ra lỗi. Vui lòng thử lại.");
     } finally {
       setIsLoading(false);
     }
@@ -76,19 +76,19 @@ export default function RegisterPage() {
     <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
       <Card className="w-full max-w-md">
         <CardHeader className="flex flex-col gap-1 items-center">
-          <h1 className="text-2xl font-bold">Create Account</h1>
+          <h1 className="text-2xl font-bold">Tạo tài khoản</h1>
           <p className="text-sm text-default-500">
-            Sign up to start shopping or selling
+            Đăng ký để mua sắm hoặc bán hàng
           </p>
         </CardHeader>
         <CardBody>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <Input
               isRequired
-              label="Name"
+              label="Họ và tên"
               name="name"
               type="text"
-              placeholder="Enter your name"
+              placeholder="Nhập tên của bạn"
               variant="bordered"
             />
             <Input
@@ -96,26 +96,26 @@ export default function RegisterPage() {
               label="Email"
               name="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="Nhập email của bạn"
               variant="bordered"
             />
             <Input
               isRequired
-              label="Password"
+              label="Mật khẩu"
               name="password"
-              placeholder="Enter your password (min. 6 characters)"
+              placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)"
               variant="bordered"
               type="password"
             />
 
             <RadioGroup
-              label="I want to:"
+              label="Tôi muốn:"
               value={role}
               onValueChange={setRole}
               orientation="horizontal"
             >
-              <Radio value="CUSTOMER">Shop</Radio>
-              <Radio value="VENDOR">Sell Products</Radio>
+              <Radio value="CUSTOMER">Mua sắm</Radio>
+              <Radio value="VENDOR">Bán hàng</Radio>
             </RadioGroup>
 
             {error && (
@@ -128,13 +128,13 @@ export default function RegisterPage() {
               isLoading={isLoading}
               className="w-full"
             >
-              Create Account
+              Tạo tài khoản
             </Button>
 
             <div className="text-center text-sm">
-              Already have an account?{" "}
+              Bạn đã có tài khoản?{" "}
               <Link href="/auth/login" size="sm">
-                Sign in
+                Đăng nhập
               </Link>
             </div>
           </form>

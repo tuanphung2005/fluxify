@@ -5,11 +5,11 @@ export const siteConfig = {
   description: "Fluxify",
   navItems: [
     {
-      label: "home",
+      label: "Trang chủ",
       href: "/",
     },
     {
-      label: "about",
+      label: "Giới thiệu",
       href: "/about",
     },
   ],

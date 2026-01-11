@@ -101,9 +101,54 @@ export async function PATCH(req: NextRequest) {
 
         const oldStatus = order.status;
 
-        const updatedOrder = await prisma.order.update({
-            where: { id: orderId },
-            data: { status },
+        // Use a transaction for atomic stock restoration + order update
+        const updatedOrder = await prisma.$transaction(async (tx) => {
+            // Restore stock if order is being cancelled (and wasn't already cancelled)
+            if (status === "CANCELLED" && oldStatus !== "CANCELLED") {
+                // Fetch order items
+                const orderItems = await tx.orderItem.findMany({
+                    where: { orderId },
+                    select: {
+                        productId: true,
+                        quantity: true,
+                        selectedVariant: true,
+                    }
+                });
+
+                // Restore stock atomically for each item
+                for (const item of orderItems) {
+                    if (item.selectedVariant) {
+                        // Use raw SQL for atomic variant stock restoration with PostgreSQL jsonb_set
+                        await tx.$executeRaw`
+                            UPDATE "Product"
+                            SET "variantStock" = jsonb_set(
+                                COALESCE("variantStock", '{}'::jsonb),
+                                ${[item.selectedVariant]}::text[],
+                                to_jsonb(
+                                    COALESCE(("variantStock"->${item.selectedVariant})::int, 0) + ${item.quantity}
+                                )
+                            )
+                            WHERE id = ${item.productId}
+                        `;
+                    } else {
+                        // General stock uses Prisma's atomic increment (already race-safe)
+                        await tx.product.update({
+                            where: { id: item.productId },
+                            data: {
+                                stock: {
+                                    increment: item.quantity,
+                                },
+                            },
+                        });
+                    }
+                }
+            }
+
+            // Update order status
+            return tx.order.update({
+                where: { id: orderId },
+                data: { status },
+            });
         });
 
         // Log the status change for audit trail

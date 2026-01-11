@@ -87,7 +87,7 @@ export default function FavoriteShopButton({ vendorId }: FavoriteShopButtonProps
 
     return (
         <Tooltip
-            content={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            content={isFavorite ? "Xóa khỏi yêu thích" : "Thêm vào yêu thích"}
             placement="left"
         >
             <Button
@@ -98,7 +98,7 @@ export default function FavoriteShopButton({ vendorId }: FavoriteShopButtonProps
                 size="lg"
                 onPress={handleToggleFavorite}
                 isLoading={isLoading}
-                aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+                aria-label={isFavorite ? "Xóa khỏi yêu thích" : "Thêm vào yêu thích"}
             >
                 <Heart size={24} fill={isFavorite ? "currentColor" : "none"} />
             </Button>

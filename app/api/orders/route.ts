@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { errorResponse, successResponse } from "@/lib/api/responses";
 import { checkRateLimit, getClientIdentifier, rateLimitPresets, rateLimitExceededResponse } from "@/lib/api/rate-limit";
+import { getVariantStockForKey } from "@/lib/variant-utils";
 import { z } from "zod";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
@@ -71,28 +72,31 @@ export async function POST(req: NextRequest) {
                 },
             });
 
-            // 3. Calculate total and verify products exist with sufficient stock
+            // 3. Batch fetch all products to avoid N+1 queries
+            const productIds = items.map(item => item.productId);
+            const products = await tx.product.findMany({
+                where: { id: { in: productIds } },
+                select: { id: true, stock: true, variantStock: true, name: true, price: true }
+            });
+            
+            // Create lookup map for O(1) access
+            const productMap = new Map(products.map(p => [p.id, p]));
+
+            // 4. Calculate total and verify products exist with sufficient stock
             let total = 0;
             const stockUpdates: Array<{ productId: string; quantity: number; selectedVariant?: string }> = [];
 
             for (const item of items) {
-                const product = await tx.product.findUnique({
-                    where: { id: item.productId },
-                    select: { id: true, stock: true, variantStock: true, name: true, price: true }
-                });
+                const product = productMap.get(item.productId);
 
                 if (!product) {
                     throw new Error(`Product not found: ${item.productId}`);
                 }
 
                 // Check variant stock if variant is selected
-                let availableStock = product.stock;
-                if (item.selectedVariant && product.variantStock) {
-                    const variantStockData = typeof product.variantStock === 'object' 
-                        ? product.variantStock as Record<string, number>
-                        : {};
-                    availableStock = variantStockData[item.selectedVariant] || 0;
-                }
+                const availableStock = item.selectedVariant 
+                    ? getVariantStockForKey(product.variantStock, item.selectedVariant)
+                    : product.stock;
 
                 if (availableStock < item.quantity) {
                     throw new Error(`Insufficient stock for product: ${product.name}${item.selectedVariant ? ` (${item.selectedVariant})` : ''}`);
@@ -126,28 +130,24 @@ export async function POST(req: NextRequest) {
                 },
             });
 
-            // 5. Update stock in batch (within transaction for atomicity)
+            // 5. Update stock atomically (prevents race conditions)
             for (const update of stockUpdates) {
-                const product = await tx.product.findUnique({
-                    where: { id: update.productId },
-                    select: { variantStock: true }
-                });
-
-                if (update.selectedVariant && product?.variantStock) {
-                    // Update variant stock
-                    const variantStockData = typeof product.variantStock === 'object'
-                        ? product.variantStock as Record<string, number>
-                        : {};
-                    
-                    variantStockData[update.selectedVariant] = 
-                        (variantStockData[update.selectedVariant] || 0) - update.quantity;
-
-                    await tx.product.update({
-                        where: { id: update.productId },
-                        data: { variantStock: variantStockData },
-                    });
+                if (update.selectedVariant) {
+                    // Use raw SQL for atomic variant stock update with PostgreSQL jsonb_set
+                    // This atomically decrements the variant stock without read-modify-write race
+                    await tx.$executeRaw`
+                        UPDATE "Product"
+                        SET "variantStock" = jsonb_set(
+                            COALESCE("variantStock", '{}'::jsonb),
+                            ${[update.selectedVariant]}::text[],
+                            to_jsonb(
+                                COALESCE(("variantStock"->${update.selectedVariant})::int, 0) - ${update.quantity}
+                            )
+                        )
+                        WHERE id = ${update.productId}
+                    `;
                 } else {
-                    // Update general stock
+                    // General stock uses Prisma's atomic decrement (already race-safe)
                     await tx.product.update({
                         where: { id: update.productId },
                         data: {

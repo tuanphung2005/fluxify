@@ -12,6 +12,51 @@ export interface VariantSelection {
 }
 
 /**
+ * Variant stock data type
+ */
+export type VariantStockData = Record<string, number>;
+
+/**
+ * Safely parse variant stock data from database JSON field
+ * Handles all edge cases: null, undefined, string, object
+ * @param variantStock - Raw variant stock from database (Prisma JSON field)
+ * @returns Typed VariantStockData object
+ */
+export function parseVariantStockData(variantStock: unknown): VariantStockData {
+  if (!variantStock) return {};
+  
+  // Handle string (shouldn't happen with Prisma, but just in case)
+  if (typeof variantStock === 'string') {
+    try {
+      const parsed = JSON.parse(variantStock);
+      if (typeof parsed === 'object' && parsed !== null) {
+        return parsed as VariantStockData;
+      }
+    } catch {
+      return {};
+    }
+  }
+  
+  // Handle object
+  if (typeof variantStock === 'object' && variantStock !== null) {
+    return variantStock as VariantStockData;
+  }
+  
+  return {};
+}
+
+/**
+ * Get stock for a specific variant key
+ * @param variantStock - Raw variant stock from database
+ * @param variantKey - The variant key to look up
+ * @returns Stock count for the variant, or 0 if not found
+ */
+export function getVariantStockForKey(variantStock: unknown, variantKey: string): number {
+  const data = parseVariantStockData(variantStock);
+  return data[variantKey] ?? 0;
+}
+
+/**
  * Generate a variant key from selections
  * Example: { Size: "M", Color: "Red" } => "Size:M,Color:Red"
  */

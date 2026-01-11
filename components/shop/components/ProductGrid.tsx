@@ -42,9 +42,9 @@ export default function ProductGrid({
         filteredProducts.length > 0
             ? filteredProducts
             : [
-                { id: "1", name: "Sample Product 1", price: 29.99, images: ["/placeholder.png"] },
-                { id: "2", name: "Sample Product 2", price: 49.99, images: ["/placeholder.png"] },
-                { id: "3", name: "Sample Product 3", price: 39.99, images: ["/placeholder.png"] },
+                { id: "1", name: "Sản phẩm mẫu 1", price: 29.99, images: ["/placeholder.png"] },
+                { id: "2", name: "Sản phẩm mẫu 2", price: 49.99, images: ["/placeholder.png"] },
+                { id: "3", name: "Sản phẩm mẫu 3", price: 39.99, images: ["/placeholder.png"] },
             ];
 
     const gridCols = {

@@ -13,44 +13,44 @@ export default function NewsletterSignupConfigPanel({ config, onUpdate }: Newsle
     return (
         <div className="space-y-4">
             <Input
-                label="Title"
+                label="Tiêu đề"
                 value={config.title || ""}
                 onValueChange={(v) => onUpdate("title", v)}
-                placeholder="Stay in the Loop"
+                placeholder="Đăng ký nhận tin"
             />
 
             <Textarea
-                label="Subtitle"
+                label="Phụ đề"
                 value={config.subtitle || ""}
                 onValueChange={(v) => onUpdate("subtitle", v)}
-                placeholder="Subscribe for exclusive deals!"
+                placeholder="Đăng ký để nhận ưu đãi độc quyền!"
                 minRows={2}
             />
 
             <Input
-                label="Button Text"
+                label="Nút đăng ký"
                 value={config.buttonText || ""}
                 onValueChange={(v) => onUpdate("buttonText", v)}
-                placeholder="Subscribe"
+                placeholder="Đăng ký"
             />
 
             <Input
-                label="Placeholder Text"
+                label="Dòng nhắc (Placeholder)"
                 value={config.placeholder || ""}
                 onValueChange={(v) => onUpdate("placeholder", v)}
-                placeholder="Enter your email"
+                placeholder="Nhập email của bạn"
             />
 
             <div className="grid grid-cols-2 gap-2">
                 <Input
-                    label="Background"
+                    label="Màu nền"
                     type="color"
                     value={config.backgroundColor || "#f8fafc"}
                     onChange={(e) => onUpdate("backgroundColor", e.target.value)}
                 />
 
                 <Input
-                    label="Text Color"
+                    label="Màu chữ"
                     type="color"
                     value={config.textColor || "#000000"}
                     onChange={(e) => onUpdate("textColor", e.target.value)}

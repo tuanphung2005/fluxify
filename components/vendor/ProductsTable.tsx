@@ -22,18 +22,18 @@ export default function ProductsTable({
     return (
         <Table aria-label="Products table" >
             <TableHeader>
-                <TableColumn>IMAGE</TableColumn>
-                <TableColumn>NAME</TableColumn>
-                <TableColumn>DESCRIPTION</TableColumn>
-                <TableColumn>VARIANTS</TableColumn>
-                <TableColumn>PRICE</TableColumn>
-                <TableColumn>STOCK</TableColumn>
-                <TableColumn>ACTIONS</TableColumn>
+                <TableColumn>HÌNH ẢNH</TableColumn>
+                <TableColumn>TÊN SẢN PHẨM</TableColumn>
+                <TableColumn>MÔ TẢ</TableColumn>
+                <TableColumn>PHÂN LOẠI</TableColumn>
+                <TableColumn>GIÁ</TableColumn>
+                <TableColumn>TỒN KHO</TableColumn>
+                <TableColumn>THAO TÁC</TableColumn>
             </TableHeader>
             <TableBody
                 items={products}
                 isLoading={isLoading}
-                emptyContent="No products found."
+                emptyContent="Không tìm thấy sản phẩm nào."
             >
                 {(product) => (
                     <TableRow key={product.id}>

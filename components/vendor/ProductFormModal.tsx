@@ -131,7 +131,7 @@ export default function ProductFormModal({
             setVariantStock("");
             onSaved();
         } catch (err: any) {
-            setError(err.message || "Failed to save product");
+            setError(err.message || "Không thể lưu sản phẩm");
         } finally {
             setIsLoading(false);
         }

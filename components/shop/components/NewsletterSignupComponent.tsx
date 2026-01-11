@@ -15,8 +15,8 @@ export default function NewsletterSignupComponent({ config }: NewsletterSignupCo
     const {
         title,
         subtitle,
-        buttonText = "Subscribe",
-        placeholder = "Enter your email",
+        buttonText = "Đăng ký",
+        placeholder = "Nhập email của bạn",
         backgroundColor,
         textColor,
     } = config;
@@ -29,7 +29,7 @@ export default function NewsletterSignupComponent({ config }: NewsletterSignupCo
         e.preventDefault();
 
         if (!email || !email.includes("@")) {
-            addToast({ title: "Please enter a valid email", color: "warning" });
+            addToast({ title: "Vui lòng nhập email hợp lệ", color: "warning" });
             return;
         }
 
@@ -40,7 +40,7 @@ export default function NewsletterSignupComponent({ config }: NewsletterSignupCo
 
         setIsSubmitting(false);
         setIsSubscribed(true);
-        addToast({ title: "Successfully subscribed!", color: "success" });
+        addToast({ title: "Đăng ký thành công!", color: "success" });
     };
 
     return (
@@ -64,7 +64,7 @@ export default function NewsletterSignupComponent({ config }: NewsletterSignupCo
                     <div className="flex items-center justify-center gap-3 text-success">
                         <CheckCircle size={24} />
                         <span className="text-lg font-medium">
-                            Thanks for subscribing!
+                            Cảm ơn bạn đã đăng ký!
                         </span>
                     </div>
                 ) : (
@@ -93,7 +93,7 @@ export default function NewsletterSignupComponent({ config }: NewsletterSignupCo
                 )}
 
                 <p className="text-sm text-default-400 mt-4">
-                    We respect your privacy. Unsubscribe at any time.
+                    Chúng tôi tôn trọng quyền riêng tư của bạn. Hủy đăng ký bất cứ lúc nào.
                 </p>
             </div>
         </section>

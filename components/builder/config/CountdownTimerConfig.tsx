@@ -27,44 +27,44 @@ export default function CountdownTimerConfigPanel({ config, onUpdate }: Countdow
     return (
         <div className="space-y-4">
             <Input
-                label="Title"
+                label="Tiêu đề"
                 value={config.title || ""}
                 onValueChange={(v) => onUpdate("title", v)}
-                placeholder="Flash Sale Ends In"
+                placeholder="Kết thúc sau"
             />
 
             <Textarea
-                label="Subtitle"
+                label="Phụ đề"
                 value={config.subtitle || ""}
                 onValueChange={(v) => onUpdate("subtitle", v)}
-                placeholder="Don't miss out!"
+                placeholder="Đừng bỏ lỡ!"
                 minRows={2}
             />
 
             <Input
-                label="End Date & Time"
+                label="Thời gian kết thúc"
                 type="datetime-local"
                 value={getDateTimeLocalValue()}
                 onChange={(e) => handleDateChange(e.target.value)}
             />
 
             <Input
-                label="Expired Message"
+                label="Thông báo khi kết thúc"
                 value={config.expiredMessage || ""}
                 onValueChange={(v) => onUpdate("expiredMessage", v)}
-                placeholder="This offer has ended!"
+                placeholder="Chương trình đã kết thúc!"
             />
 
             <div className="grid grid-cols-2 gap-2">
                 <Input
-                    label="Background"
+                    label="Màu nền"
                     type="color"
                     value={config.backgroundColor?.replace(/linear-gradient.*/, "#667eea") || "#667eea"}
                     onChange={(e) => onUpdate("backgroundColor", e.target.value)}
                 />
 
                 <Input
-                    label="Text Color"
+                    label="Màu chữ"
                     type="color"
                     value={config.textColor || "#ffffff"}
                     onChange={(e) => onUpdate("textColor", e.target.value)}
@@ -72,7 +72,7 @@ export default function CountdownTimerConfigPanel({ config, onUpdate }: Countdow
             </div>
 
             <p className="text-xs text-default-400">
-                Tip: For gradient backgrounds, edit the theme CSS.
+                Gợi ý: Để có màu nền gradient, hãy sửa trong CSS theme.
             </p>
         </div>
     );

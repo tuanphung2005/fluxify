@@ -59,16 +59,16 @@ export default function BuilderToolbar({
                             size="sm"
                             as="a"
                             href="/vendor"
-                            aria-label="Back to Dashboard"
+                            aria-label="Quay lại tổng quan"
                         >
                             <ArrowLeft size={20} />
                         </Button>
                         <div>
                             <h2 className="text-xl font-bold">{templateName}</h2>
                             <p className="text-xs text-default-500">
-                                {isPublished ? "published" : "draft"}
+                                {isPublished ? "Đã đăng" : "Bản nháp"}
                                 {hasUnsavedChanges && (
-                                    <span className="ml-2 text-warning">• unsaved changes</span>
+                                    <span className="ml-2 text-warning">• chưa lưu thay đổi</span>
                                 )}
                             </p>
                         </div>
@@ -81,7 +81,7 @@ export default function BuilderToolbar({
                         onPress={productsModal.onOpen}
 
                     >
-                        products
+                        Sản phẩm
                     </Button>
                     <Button
                         variant="flat"
@@ -89,7 +89,7 @@ export default function BuilderToolbar({
                         onPress={settingsModal.onOpen}
 
                     >
-                        settings
+                        Cài đặt
                     </Button>
                     <Button
                         variant="flat"
@@ -97,7 +97,7 @@ export default function BuilderToolbar({
                         onPress={onPreview}
 
                     >
-                        preview
+                        Xem trước
                     </Button>
                     <Button
                         color="primary"
@@ -108,7 +108,7 @@ export default function BuilderToolbar({
                         isDisabled={!hasUnsavedChanges}
 
                     >
-                        {hasUnsavedChanges ? "save" : "saved"}
+                        {hasUnsavedChanges ? "Lưu" : "Đã lưu"}
                     </Button>
                     <Button
                         color="success"
@@ -118,7 +118,7 @@ export default function BuilderToolbar({
                         isDisabled={isOperating}
 
                     >
-                        {isPublished ? "update" : "publish"}
+                        {isPublished ? "Cập nhật" : "Đăng bán"}
                     </Button>
                     {isPublished && (
                         <Button
@@ -130,7 +130,7 @@ export default function BuilderToolbar({
 
                             startContent={<Undo2 />}
                         >
-                            unpublish
+                            Hủy đăng
                         </Button>
                     )}
                 </div>
@@ -139,9 +139,9 @@ export default function BuilderToolbar({
             <ConfirmationModal
                 isOpen={isUnpublishModalOpen}
                 onClose={onUnpublishModalClose}
-                title="Unpublish Shop"
-                message="Are you sure you want to unpublish your shop? This will make your shop inaccessible to customers."
-                confirmText="Unpublish"
+                title="Hủy đăng cửa hàng"
+                message="Bạn có chắc chắn muốn hủy đăng cửa hàng không? Khách hàng sẽ không thể truy cập cửa hàng của bạn nữa."
+                confirmText="Hủy đăng"
                 confirmColor="warning"
                 onConfirm={handleUnpublishConfirm}
             />

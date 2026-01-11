@@ -83,18 +83,18 @@ export const COMPONENT_COLORS: Record<ComponentType, ComponentColors> = {
 // =============================================================================
 
 export const COMPONENT_LABELS: Record<ComponentType, string> = {
-    HERO: "hero section",
-    PRODUCT_GRID: "product grid",
-    IMAGE_GALLERY: "image gallery",
-    VIDEO_EMBED: "video embed",
-    TEXT_BLOCK: "text block",
-    SPACER: "spacer",
-    TESTIMONIALS: "testimonials",
-    FEATURED_COLLECTION: "featured collection",
-    COUNTDOWN_TIMER: "countdown timer",
-    NEWSLETTER_SIGNUP: "newsletter",
-    FAQ_ACCORDION: "FAQ",
-    BANNER_CAROUSEL: "banner carousel",
+    HERO: "banner chính",
+    PRODUCT_GRID: "lưới sản phẩm",
+    IMAGE_GALLERY: "thư viện ảnh",
+    VIDEO_EMBED: "video nhúng",
+    TEXT_BLOCK: "khối văn bản",
+    SPACER: "khoảng cách",
+    TESTIMONIALS: "đánh giá",
+    FEATURED_COLLECTION: "bộ sưu tập nổi bật",
+    COUNTDOWN_TIMER: "đếm ngược",
+    NEWSLETTER_SIGNUP: "đăng ký bản tin",
+    FAQ_ACCORDION: "câu hỏi thường gặp",
+    BANNER_CAROUSEL: "băng chảy banner",
 };
 
 // =============================================================================

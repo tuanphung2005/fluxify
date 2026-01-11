@@ -59,21 +59,21 @@ export default function Error({ error, reset }: ErrorProps) {
             </svg>
           </div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Something went wrong
+            Hỏng rồi...
           </h2>
           <p className="text-gray-600 mb-6">
-            We've been notified and are working to fix the issue.
+            Chúng tôi đã nhận được lỗi và đang cố gắng sửa, bạn đợi nhé!
           </p>
           {error.digest && (
             <p className="text-xs text-gray-400 mb-4">
-              Error ID: {error.digest}
+              ID lỗi: {error.digest}
             </p>
           )}
           <button
             onClick={reset}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
           >
-            Try again
+            Thử lại
           </button>
         </div>
       </div>

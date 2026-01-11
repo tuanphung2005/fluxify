@@ -24,10 +24,10 @@ export default function ConfirmationModal({
     isOpen,
     onClose,
     onConfirm,
-    title = "Confirm Action",
-    message = "Are you sure you want to proceed?",
-    confirmText = "Confirm",
-    cancelText = "Cancel",
+    title = "Xác nhận hành động",
+    message = "Bạn có chắc chắn muốn tiếp tục không?",
+    confirmText = "Xác nhận",
+    cancelText = "Hủy",
     confirmColor = "danger",
 }: ConfirmationModalProps) {
     const handleConfirm = () => {

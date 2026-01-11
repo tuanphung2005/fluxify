@@ -18,9 +18,9 @@ export default function BannerCarouselConfigPanel({ config, onUpdate }: BannerCa
     const addBanner = () => {
         const newBanner = {
             imageUrl: "https://images.unsplash.com/photo-1441986300917-64674bd600d8",
-            title: "New Banner",
-            subtitle: "Add your message here",
-            ctaText: "Shop Now",
+            title: "Tên Banner",
+            subtitle: "Mô tả Banner",
+            ctaText: "Mua ngay",
             ctaLink: "#",
         };
         onUpdate("banners", [...banners, newBanner]);
@@ -44,14 +44,14 @@ export default function BannerCarouselConfigPanel({ config, onUpdate }: BannerCa
                     isSelected={config.autoplay !== false}
                     onValueChange={(v) => onUpdate("autoplay", v)}
                 >
-                    Autoplay
+                    Tự động phát
                 </Switch>
 
                 <Switch
                     isSelected={config.showDots !== false}
                     onValueChange={(v) => onUpdate("showDots", v)}
                 >
-                    Show Dots
+                    Hiển thị Dots
                 </Switch>
             </div>
 
@@ -60,13 +60,13 @@ export default function BannerCarouselConfigPanel({ config, onUpdate }: BannerCa
                     isSelected={config.showArrows !== false}
                     onValueChange={(v) => onUpdate("showArrows", v)}
                 >
-                    Show Arrows
+                    Hiển thị mũi tên
                 </Switch>
 
                 <Input
                     size="sm"
                     type="number"
-                    label="Interval (ms)"
+                    label="Thời gian chuyển (ms)"
                     value={String(config.interval || 5000)}
                     onValueChange={(v) => onUpdate("interval", Number(v))}
                 />
@@ -75,9 +75,9 @@ export default function BannerCarouselConfigPanel({ config, onUpdate }: BannerCa
             <Divider />
 
             <div className="flex justify-between items-center">
-                <h4 className="font-semibold">Banners ({banners.length})</h4>
+                <h4 className="font-semibold">Danh sách Banner ({banners.length})</h4>
                 <Button size="sm" color="primary" variant="flat" onPress={addBanner}>
-                    <Plus size={16} /> Add
+                    <Plus size={16} /> Thêm
                 </Button>
             </div>
 
@@ -85,7 +85,7 @@ export default function BannerCarouselConfigPanel({ config, onUpdate }: BannerCa
                 <div key={index} className="p-3 bg-default-100 rounded-lg space-y-3">
                     <div className="flex justify-between items-center">
                         <span className="text-sm font-medium flex items-center gap-2">
-                            <Image size={14} /> Banner {index + 1}
+                            <Image size={14} /> Banner số {index + 1}
                         </span>
                         <Button
                             isIconOnly
@@ -100,7 +100,7 @@ export default function BannerCarouselConfigPanel({ config, onUpdate }: BannerCa
 
                     <Input
                         size="sm"
-                        label="Image URL"
+                        label="URL ảnh"
                         value={banner.imageUrl}
                         onValueChange={(v) => updateBanner(index, "imageUrl", v)}
                         placeholder="https://..."
@@ -108,14 +108,14 @@ export default function BannerCarouselConfigPanel({ config, onUpdate }: BannerCa
 
                     <Input
                         size="sm"
-                        label="Title"
+                        label="Tiêu đề"
                         value={banner.title || ""}
                         onValueChange={(v) => updateBanner(index, "title", v)}
                     />
 
                     <Input
                         size="sm"
-                        label="Subtitle"
+                        label="Phụ đề"
                         value={banner.subtitle || ""}
                         onValueChange={(v) => updateBanner(index, "subtitle", v)}
                     />
@@ -123,14 +123,14 @@ export default function BannerCarouselConfigPanel({ config, onUpdate }: BannerCa
                     <div className="grid grid-cols-2 gap-2">
                         <Input
                             size="sm"
-                            label="CTA Text"
+                            label="Nút CTAText"
                             value={banner.ctaText || ""}
                             onValueChange={(v) => updateBanner(index, "ctaText", v)}
                         />
 
                         <Input
                             size="sm"
-                            label="CTA Link"
+                            label="Nút CTA Link"
                             value={banner.ctaLink || ""}
                             onValueChange={(v) => updateBanner(index, "ctaLink", v)}
                         />
@@ -141,7 +141,7 @@ export default function BannerCarouselConfigPanel({ config, onUpdate }: BannerCa
             {banners.length === 0 && (
                 <div className="text-center py-6 bg-default-50 rounded-lg text-default-400">
                     <Image size={32} className="mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">No banners added yet</p>
+                    <p className="text-sm">Chưa có banner nào</p>
                 </div>
             )}
         </div>

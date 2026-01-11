@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
-import { successResponse, errorResponse } from "@/lib/api/responses";
-import { auth } from "@/lib/auth";
+import { successResponse, errorResponse, isErrorResult } from "@/lib/api/responses";
+import { getAuthenticatedUser } from "@/lib/api/auth-helpers";
+import { checkRateLimit, getClientIdentifier, rateLimitPresets, rateLimitExceededResponse } from "@/lib/api/rate-limit";
+import { normalizePagination } from "@/lib/db/product-queries";
 import { z } from "zod";
 import {
     getProductReviews,
@@ -24,8 +26,10 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
         const { id: productId } = await params;
         const { searchParams } = new URL(req.url);
 
-        const page = parseInt(searchParams.get("page") || "1");
-        const limit = parseInt(searchParams.get("limit") || "10");
+        const { page, limit } = normalizePagination({
+            page: parseInt(searchParams.get("page") || "1"),
+            limit: parseInt(searchParams.get("limit") || "10"),
+        });
         const includeSummary = searchParams.get("summary") === "true";
 
         const reviews = await getProductReviews(productId, { page, limit });
@@ -43,9 +47,15 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
 // POST - Create a review (authenticated users only)
 export async function POST(req: NextRequest, { params }: RouteParams) {
+    // Rate limit review creation
+    const rateLimit = checkRateLimit(getClientIdentifier(req), rateLimitPresets.write);
+    if (!rateLimit.allowed) {
+        return rateLimitExceededResponse(rateLimit.resetTime);
+    }
+
     try {
-        const session = await auth();
-        if (!session?.user) {
+        const auth = await getAuthenticatedUser();
+        if (isErrorResult(auth)) {
             return errorResponse("Please log in to leave a review", 401);
         }
 
@@ -59,7 +69,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
 
         const review = await createReview({
             productId,
-            userId: session.user.id,
+            userId: auth.user.id,
             rating: validation.data.rating,
             title: validation.data.title,
             comment: validation.data.comment,
@@ -73,3 +83,4 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
         return errorResponse("Failed to create review", 500, error);
     }
 }
+

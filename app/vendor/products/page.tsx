@@ -5,7 +5,7 @@ export default function ProductsPage() {
     return (
         <VendorLayout>
             <div className="space-y-6 p-6">
-                <h2 className="text-2xl font-bold">Products</h2>
+                <h2 className="text-2xl font-bold">Sản phẩm</h2>
                 <ProductManagerContent />
             </div>
         </VendorLayout>
