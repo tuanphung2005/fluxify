@@ -129,7 +129,33 @@ export default function ProductCard({
                 </p>
                 {productHasVariants && (
                     <div className="mt-1 space-y-1">
-                        <p className="text-xs text-default-500">Nhiều tùy chọn</p>
+                        <p className="text-xs text-default-500">
+                            {(() => {
+                                try {
+                                    const parsedVariants = typeof variants === 'string' ? JSON.parse(variants) : variants;
+                                    if (!parsedVariants || typeof parsedVariants !== 'object') return 'Nhiều tùy chọn';
+
+                                    const entries = Object.entries(parsedVariants);
+                                    const maxVariants = 2;
+                                    const maxValuesPerVariant = 3;
+
+                                    const displayParts = entries.slice(0, maxVariants).map(([name, values]) => {
+                                        const valuesArr = Array.isArray(values) ? values : [];
+                                        const displayValues = valuesArr.slice(0, maxValuesPerVariant).join(', ');
+                                        const suffix = valuesArr.length > maxValuesPerVariant ? '...' : '';
+                                        return `${name}: ${displayValues}${suffix}`;
+                                    });
+
+                                    const result = displayParts.join(' | ');
+                                    if (entries.length > maxVariants) {
+                                        return result + ' +' + (entries.length - maxVariants);
+                                    }
+                                    return result || 'Nhiều tùy chọn';
+                                } catch {
+                                    return 'Nhiều tùy chọn';
+                                }
+                            })()}
+                        </p>
                         {variantStock && typeof variantStock === 'object' && (
                             <p className="text-xs text-default-600">
                                 Tồn kho: {Object.values(variantStock as Record<string, number>).reduce((sum: number, stock) => sum + (typeof stock === 'number' ? stock : 0), 0)} sản phẩm
