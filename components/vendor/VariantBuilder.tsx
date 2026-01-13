@@ -2,8 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { Button, Input, Chip } from "@heroui/react";
-import { Plus, X, Package } from "lucide-react";
-import { getAllVariantCombinations, parseVariantKey, type VariantOption } from "@/lib/variant-utils";
+import { Plus, X, Package, Palette } from "lucide-react";
+import {
+    getAllVariantCombinations,
+    parseVariantKey,
+    isColorVariant,
+    getVariantDisplayName,
+    parseColorValue,
+    type VariantOption,
+    type ColorVariantValue
+} from "@/lib/variant-utils";
 
 interface VariantBuilderProps {
     value: string; // JSON string of variants
@@ -17,6 +25,7 @@ export default function VariantBuilder({ value, stockValue, onChange, onStockCha
     const [variantStock, setVariantStock] = useState<Record<string, number>>({});
     const [newVariantName, setNewVariantName] = useState("");
     const [newVariantValue, setNewVariantValue] = useState("");
+    const [newVariantColor, setNewVariantColor] = useState("#3B82F6"); // Default blue
     const [activeVariantIndex, setActiveVariantIndex] = useState<number | null>(null);
 
     // Load variants from prop
@@ -60,7 +69,7 @@ export default function VariantBuilder({ value, stockValue, onChange, onStockCha
                 acc[variant.name] = variant.values;
             }
             return acc;
-        }, {} as Record<string, string[]>);
+        }, {} as Record<string, (string | ColorVariantValue)[]>);
 
         onChange(Object.keys(variantObject).length > 0 ? JSON.stringify(variantObject, null, 2) : "");
     };
@@ -84,7 +93,7 @@ export default function VariantBuilder({ value, stockValue, onChange, onStockCha
         const newVariants = variants.filter((_, i) => i !== index);
         setVariants(newVariants);
         updateParent(newVariants);
-        
+
         // Regenerate stock for new combinations
         const combinations = getAllVariantCombinations(newVariants);
         const newStock: Record<string, number> = {};
@@ -98,11 +107,24 @@ export default function VariantBuilder({ value, stockValue, onChange, onStockCha
     const addValueToVariant = (index: number) => {
         if (!newVariantValue.trim()) return;
         const newVariants = [...variants];
-        if (!newVariants[index].values.includes(newVariantValue)) {
-            newVariants[index].values.push(newVariantValue);
+        const variant = newVariants[index];
+        const isColor = isColorVariant(variant.name);
+
+        // Check if value already exists
+        const existingValue = variant.values.find(v =>
+            getVariantDisplayName(v) === newVariantValue.trim()
+        );
+
+        if (!existingValue) {
+            // Add as ColorVariantValue if it's a color variant, otherwise as string
+            if (isColor) {
+                variant.values.push({ name: newVariantValue.trim(), color: newVariantColor });
+            } else {
+                variant.values.push(newVariantValue.trim());
+            }
             setVariants(newVariants);
             updateParent(newVariants);
-            
+
             // Regenerate stock for new combinations
             const combinations = getAllVariantCombinations(newVariants);
             const newStock: Record<string, number> = {};
@@ -113,6 +135,7 @@ export default function VariantBuilder({ value, stockValue, onChange, onStockCha
             updateStockParent(newStock);
         }
         setNewVariantValue("");
+        setNewVariantColor("#3B82F6"); // Reset to default blue
     };
 
     const removeValueFromVariant = (variantIndex: number, valueIndex: number) => {
@@ -120,7 +143,7 @@ export default function VariantBuilder({ value, stockValue, onChange, onStockCha
         newVariants[variantIndex].values = newVariants[variantIndex].values.filter((_, i) => i !== valueIndex);
         setVariants(newVariants);
         updateParent(newVariants);
-        
+
         // Regenerate stock for new combinations
         const combinations = getAllVariantCombinations(newVariants);
         const newStock: Record<string, number> = {};
@@ -175,21 +198,48 @@ export default function VariantBuilder({ value, stockValue, onChange, onStockCha
                             </div>
 
                             <div className="flex flex-wrap gap-2 mb-2">
-                                {variant.values.map((val, vIndex) => (
-                                    <Chip
-                                        key={vIndex}
-                                        onClose={() => removeValueFromVariant(index, vIndex)}
-                                        size="sm"
-                                        variant="flat"
-                                    >
-                                        {val}
-                                    </Chip>
-                                ))}
+                                {variant.values.map((val, vIndex) => {
+                                    const colorValue = parseColorValue(val);
+                                    const displayName = getVariantDisplayName(val);
+
+                                    return (
+                                        <Chip
+                                            key={vIndex}
+                                            onClose={() => removeValueFromVariant(index, vIndex)}
+                                            size="sm"
+                                            variant="flat"
+                                            startContent={
+                                                colorValue ? (
+                                                    <span
+                                                        className="w-3 h-3 rounded-full border border-white/30"
+                                                        style={{ backgroundColor: colorValue.color }}
+                                                    />
+                                                ) : undefined
+                                            }
+                                        >
+                                            {displayName}
+                                        </Chip>
+                                    );
+                                })}
                             </div>
 
                             <div className="flex gap-2">
+                                {isColorVariant(variant.name) && (
+                                    <div className="relative">
+                                        <input
+                                            type="color"
+                                            value={activeVariantIndex === index ? newVariantColor : "#3B82F6"}
+                                            onChange={(e) => {
+                                                setActiveVariantIndex(index);
+                                                setNewVariantColor(e.target.value);
+                                            }}
+                                            className="w-10 h-10 rounded-lg cursor-pointer border-2 border-default-200"
+                                            title="Chọn màu"
+                                        />
+                                    </div>
+                                )}
                                 <Input
-                                    placeholder={`Thêm ${variant.name}`}
+                                    placeholder={isColorVariant(variant.name) ? "Tên màu (VD: Xanh dương)" : `Thêm ${variant.name}`}
                                     size="sm"
                                     value={activeVariantIndex === index ? newVariantValue : ""}
                                     onValueChange={(val) => {
@@ -201,6 +251,11 @@ export default function VariantBuilder({ value, stockValue, onChange, onStockCha
                                             addValueToVariant(index);
                                         }
                                     }}
+                                    startContent={
+                                        isColorVariant(variant.name) ? (
+                                            <Palette size={16} className="text-default-400" />
+                                        ) : undefined
+                                    }
                                 />
                                 <Button
                                     size="sm"
@@ -232,7 +287,7 @@ export default function VariantBuilder({ value, stockValue, onChange, onStockCha
                                 .map(([name, value]) => `${name}: ${value}`)
                                 .join(", ");
                             const stock = variantStock[combo] || 0;
-                            
+
                             return (
                                 <div key={combo} className="flex items-center gap-2 p-2 bg-default-50 rounded-md">
                                     <span className="text-sm flex-1 truncate" title={displayName}>

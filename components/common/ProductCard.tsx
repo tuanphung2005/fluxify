@@ -6,7 +6,7 @@ import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { hasVariants } from "@/lib/variant-utils";
+import { hasVariants, isColorVariant, parseColorValue, getVariantDisplayName, type ColorVariantValue } from "@/lib/variant-utils";
 import { formatVND } from "@/lib/format";
 
 type StockStatus = "in_stock" | "low_stock" | "out_of_stock";
@@ -129,18 +129,58 @@ export default function ProductCard({
                 </p>
                 {productHasVariants && (
                     <div className="mt-1 space-y-1">
+                        {/* Color swatches if color variant exists */}
+                        {(() => {
+                            try {
+                                const parsedVariants = typeof variants === 'string' ? JSON.parse(variants) : variants;
+                                if (!parsedVariants || typeof parsedVariants !== 'object') return null;
+
+                                // Find color variant
+                                const colorEntry = Object.entries(parsedVariants).find(([name]) => isColorVariant(name));
+                                if (colorEntry) {
+                                    const [, colorValues] = colorEntry;
+                                    const colors = Array.isArray(colorValues) ? colorValues : [];
+                                    return (
+                                        <div className="flex gap-1 flex-wrap">
+                                            {colors.slice(0, 5).map((colorVal, idx) => {
+                                                const parsed = parseColorValue(colorVal as string | ColorVariantValue);
+                                                if (parsed) {
+                                                    return (
+                                                        <span
+                                                            key={idx}
+                                                            className="w-4 h-4 rounded-full border border-default-300"
+                                                            style={{ backgroundColor: parsed.color }}
+                                                            title={parsed.name}
+                                                        />
+                                                    );
+                                                }
+                                                return null;
+                                            })}
+                                            {colors.length > 5 && (
+                                                <span className="text-xs text-default-400">+{colors.length - 5}</span>
+                                            )}
+                                        </div>
+                                    );
+                                }
+                                return null;
+                            } catch {
+                                return null;
+                            }
+                        })()}
                         <p className="text-xs text-default-500">
                             {(() => {
                                 try {
                                     const parsedVariants = typeof variants === 'string' ? JSON.parse(variants) : variants;
                                     if (!parsedVariants || typeof parsedVariants !== 'object') return 'Nhiều tùy chọn';
 
-                                    const entries = Object.entries(parsedVariants);
+                                    const entries = Object.entries(parsedVariants).filter(([name]) => !isColorVariant(name));
+                                    if (entries.length === 0) return 'Nhiều màu sắc';
+
                                     const maxVariants = 2;
                                     const maxValuesPerVariant = 3;
 
                                     const displayParts = entries.slice(0, maxVariants).map(([name, values]) => {
-                                        const valuesArr = Array.isArray(values) ? values : [];
+                                        const valuesArr = Array.isArray(values) ? values.map(v => getVariantDisplayName(v)) : [];
                                         const displayValues = valuesArr.slice(0, maxValuesPerVariant).join(', ');
                                         const suffix = valuesArr.length > maxValuesPerVariant ? '...' : '';
                                         return `${name}: ${displayValues}${suffix}`;

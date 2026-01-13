@@ -4,11 +4,50 @@
 
 export interface VariantOption {
   name: string;
-  values: string[];
+  values: (string | ColorVariantValue)[];
 }
 
 export interface VariantSelection {
   [variantName: string]: string;
+}
+
+/**
+ * Color variant value that stores both the display name and hex color
+ */
+export interface ColorVariantValue {
+  name: string;
+  color: string; // Hex color like "#FF0000"
+}
+
+/**
+ * Check if a variant name indicates a color variant
+ * Matches if name contains: màu, color, colours, colors, colour
+ */
+export function isColorVariant(name: string): boolean {
+  const lowerName = name.toLowerCase().trim();
+  const colorPatterns = ['màu', 'color', 'colours', 'colors', 'colour'];
+  return colorPatterns.some(pattern => lowerName.includes(pattern));
+}
+
+/**
+ * Parse a variant value to extract color info
+ * Returns the ColorVariantValue if it's a color, or converts string to object
+ */
+export function parseColorValue(value: string | ColorVariantValue): ColorVariantValue | null {
+  if (typeof value === 'object' && value !== null && 'name' in value && 'color' in value) {
+    return value;
+  }
+  return null;
+}
+
+/**
+ * Get display name from a variant value (works for both string and color values)
+ */
+export function getVariantDisplayName(value: string | ColorVariantValue): string {
+  if (typeof value === 'object' && value !== null && 'name' in value) {
+    return value.name;
+  }
+  return value;
 }
 
 /**
@@ -24,7 +63,7 @@ export type VariantStockData = Record<string, number>;
  */
 export function parseVariantStockData(variantStock: unknown): VariantStockData {
   if (!variantStock) return {};
-  
+
   // Handle string (shouldn't happen with Prisma, but just in case)
   if (typeof variantStock === 'string') {
     try {
@@ -36,12 +75,12 @@ export function parseVariantStockData(variantStock: unknown): VariantStockData {
       return {};
     }
   }
-  
+
   // Handle object
   if (typeof variantStock === 'object' && variantStock !== null) {
     return variantStock as VariantStockData;
   }
-  
+
   return {};
 }
 
@@ -73,17 +112,17 @@ export function generateVariantKey(selections: VariantSelection): string {
  */
 export function parseVariantKey(key: string): VariantSelection {
   if (!key) return {};
-  
+
   const selections: VariantSelection = {};
   const parts = key.split(',');
-  
+
   for (const part of parts) {
     const [name, value] = part.split(':');
     if (name && value) {
       selections[name] = value;
     }
   }
-  
+
   return selections;
 }
 
@@ -94,25 +133,25 @@ export function parseVariantKey(key: string): VariantSelection {
  */
 export function getAllVariantCombinations(variants: VariantOption[]): string[] {
   if (!variants || variants.length === 0) return [];
-  
+
   const combinations: VariantSelection[] = [{}];
-  
+
   for (const variant of variants) {
     const newCombinations: VariantSelection[] = [];
-    
+
     for (const combination of combinations) {
       for (const value of variant.values) {
         newCombinations.push({
           ...combination,
-          [variant.name]: value,
+          [variant.name]: getVariantDisplayName(value),
         });
       }
     }
-    
+
     combinations.length = 0;
     combinations.push(...newCombinations);
   }
-  
+
   return combinations.map(generateVariantKey);
 }
 
@@ -127,13 +166,13 @@ export function getVariantStock(
   if (!variantKey || !product.variants) {
     return product.stock;
   }
-  
+
   // If product has variant stock data, use it
   if (product.variantStock && typeof product.variantStock === 'object') {
     const stock = product.variantStock[variantKey];
     return typeof stock === 'number' ? stock : 0;
   }
-  
+
   // Fallback to overall stock
   return product.stock;
 }
@@ -143,19 +182,19 @@ export function getVariantStock(
  */
 export function hasVariants(product: { variants?: any }): boolean {
   if (!product.variants) return false;
-  
+
   try {
-    const variants = typeof product.variants === 'string' 
-      ? JSON.parse(product.variants) 
+    const variants = typeof product.variants === 'string'
+      ? JSON.parse(product.variants)
       : product.variants;
-    
+
     if (typeof variants === 'object' && variants !== null) {
       return Object.keys(variants).length > 0;
     }
   } catch (e) {
     return false;
   }
-  
+
   return false;
 }
 
@@ -166,9 +205,9 @@ export function getTotalVariantStock(product: { variantStock?: any; stock: numbe
   if (!product.variantStock || typeof product.variantStock !== 'object') {
     return product.stock;
   }
-  
-  const stocks = Object.values(product.variantStock);
-  return stocks.reduce((sum, stock) => sum + (typeof stock === 'number' ? stock : 0), 0);
+
+  const stocks = Object.values(product.variantStock) as unknown[];
+  return stocks.reduce<number>((sum, stock) => sum + (typeof stock === 'number' ? stock : 0), 0);
 }
 
 /**
@@ -189,7 +228,7 @@ export function getVariantStockStatus(
   variantKey?: string
 ): 'in_stock' | 'low_stock' | 'out_of_stock' {
   const stock = getVariantStock(product, variantKey);
-  
+
   if (stock === 0) return 'out_of_stock';
   if (stock < 5) return 'low_stock';
   return 'in_stock';
