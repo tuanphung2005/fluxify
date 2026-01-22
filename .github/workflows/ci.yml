@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main, master]
 
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+  NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -29,16 +34,12 @@ jobs:
 
       - name: Generate Prisma Client
         run: bunx prisma generate
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run linting
         run: bun run lint
 
       - name: Run tests
         run: bun run test
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
   build:
     runs-on: ubuntu-latest
@@ -66,7 +67,3 @@ jobs:
 
       - name: Build
         run: bun run build
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
