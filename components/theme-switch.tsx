@@ -8,7 +8,7 @@ import { useIsSSR } from "@react-aria/ssr";
 import clsx from "clsx";
 
 // import { SunFilledIcon, MoonFilledIcon } from "@/components/icons";
-import { Sun, Moon } from "lucide-react"
+import { Sun, Moon } from "lucide-react";
 
 export interface ThemeSwitchProps {
   className?: string;

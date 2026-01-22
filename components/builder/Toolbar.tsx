@@ -2,163 +2,162 @@
 
 import { Button } from "@heroui/button";
 import { useDisclosure } from "@heroui/react";
-import { Save, Eye, Upload, Undo2, Package, Settings, ArrowLeft } from "lucide-react";
+import {
+  Save,
+  Eye,
+  Upload,
+  Undo2,
+  Package,
+  Settings,
+  ArrowLeft,
+} from "lucide-react";
+
 import ConfirmationModal from "@/components/common/ConfirmationModal";
 import ProductManager from "@/components/vendor/ProductManager";
 import ShopSettings from "@/components/vendor/ShopSettings";
 
 interface BuilderToolbarProps {
-    templateName: string;
-    isPublished: boolean;
-    isOperating: boolean;
-    hasUnsavedChanges: boolean;
-    favicon?: string;
-    onSave: () => void;
-    onPublish: () => void;
-    onUnpublish: () => void;
-    onPreview: () => void;
-    onProductsChange?: () => void;
-    onProfileUpdate?: () => void;
+  templateName: string;
+  isPublished: boolean;
+  isOperating: boolean;
+  hasUnsavedChanges: boolean;
+  favicon?: string;
+  onSave: () => void;
+  onPublish: () => void;
+  onUnpublish: () => void;
+  onPreview: () => void;
+  onProductsChange?: () => void;
+  onProfileUpdate?: () => void;
 }
 
 export default function BuilderToolbar({
-    templateName,
-    isPublished,
-    isOperating,
-    hasUnsavedChanges,
-    favicon,
-    onSave,
-    onPublish,
-    onUnpublish,
-    onPreview,
-    onProductsChange,
-    onProfileUpdate,
+  templateName,
+  isPublished,
+  isOperating,
+  hasUnsavedChanges,
+  favicon,
+  onSave,
+  onPublish,
+  onUnpublish,
+  onPreview,
+  onProductsChange,
+  onProfileUpdate,
 }: BuilderToolbarProps) {
-    const {
-        isOpen: isUnpublishModalOpen,
-        onOpen: onUnpublishModalOpen,
-        onClose: onUnpublishModalClose,
-        onOpenChange: onUnpublishModalOpenChange,
-    } = useDisclosure();
-    const productsModal = useDisclosure();
-    const settingsModal = useDisclosure();
+  const {
+    isOpen: isUnpublishModalOpen,
+    onOpen: onUnpublishModalOpen,
+    onClose: onUnpublishModalClose,
+    onOpenChange: onUnpublishModalOpenChange,
+  } = useDisclosure();
+  const productsModal = useDisclosure();
+  const settingsModal = useDisclosure();
 
-    const handleUnpublishConfirm = () => {
-        onUnpublish();
-        onUnpublishModalClose();
-    };
+  const handleUnpublishConfirm = () => {
+    onUnpublish();
+    onUnpublishModalClose();
+  };
 
-    return (
-        <>
-            <div className="h-16 bg-content1 border-b border-divider px-6 flex items-center justify-between">
-                <div>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            isIconOnly
-                            variant="light"
-                            size="sm"
-                            as="a"
-                            href="/vendor"
-                            aria-label="Quay lại tổng quan"
-                        >
-                            <ArrowLeft size={20} />
-                        </Button>
-                        <div>
-                            <h2 className="text-xl font-bold">{templateName}</h2>
-                            <p className="text-xs text-default-500">
-                                {isPublished ? "Đã đăng" : "Bản nháp"}
-                                {hasUnsavedChanges && (
-                                    <span className="ml-2 text-warning">• chưa lưu thay đổi</span>
-                                )}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex gap-3">
-                    <Button
-                        variant="flat"
-                        startContent={<Package />}
-                        onPress={productsModal.onOpen}
-
-                    >
-                        Sản phẩm
-                    </Button>
-                    <Button
-                        variant="flat"
-                        startContent={<Settings />}
-                        onPress={settingsModal.onOpen}
-
-                    >
-                        Cài đặt
-                    </Button>
-                    <Button
-                        variant="flat"
-                        startContent={<Eye />}
-                        onPress={onPreview}
-
-                    >
-                        Xem trước
-                    </Button>
-                    <Button
-                        color="primary"
-                        variant="flat"
-                        startContent={<Save />}
-                        onPress={onSave}
-                        isLoading={isOperating}
-                        isDisabled={!hasUnsavedChanges}
-
-                    >
-                        {hasUnsavedChanges ? "Lưu" : "Đã lưu"}
-                    </Button>
-                    <Button
-                        color="success"
-                        startContent={<Upload />}
-                        onPress={onPublish}
-                        isLoading={isOperating}
-                        isDisabled={isOperating}
-
-                    >
-                        {isPublished ? "Cập nhật" : "Đăng bán"}
-                    </Button>
-                    {isPublished && (
-                        <Button
-                            color="warning"
-                            variant="flat"
-                            onPress={onUnpublishModalOpen}
-                            isLoading={isOperating}
-                            isDisabled={isOperating}
-
-                            startContent={<Undo2 />}
-                        >
-                            Hủy đăng
-                        </Button>
-                    )}
-                </div>
+  return (
+    <>
+      <div className="h-16 bg-content1 border-b border-divider px-6 flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <Button
+              isIconOnly
+              aria-label="Quay lại tổng quan"
+              as="a"
+              href="/vendor"
+              size="sm"
+              variant="light"
+            >
+              <ArrowLeft size={20} />
+            </Button>
+            <div>
+              <h2 className="text-xl font-bold">{templateName}</h2>
+              <p className="text-xs text-default-500">
+                {isPublished ? "Đã đăng" : "Bản nháp"}
+                {hasUnsavedChanges && (
+                  <span className="ml-2 text-warning">• chưa lưu thay đổi</span>
+                )}
+              </p>
             </div>
+          </div>
+        </div>
+        <div className="flex gap-3">
+          <Button
+            startContent={<Package />}
+            variant="flat"
+            onPress={productsModal.onOpen}
+          >
+            Sản phẩm
+          </Button>
+          <Button
+            startContent={<Settings />}
+            variant="flat"
+            onPress={settingsModal.onOpen}
+          >
+            Cài đặt
+          </Button>
+          <Button startContent={<Eye />} variant="flat" onPress={onPreview}>
+            Xem trước
+          </Button>
+          <Button
+            color="primary"
+            isDisabled={!hasUnsavedChanges}
+            isLoading={isOperating}
+            startContent={<Save />}
+            variant="flat"
+            onPress={onSave}
+          >
+            {hasUnsavedChanges ? "Lưu" : "Đã lưu"}
+          </Button>
+          <Button
+            color="success"
+            isDisabled={isOperating}
+            isLoading={isOperating}
+            startContent={<Upload />}
+            onPress={onPublish}
+          >
+            {isPublished ? "Cập nhật" : "Đăng bán"}
+          </Button>
+          {isPublished && (
+            <Button
+              color="warning"
+              isDisabled={isOperating}
+              isLoading={isOperating}
+              startContent={<Undo2 />}
+              variant="flat"
+              onPress={onUnpublishModalOpen}
+            >
+              Hủy đăng
+            </Button>
+          )}
+        </div>
+      </div>
 
-            <ConfirmationModal
-                isOpen={isUnpublishModalOpen}
-                onClose={onUnpublishModalClose}
-                title="Hủy đăng cửa hàng"
-                message="Bạn có chắc chắn muốn hủy đăng cửa hàng không? Khách hàng sẽ không thể truy cập cửa hàng của bạn nữa."
-                confirmText="Hủy đăng"
-                confirmColor="warning"
-                onConfirm={handleUnpublishConfirm}
-            />
+      <ConfirmationModal
+        confirmColor="warning"
+        confirmText="Hủy đăng"
+        isOpen={isUnpublishModalOpen}
+        message="Bạn có chắc chắn muốn hủy đăng cửa hàng không? Khách hàng sẽ không thể truy cập cửa hàng của bạn nữa."
+        title="Hủy đăng cửa hàng"
+        onClose={onUnpublishModalClose}
+        onConfirm={handleUnpublishConfirm}
+      />
 
-            <ProductManager
-                isOpen={productsModal.isOpen}
-                onOpenChange={productsModal.onOpenChange}
-                onProductsChange={onProductsChange || (() => { })}
-            />
+      <ProductManager
+        isOpen={productsModal.isOpen}
+        onOpenChange={productsModal.onOpenChange}
+        onProductsChange={onProductsChange || (() => {})}
+      />
 
-            <ShopSettings
-                isOpen={settingsModal.isOpen}
-                onOpenChange={settingsModal.onOpenChange}
-                currentStoreName={templateName}
-                currentFavicon={favicon}
-                onUpdate={onProfileUpdate || (() => { })}
-            />
-        </>
-    );
+      <ShopSettings
+        currentFavicon={favicon}
+        currentStoreName={templateName}
+        isOpen={settingsModal.isOpen}
+        onOpenChange={settingsModal.onOpenChange}
+        onUpdate={onProfileUpdate || (() => {})}
+      />
+    </>
+  );
 }

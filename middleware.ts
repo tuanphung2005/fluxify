@@ -1,5 +1,6 @@
-import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
+
+import { auth } from "@/lib/auth";
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;
@@ -29,7 +30,11 @@ export default auth((req) => {
       return NextResponse.redirect(new URL("/", req.url));
     }
 
-    if (isVendorRoute && session.user.role !== "VENDOR" && session.user.role !== "ADMIN") {
+    if (
+      isVendorRoute &&
+      session.user.role !== "VENDOR" &&
+      session.user.role !== "ADMIN"
+    ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
   }

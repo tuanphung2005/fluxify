@@ -1,125 +1,134 @@
 import { NextRequest } from "next/server";
+import { z } from "zod";
+
 import { prisma } from "@/lib/prisma";
 import { errorResponse, successResponse } from "@/lib/api/responses";
 import { getAuthenticatedVendor } from "@/lib/api/auth-helpers";
 import { isErrorResult } from "@/lib/api/responses";
 import { logOrderStatusChange } from "@/lib/api/audit";
-import { z } from "zod";
 
 export async function GET(req: NextRequest) {
-    try {
-        const auth = await getAuthenticatedVendor();
-        if (isErrorResult(auth)) {
-            return errorResponse(auth.error, auth.status);
-        }
+  try {
+    const auth = await getAuthenticatedVendor();
 
-        const orders = await prisma.order.findMany({
-            where: {
-                items: {
-                    some: {
-                        product: {
-                            vendorId: auth.vendor.id
-                        }
-                    }
-                }
-            },
-            select: {
-                id: true,
-                fullName: true,
-                phoneNumber: true,
-                total: true,
-                status: true,
-                createdAt: true,
-                updatedAt: true,
-                items: {
-                    where: {
-                        product: {
-                            vendorId: auth.vendor.id
-                        }
-                    },
-                    include: {
-                        product: true
-                    }
-                },
-                user: {
-                    select: {
-                        name: true,
-                        email: true
-                    }
-                },
-                address: true
-            },
-            orderBy: {
-                createdAt: 'desc'
-            }
-        });
-
-        return successResponse(orders);
-    } catch (error) {
-        return errorResponse("Failed to fetch orders", 500, error);
+    if (isErrorResult(auth)) {
+      return errorResponse(auth.error, auth.status);
     }
+
+    const orders = await prisma.order.findMany({
+      where: {
+        items: {
+          some: {
+            product: {
+              vendorId: auth.vendor.id,
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+        fullName: true,
+        phoneNumber: true,
+        total: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+        items: {
+          where: {
+            product: {
+              vendorId: auth.vendor.id,
+            },
+          },
+          include: {
+            product: true,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        address: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return successResponse(orders);
+  } catch (error) {
+    return errorResponse("Failed to fetch orders", 500, error);
+  }
 }
 
 const updateStatusSchema = z.object({
-    orderId: z.string(),
-    status: z.enum(["PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"]),
+  orderId: z.string(),
+  status: z.enum([
+    "PENDING",
+    "PROCESSING",
+    "SHIPPED",
+    "DELIVERED",
+    "CANCELLED",
+  ]),
 });
 
 export async function PATCH(req: NextRequest) {
-    try {
-        const auth = await getAuthenticatedVendor();
-        if (isErrorResult(auth)) {
-            return errorResponse(auth.error, auth.status);
-        }
+  try {
+    const auth = await getAuthenticatedVendor();
 
-        const body = await req.json();
-        const validation = updateStatusSchema.safeParse(body);
+    if (isErrorResult(auth)) {
+      return errorResponse(auth.error, auth.status);
+    }
 
-        if (!validation.success) {
-            return errorResponse(validation.error.issues[0].message, 400);
-        }
+    const body = await req.json();
+    const validation = updateStatusSchema.safeParse(body);
 
-        const { orderId, status } = validation.data;
+    if (!validation.success) {
+      return errorResponse(validation.error.issues[0].message, 400);
+    }
 
-        // Verify the order contains items from this vendor
-        const order = await prisma.order.findFirst({
-            where: {
-                id: orderId,
-                items: {
-                    some: {
-                        product: {
-                            vendorId: auth.vendor.id
-                        }
-                    }
-                }
-            }
+    const { orderId, status } = validation.data;
+
+    // Verify the order contains items from this vendor
+    const order = await prisma.order.findFirst({
+      where: {
+        id: orderId,
+        items: {
+          some: {
+            product: {
+              vendorId: auth.vendor.id,
+            },
+          },
+        },
+      },
+    });
+
+    if (!order) {
+      return errorResponse("Order not found or unauthorized", 404);
+    }
+
+    const oldStatus = order.status;
+
+    // Use a transaction for atomic stock restoration + order update
+    const updatedOrder = await prisma.$transaction(async (tx) => {
+      // Restore stock if order is being cancelled (and wasn't already cancelled)
+      if (status === "CANCELLED" && oldStatus !== "CANCELLED") {
+        // Fetch order items
+        const orderItems = await tx.orderItem.findMany({
+          where: { orderId },
+          select: {
+            productId: true,
+            quantity: true,
+            selectedVariant: true,
+          },
         });
 
-        if (!order) {
-            return errorResponse("Order not found or unauthorized", 404);
-        }
-
-        const oldStatus = order.status;
-
-        // Use a transaction for atomic stock restoration + order update
-        const updatedOrder = await prisma.$transaction(async (tx) => {
-            // Restore stock if order is being cancelled (and wasn't already cancelled)
-            if (status === "CANCELLED" && oldStatus !== "CANCELLED") {
-                // Fetch order items
-                const orderItems = await tx.orderItem.findMany({
-                    where: { orderId },
-                    select: {
-                        productId: true,
-                        quantity: true,
-                        selectedVariant: true,
-                    }
-                });
-
-                // Restore stock atomically for each item
-                for (const item of orderItems) {
-                    if (item.selectedVariant) {
-                        // Use raw SQL for atomic variant stock restoration with PostgreSQL jsonb_set
-                        await tx.$executeRaw`
+        // Restore stock atomically for each item
+        for (const item of orderItems) {
+          if (item.selectedVariant) {
+            // Use raw SQL for atomic variant stock restoration with PostgreSQL jsonb_set
+            await tx.$executeRaw`
                             UPDATE "Product"
                             SET "variantStock" = jsonb_set(
                                 COALESCE("variantStock", '{}'::jsonb),
@@ -130,32 +139,32 @@ export async function PATCH(req: NextRequest) {
                             )
                             WHERE id = ${item.productId}
                         `;
-                    } else {
-                        // General stock uses Prisma's atomic increment (already race-safe)
-                        await tx.product.update({
-                            where: { id: item.productId },
-                            data: {
-                                stock: {
-                                    increment: item.quantity,
-                                },
-                            },
-                        });
-                    }
-                }
-            }
-
-            // Update order status
-            return tx.order.update({
-                where: { id: orderId },
-                data: { status },
+          } else {
+            // General stock uses Prisma's atomic increment (already race-safe)
+            await tx.product.update({
+              where: { id: item.productId },
+              data: {
+                stock: {
+                  increment: item.quantity,
+                },
+              },
             });
-        });
+          }
+        }
+      }
 
-        // Log the status change for audit trail
-        logOrderStatusChange(orderId, oldStatus, status, auth.user.id);
+      // Update order status
+      return tx.order.update({
+        where: { id: orderId },
+        data: { status },
+      });
+    });
 
-        return successResponse(updatedOrder);
-    } catch (error) {
-        return errorResponse("Failed to update order", 500, error);
-    }
+    // Log the status change for audit trail
+    logOrderStatusChange(orderId, oldStatus, status, auth.user.id);
+
+    return successResponse(updatedOrder);
+  } catch (error) {
+    return errorResponse("Failed to update order", 500, error);
+  }
 }

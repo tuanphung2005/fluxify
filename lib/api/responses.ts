@@ -7,11 +7,16 @@ import { NextResponse } from "next/server";
  * @param error - Optional error object to log
  * @returns NextResponse with error JSON
  */
-export function errorResponse(message: string, status: number = 500, error?: any) {
-    if (error) {
-        console.error(message, error);
-    }
-    return NextResponse.json({ error: message }, { status });
+export function errorResponse(
+  message: string,
+  status: number = 500,
+  error?: any,
+) {
+  if (error) {
+    console.error(message, error);
+  }
+
+  return NextResponse.json({ error: message }, { status });
 }
 
 /**
@@ -21,7 +26,7 @@ export function errorResponse(message: string, status: number = 500, error?: any
  * @returns NextResponse with data JSON
  */
 export function successResponse(data: any, status: number = 200) {
-    return NextResponse.json(data, { status });
+  return NextResponse.json(data, { status });
 }
 
 /**
@@ -29,6 +34,13 @@ export function successResponse(data: any, status: number = 200) {
  * @param result - The result to check
  * @returns True if the result has an error property
  */
-export function isErrorResult(result: any): result is { error: string; status: number } {
-    return result && typeof result === "object" && "error" in result && "status" in result;
+export function isErrorResult(
+  result: any,
+): result is { error: string; status: number } {
+  return (
+    result &&
+    typeof result === "object" &&
+    "error" in result &&
+    "status" in result
+  );
 }

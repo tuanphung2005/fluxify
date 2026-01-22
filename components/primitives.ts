@@ -20,9 +20,7 @@ export const title = tv({
   },
   compoundVariants: [
     {
-      color: [
-        "foreground",
-      ],
+      color: ["foreground"],
       class: "bg-clip-text",
     },
   ],
@@ -39,4 +37,3 @@ export const subtitle = tv({
     fullWidth: true,
   },
 });
-

@@ -1,59 +1,62 @@
 import { NextRequest } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/api/middleware";
 import { errorResponse, successResponse } from "@/lib/api/responses";
 import { normalizePagination } from "@/lib/db/product-queries";
 
 export async function GET(req: NextRequest) {
-    const auth = await requireAdmin(req);
-    if (auth.error) return auth.error;
+  const auth = await requireAdmin(req);
 
-    try {
-        const { searchParams } = new URL(req.url);
-        const { page, limit, skip } = normalizePagination({
-            page: parseInt(searchParams.get("page") || "1"),
-            limit: parseInt(searchParams.get("limit") || "10"),
-        });
-        const search = searchParams.get("search") || "";
+  if (auth.error) return auth.error;
 
-        const where: Record<string, unknown> = {};
-        if (search) {
-            where.OR = [
-                { name: { contains: search, mode: "insensitive" } },
-                { email: { contains: search, mode: "insensitive" } },
-            ];
-        }
+  try {
+    const { searchParams } = new URL(req.url);
+    const { page, limit, skip } = normalizePagination({
+      page: parseInt(searchParams.get("page") || "1"),
+      limit: parseInt(searchParams.get("limit") || "10"),
+    });
+    const search = searchParams.get("search") || "";
 
-        const [users, total] = await Promise.all([
-            prisma.user.findMany({
-                where,
-                select: {
-                    id: true,
-                    email: true,
-                    name: true,
-                    role: true,
-                    isActive: true,
-                    createdAt: true,
-                    vendorProfile: {
-                        select: { id: true }
-                    }
-                },
-                orderBy: {
-                    createdAt: 'desc'
-                },
-                skip,
-                take: limit,
-            }),
-            prisma.user.count({ where })
-        ]);
+    const where: Record<string, unknown> = {};
 
-        return successResponse({
-            users,
-            total,
-            totalPages: Math.ceil(total / limit),
-            currentPage: page
-        });
-    } catch (error) {
-        return errorResponse("Failed to fetch users", 500, error);
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        { email: { contains: search, mode: "insensitive" } },
+      ];
     }
+
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          isActive: true,
+          createdAt: true,
+          vendorProfile: {
+            select: { id: true },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip,
+        take: limit,
+      }),
+      prisma.user.count({ where }),
+    ]);
+
+    return successResponse({
+      users,
+      total,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    return errorResponse("Failed to fetch users", 500, error);
+  }
 }

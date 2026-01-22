@@ -1,26 +1,28 @@
 import { NextRequest } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/api/middleware";
 import { errorResponse, successResponse } from "@/lib/api/responses";
 
 export async function PATCH(
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
-    const auth = await requireAdmin(request);
-    if (auth.error) return auth.error;
+  const auth = await requireAdmin(request);
 
-    try {
-        const { isActive } = await request.json();
-        const { id } = await params;
+  if (auth.error) return auth.error;
 
-        const user = await prisma.user.update({
-            where: { id },
-            data: { isActive },
-        });
+  try {
+    const { isActive } = await request.json();
+    const { id } = await params;
 
-        return successResponse(user);
-    } catch (error) {
-        return errorResponse("Failed to update user status", 500, error);
-    }
+    const user = await prisma.user.update({
+      where: { id },
+      data: { isActive },
+    });
+
+    return successResponse(user);
+  } catch (error) {
+    return errorResponse("Failed to update user status", 500, error);
+  }
 }

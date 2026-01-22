@@ -29,7 +29,9 @@ export default function LoginPage() {
       if (result?.error) {
         // Check for account deactivation error (custom error code from auth.ts)
         if (result.code === "account_deactivated") {
-          setError("Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ hỗ trợ.");
+          setError(
+            "Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ hỗ trợ.",
+          );
         } else {
           setError("Email hoặc mật khẩu không chính xác");
         }
@@ -49,16 +51,18 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="flex flex-col gap-1 items-center">
           <h1 className="text-2xl font-bold">Chào mừng trở lại</h1>
-          <p className="text-sm text-default-500">Đăng nhập vào tài khoản của bạn</p>
+          <p className="text-sm text-default-500">
+            Đăng nhập vào tài khoản của bạn
+          </p>
         </CardHeader>
         <CardBody>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <Input
               isRequired
               label="Email"
               name="email"
-              type="email"
               placeholder="Nhập email của bạn"
+              type="email"
               variant="bordered"
             />
             <Input
@@ -66,8 +70,8 @@ export default function LoginPage() {
               label="Mật khẩu"
               name="password"
               placeholder="Nhập mật khẩu"
-              variant="bordered"
               type="password"
+              variant="bordered"
             />
 
             {error && (
@@ -75,10 +79,10 @@ export default function LoginPage() {
             )}
 
             <Button
-              type="submit"
+              className="w-full"
               color="primary"
               isLoading={isLoading}
-              className="w-full"
+              type="submit"
             >
               Đăng nhập
             </Button>

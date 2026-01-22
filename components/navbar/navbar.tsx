@@ -9,10 +9,11 @@ import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
 
+import { NavbarUserMenu } from "./user-menu";
+
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { auth } from "@/lib/auth";
-import { NavbarUserMenu } from "./user-menu";
 
 export const Navbar = async () => {
   const session = await auth();
@@ -43,24 +44,17 @@ export const Navbar = async () => {
         </ul>
       </NavbarContent>
 
-      <NavbarContent
-        className=""
-        justify="end"
-      >
+      <NavbarContent className="" justify="end">
         <ThemeSwitch />
         {session ? (
           <NavbarUserMenu user={session.user} />
         ) : (
           <>
             <NextLink href="/auth/login">
-              <Button variant="flat">
-                login
-              </Button>
+              <Button variant="flat">login</Button>
             </NextLink>
             <NextLink href="/auth/register">
-              <Button color="primary">
-                sign up
-              </Button>
+              <Button color="primary">sign up</Button>
             </NextLink>
           </>
         )}

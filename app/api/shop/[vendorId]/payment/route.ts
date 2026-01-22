@@ -1,11 +1,12 @@
 import { NextRequest } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 import { errorResponse, successResponse } from "@/lib/api/responses";
 
 interface RouteParams {
-    params: Promise<{
-        vendorId: string;
-    }>;
+  params: Promise<{
+    vendorId: string;
+  }>;
 }
 
 /**
@@ -14,28 +15,28 @@ interface RouteParams {
  * This is a public endpoint - no authentication required
  */
 export async function GET(req: NextRequest, { params }: RouteParams) {
-    try {
-        const { vendorId } = await params;
+  try {
+    const { vendorId } = await params;
 
-        const vendor = await prisma.vendorProfile.findUnique({
-            where: { id: vendorId },
-            select: {
-                bankId: true,
-                bankAccount: true,
-                bankAccountName: true,
-            },
-        });
+    const vendor = await prisma.vendorProfile.findUnique({
+      where: { id: vendorId },
+      select: {
+        bankId: true,
+        bankAccount: true,
+        bankAccountName: true,
+      },
+    });
 
-        if (!vendor) {
-            return errorResponse("Vendor not found", 404);
-        }
-
-        return successResponse({
-            bankId: vendor.bankId || null,
-            bankAccount: vendor.bankAccount || null,
-            bankAccountName: vendor.bankAccountName || null,
-        });
-    } catch (error) {
-        return errorResponse("Failed to fetch payment info", 500, error);
+    if (!vendor) {
+      return errorResponse("Vendor not found", 404);
     }
+
+    return successResponse({
+      bankId: vendor.bankId || null,
+      bankAccount: vendor.bankAccount || null,
+      bankAccountName: vendor.bankAccountName || null,
+    });
+  } catch (error) {
+    return errorResponse("Failed to fetch payment info", 500, error);
+  }
 }

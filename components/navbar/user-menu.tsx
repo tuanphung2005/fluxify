@@ -8,10 +8,10 @@ import {
   DropdownItem,
 } from "@heroui/dropdown";
 import { Avatar } from "@heroui/avatar";
-import { SignOutButton } from "./sign-out-button";
 import { Session } from "next-auth";
+import { Package2, LogOut, LayoutDashboard } from "lucide-react";
 
-import { Package2, Settings, LogOut, LayoutDashboard } from "lucide-react";
+import { SignOutButton } from "./sign-out-button";
 
 interface NavbarUserMenuProps {
   user: Session["user"];
@@ -34,7 +34,7 @@ export const NavbarUserMenu = ({ user }: NavbarUserMenuProps) => {
 
       <DropdownMenu aria-label="Profile Actions" variant="flat">
         <DropdownSection>
-          <DropdownItem key="info" showDivider isReadOnly>
+          <DropdownItem key="info" isReadOnly showDivider>
             {user.email}
           </DropdownItem>
         </DropdownSection>
@@ -64,7 +64,11 @@ export const NavbarUserMenu = ({ user }: NavbarUserMenuProps) => {
           >
             my orders
           </DropdownItem>
-          <DropdownItem key="logout" color="danger" startContent={<LogOut size={16} />}>
+          <DropdownItem
+            key="logout"
+            color="danger"
+            startContent={<LogOut size={16} />}
+          >
             <SignOutButton />
           </DropdownItem>
         </DropdownSection>

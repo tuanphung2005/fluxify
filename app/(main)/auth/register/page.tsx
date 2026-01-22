@@ -49,6 +49,7 @@ export default function RegisterPage() {
       if (!response.ok) {
         setError(data.error || "Đã xảy ra lỗi");
         setIsLoading(false);
+
         return;
       }
 
@@ -60,7 +61,9 @@ export default function RegisterPage() {
       });
 
       if (result?.error) {
-        setError("Tài khoản đã tạo thành công nhưng đăng nhập thất bại. Vui lòng thử đăng nhập lại.");
+        setError(
+          "Tài khoản đã tạo thành công nhưng đăng nhập thất bại. Vui lòng thử đăng nhập lại.",
+        );
       } else {
         router.push("/");
         router.refresh();
@@ -82,21 +85,21 @@ export default function RegisterPage() {
           </p>
         </CardHeader>
         <CardBody>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <Input
               isRequired
               label="Họ và tên"
               name="name"
-              type="text"
               placeholder="Nhập tên của bạn"
+              type="text"
               variant="bordered"
             />
             <Input
               isRequired
               label="Email"
               name="email"
-              type="email"
               placeholder="Nhập email của bạn"
+              type="email"
               variant="bordered"
             />
             <Input
@@ -104,15 +107,15 @@ export default function RegisterPage() {
               label="Mật khẩu"
               name="password"
               placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)"
-              variant="bordered"
               type="password"
+              variant="bordered"
             />
 
             <RadioGroup
               label="Tôi muốn:"
+              orientation="horizontal"
               value={role}
               onValueChange={setRole}
-              orientation="horizontal"
             >
               <Radio value="CUSTOMER">Mua sắm</Radio>
               <Radio value="VENDOR">Bán hàng</Radio>
@@ -123,10 +126,10 @@ export default function RegisterPage() {
             )}
 
             <Button
-              type="submit"
+              className="w-full"
               color="primary"
               isLoading={isLoading}
-              className="w-full"
+              type="submit"
             >
               Tạo tài khoản
             </Button>

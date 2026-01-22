@@ -1,19 +1,29 @@
 import { NextRequest } from "next/server";
 import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
 import { z } from "zod";
-import { checkRateLimit, getClientIdentifier, rateLimitPresets, rateLimitExceededResponse } from "@/lib/api/rate-limit";
+
+import { prisma } from "@/lib/prisma";
+import {
+  checkRateLimit,
+  getClientIdentifier,
+  rateLimitPresets,
+  rateLimitExceededResponse,
+} from "@/lib/api/rate-limit";
 import { errorResponse, successResponse } from "@/lib/api/responses";
-import { createVerificationToken, sendVerificationEmail } from "@/lib/api/email-verification";
+import {
+  createVerificationToken,
+  sendVerificationEmail,
+} from "@/lib/api/email-verification";
 
 /**
  * Password validation schema with security requirements:
  * - Minimum 8 characters
  * - At least one uppercase letter
- * - At least one lowercase letter  
+ * - At least one lowercase letter
  * - At least one number
  */
-const passwordSchema = z.string()
+const passwordSchema = z
+  .string()
   .min(8, "Password must be at least 8 characters")
   .regex(/[A-Z]/, "Password must contain an uppercase letter")
   .regex(/[a-z]/, "Password must contain a lowercase letter")
@@ -28,7 +38,11 @@ const registerSchema = z.object({
 
 export async function POST(req: NextRequest) {
   // Apply strict rate limiting to auth endpoints
-  const rateLimit = checkRateLimit(getClientIdentifier(req), rateLimitPresets.auth);
+  const rateLimit = checkRateLimit(
+    getClientIdentifier(req),
+    rateLimitPresets.auth,
+  );
+
   if (!rateLimit.allowed) {
     return rateLimitExceededResponse(rateLimit.resetTime);
   }
@@ -78,13 +92,18 @@ export async function POST(req: NextRequest) {
 
     // Send verification email
     const token = await createVerificationToken(user.email);
+
     await sendVerificationEmail(user.email, token);
 
-    return successResponse({
-      message: "User created successfully. Please check your email to verify your account.",
-      user,
-      requiresVerification: true,
-    }, 201);
+    return successResponse(
+      {
+        message:
+          "User created successfully. Please check your email to verify your account.",
+        user,
+        requiresVerification: true,
+      },
+      201,
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return errorResponse(error.issues[0].message, 400);

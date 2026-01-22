@@ -1,179 +1,189 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Spinner } from "@heroui/spinner";
-import { Package } from "lucide-react";
-import { api } from "@/lib/api/api";
-import ProductCard from "@/components/common/ProductCard";
-import { useCartStore } from "@/store/cart-store";
 import type { FeaturedCollectionConfig } from "@/types/shop";
 import type { ProductData } from "@/types/api";
 
+import { useState, useEffect } from "react";
+import { Spinner } from "@heroui/spinner";
+import { Package } from "lucide-react";
+
+import { api } from "@/lib/api/api";
+import ProductCard from "@/components/common/ProductCard";
+import { useCartStore } from "@/store/cart-store";
+
 interface FeaturedCollectionComponentProps {
-    config: FeaturedCollectionConfig;
-    vendorId?: string;
-    vendorName?: string;
-    products?: Array<{
-        id: string;
-        name: string;
-        price: number;
-        description?: string | null;
-        stock?: number;
-        images: string[];
-        variants?: unknown;
-    }>;
+  config: FeaturedCollectionConfig;
+  vendorId?: string;
+  vendorName?: string;
+  products?: Array<{
+    id: string;
+    name: string;
+    price: number;
+    description?: string | null;
+    stock?: number;
+    images: string[];
+    variants?: unknown;
+  }>;
 }
 
 export default function FeaturedCollectionComponent({
-    config,
-    vendorId,
-    vendorName,
-    products: productsFromParent,
+  config,
+  vendorId,
+  vendorName,
+  products: productsFromParent,
 }: FeaturedCollectionComponentProps) {
-    const {
-        title,
-        description,
-        productIds,
-        columns = 4,
-        showAddToCart = true,
-    } = config;
+  const {
+    title,
+    description,
+    productIds,
+    columns = 4,
+    showAddToCart = true,
+  } = config;
 
-    const [displayProducts, setDisplayProducts] = useState<ProductData[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const { addItem, setIsOpen } = useCartStore();
+  const [displayProducts, setDisplayProducts] = useState<ProductData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { addItem, setIsOpen } = useCartStore();
 
-    useEffect(() => {
-        loadProducts();
-    }, [productIds, productsFromParent]);
+  useEffect(() => {
+    loadProducts();
+  }, [productIds, productsFromParent]);
 
-    const loadProducts = async () => {
-        if (!productIds || productIds.length === 0) {
-            setIsLoading(false);
-            return;
-        }
+  const loadProducts = async () => {
+    if (!productIds || productIds.length === 0) {
+      setIsLoading(false);
 
-        // If products are provided from parent (public shop page), use them directly
-        if (productsFromParent && productsFromParent.length > 0) {
-            const selectedProducts = productsFromParent
-                .filter(p => productIds.includes(p.id))
-                .map(p => ({
-                    id: p.id,
-                    name: p.name,
-                    price: p.price,
-                    description: p.description,
-                    stock: p.stock,
-                    images: p.images,
-                    variants: p.variants,
-                })) as ProductData[];
-
-            // Sort by the order in productIds
-            selectedProducts.sort((a, b) =>
-                productIds.indexOf(a.id) - productIds.indexOf(b.id)
-            );
-
-            setDisplayProducts(selectedProducts);
-            setIsLoading(false);
-            return;
-        }
-
-        // Otherwise, fetch from API (builder mode where vendor is authenticated)
-        try {
-            const response = await api.get<{ products: ProductData[] } | ProductData[]>("/api/products?limit=100");
-
-            let allProducts: ProductData[] = [];
-            if (Array.isArray(response)) {
-                allProducts = response;
-            } else if (response && 'products' in response) {
-                allProducts = response.products || [];
-            }
-
-            const selectedProducts = allProducts.filter(p => productIds.includes(p.id));
-
-            selectedProducts.sort((a, b) =>
-                productIds.indexOf(a.id) - productIds.indexOf(b.id)
-            );
-
-            setDisplayProducts(selectedProducts);
-        } catch (error) {
-            console.error("Failed to fetch products:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleAddToCart = (productId: string) => {
-        const product = displayProducts.find(p => p.id === productId);
-        if (product) {
-            addItem({
-                id: product.id,
-                name: product.name,
-                price: Number(product.price),
-                image: product.images?.[0],
-            });
-            setIsOpen(true);
-        }
-    };
-
-    if (isLoading) {
-        return (
-            <section className="py-16 px-4">
-                <div className="max-w-7xl mx-auto text-center">
-                    <Spinner size="lg" />
-                </div>
-            </section>
-        );
+      return;
     }
 
-    if (displayProducts.length === 0) {
-        return (
-            <section className="py-16 px-4 bg-default-50">
-                <div className="max-w-7xl mx-auto text-center text-default-500">
-                    <Package size={48} className="mx-auto mb-4 opacity-50" />
-                    <p>Chưa có sản phẩm nào trong bộ sưu tập này.</p>
-                </div>
-            </section>
-        );
+    // If products are provided from parent (public shop page), use them directly
+    if (productsFromParent && productsFromParent.length > 0) {
+      const selectedProducts = productsFromParent
+        .filter((p) => productIds.includes(p.id))
+        .map((p) => ({
+          id: p.id,
+          name: p.name,
+          price: p.price,
+          description: p.description,
+          stock: p.stock,
+          images: p.images,
+          variants: p.variants,
+        })) as ProductData[];
+
+      // Sort by the order in productIds
+      selectedProducts.sort(
+        (a, b) => productIds.indexOf(a.id) - productIds.indexOf(b.id),
+      );
+
+      setDisplayProducts(selectedProducts);
+      setIsLoading(false);
+
+      return;
     }
 
-    const gridCols = {
-        2: "grid-cols-1 sm:grid-cols-2",
-        3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
-        4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
-        5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5",
+    // Otherwise, fetch from API (builder mode where vendor is authenticated)
+    try {
+      const response = await api.get<
+        { products: ProductData[] } | ProductData[]
+      >("/api/products?limit=100");
+
+      let allProducts: ProductData[] = [];
+
+      if (Array.isArray(response)) {
+        allProducts = response;
+      } else if (response && "products" in response) {
+        allProducts = response.products || [];
+      }
+
+      const selectedProducts = allProducts.filter((p) =>
+        productIds.includes(p.id),
+      );
+
+      selectedProducts.sort(
+        (a, b) => productIds.indexOf(a.id) - productIds.indexOf(b.id),
+      );
+
+      setDisplayProducts(selectedProducts);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddToCart = (productId: string) => {
+    const product = displayProducts.find((p) => p.id === productId);
+
+    if (product) {
+      addItem({
+        id: product.id,
+        name: product.name,
+        price: Number(product.price),
+        image: product.images?.[0],
+      });
+      setIsOpen(true);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <section className="py-16 px-4">
+        <div className="max-w-7xl mx-auto text-center">
+          <Spinner size="lg" />
+        </div>
+      </section>
+    );
+  }
+
+  if (displayProducts.length === 0) {
+    return (
+      <section className="py-16 px-4 bg-default-50">
+        <div className="max-w-7xl mx-auto text-center text-default-500">
+          <Package className="mx-auto mb-4 opacity-50" size={48} />
+          <p>Chưa có sản phẩm nào trong bộ sưu tập này.</p>
+        </div>
+      </section>
+    );
+  }
+
+  const gridCols =
+    {
+      2: "grid-cols-1 sm:grid-cols-2",
+      3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+      4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
+      5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5",
     }[columns] || "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
 
-    return (
-        <section className="py-16 px-4">
-            <div className="max-w-7xl mx-auto">
-                {/* Header */}
-                <div className="text-center mb-12">
-                    <h2 className="text-3xl font-bold mb-4">{title}</h2>
-                    {description && (
-                        <p className="text-lg text-default-600 max-w-2xl mx-auto">
-                            {description}
-                        </p>
-                    )}
-                </div>
+  return (
+    <section className="py-16 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4">{title}</h2>
+          {description && (
+            <p className="text-lg text-default-600 max-w-2xl mx-auto">
+              {description}
+            </p>
+          )}
+        </div>
 
-                {/* Products Grid */}
-                <div className={`grid ${gridCols} gap-6`}>
-                    {displayProducts.map((product) => (
-                        <ProductCard
-                            key={product.id}
-                            id={product.id}
-                            name={product.name}
-                            price={Number(product.price)}
-                            images={product.images || []}
-                            vendorId={vendorId}
-                            showAddToCart={showAddToCart}
-                            onAddToCart={handleAddToCart}
-                            variants={product.variants}
-                            variantStock={(product as any).variantStock}
-                        />
-                    ))}
-                </div>
-            </div>
-        </section>
-    );
+        {/* Products Grid */}
+        <div className={`grid ${gridCols} gap-6`}>
+          {displayProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              images={product.images || []}
+              name={product.name}
+              price={Number(product.price)}
+              showAddToCart={showAddToCart}
+              variantStock={(product as any).variantStock}
+              variants={product.variants}
+              vendorId={vendorId}
+              onAddToCart={handleAddToCart}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }
-

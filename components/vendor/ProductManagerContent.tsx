@@ -1,162 +1,164 @@
 "use client";
 
-import {
-    Button,
-    Input,
-    useDisclosure,
-} from "@heroui/react";
+import { Button, Input, useDisclosure } from "@heroui/react";
 import { Pagination } from "@heroui/pagination";
 import { Plus, Search } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
-import { api } from "@/lib/api/api";
+
+import ConfirmationModal from "../common/ConfirmationModal";
+
 import ProductsTable from "./ProductsTable";
 import ProductFormModal, { Product } from "./ProductFormModal";
-import ConfirmationModal from "../common/ConfirmationModal";
+
+import { api } from "@/lib/api/api";
 import { useDebounce } from "@/hooks/use-debounce";
 
 interface ProductManagerContentProps {
-    onProductsChange?: () => void;
+  onProductsChange?: () => void;
 }
 
 interface ProductResponse {
-    products: Product[];
-    total: number;
-    totalPages: number;
-    currentPage: number;
+  products: Product[];
+  total: number;
+  totalPages: number;
+  currentPage: number;
 }
 
 export default function ProductManagerContent({
-    onProductsChange,
+  onProductsChange,
 }: ProductManagerContentProps) {
-    const productModal = useDisclosure();
-    const deleteModal = useDisclosure();
-    const [products, setProducts] = useState<Product[]>([]);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-    const [productToDelete, setProductToDelete] = useState<string | null>(null);
+  const productModal = useDisclosure();
+  const deleteModal = useDisclosure();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
-    // Pagination state
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-    const debouncedSearch = useDebounce(searchQuery, 300);
+  const debouncedSearch = useDebounce(searchQuery, 300);
 
-    const fetchProducts = useCallback(async () => {
-        setIsLoading(true);
-        try {
-            const queryParams = new URLSearchParams({
-                page: page.toString(),
-                limit: "10",
-                search: debouncedSearch
-            });
-            const data = await api.get<ProductResponse>(`/api/products?${queryParams}`);
-            setProducts(data.products);
-            setTotalPages(data.totalPages);
-        } catch (error) {
-            console.error("Failed to fetch products", error);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [page, debouncedSearch]);
+  const fetchProducts = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: "10",
+        search: debouncedSearch,
+      });
+      const data = await api.get<ProductResponse>(
+        `/api/products?${queryParams}`,
+      );
 
-    useEffect(() => {
-        fetchProducts();
-    }, [fetchProducts]);
+      setProducts(data.products);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.error("Failed to fetch products", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, debouncedSearch]);
 
-    const handleProductSaved = () => {
-        fetchProducts();
-        if (onProductsChange) onProductsChange();
-        productModal.onClose();
-        setSelectedProduct(null);
-    };
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
-    const handleAddProduct = () => {
-        setSelectedProduct(null);
-        productModal.onOpen();
-    };
+  const handleProductSaved = () => {
+    fetchProducts();
+    if (onProductsChange) onProductsChange();
+    productModal.onClose();
+    setSelectedProduct(null);
+  };
 
-    const handleEditProduct = (product: Product) => {
-        setSelectedProduct(product);
-        productModal.onOpen();
-    };
+  const handleAddProduct = () => {
+    setSelectedProduct(null);
+    productModal.onOpen();
+  };
 
-    const handleDeleteProduct = (productId: string) => {
-        setProductToDelete(productId);
-        deleteModal.onOpen();
-    };
+  const handleEditProduct = (product: Product) => {
+    setSelectedProduct(product);
+    productModal.onOpen();
+  };
 
-    const confirmDelete = async () => {
-        if (!productToDelete) return;
+  const handleDeleteProduct = (productId: string) => {
+    setProductToDelete(productId);
+    deleteModal.onOpen();
+  };
 
-        try {
-            await api.delete(`/api/products/${productToDelete}`);
-            fetchProducts();
-            if (onProductsChange) onProductsChange();
-            setProductToDelete(null);
-        } catch (error) {
-            console.error("Failed to delete product", error);
-        }
-    };
+  const confirmDelete = async () => {
+    if (!productToDelete) return;
 
-    const handleSearchChange = (value: string) => {
-        setSearchQuery(value);
-        setPage(1); // Reset to first page on search
-    };
+    try {
+      await api.delete(`/api/products/${productToDelete}`);
+      fetchProducts();
+      if (onProductsChange) onProductsChange();
+      setProductToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete product", error);
+    }
+  };
 
-    return (
-        <>
-            <div className="flex justify-between items-center mb-4 gap-4">
-                <Input
-                    placeholder="Tìm kiếm sản phẩm..."
-                    startContent={<Search size={18} />}
-                    value={searchQuery}
-                    onValueChange={handleSearchChange}
-                    className="max-w-xs"
-                />
-                <Button
-                    color="primary"
-                    startContent={<Plus />}
-                    onPress={handleAddProduct}
-                >
-                    Thêm sản phẩm
-                </Button>
-            </div>
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setPage(1); // Reset to first page on search
+  };
 
-            <ProductsTable
-                products={products}
-                isLoading={isLoading}
-                onEdit={handleEditProduct}
-                onDelete={handleDeleteProduct}
-            />
+  return (
+    <>
+      <div className="flex justify-between items-center mb-4 gap-4">
+        <Input
+          className="max-w-xs"
+          placeholder="Tìm kiếm sản phẩm..."
+          startContent={<Search size={18} />}
+          value={searchQuery}
+          onValueChange={handleSearchChange}
+        />
+        <Button
+          color="primary"
+          startContent={<Plus />}
+          onPress={handleAddProduct}
+        >
+          Thêm sản phẩm
+        </Button>
+      </div>
 
-            {totalPages > 1 && (
-                <div className="flex justify-center mt-4">
-                    <Pagination
-                        total={totalPages}
-                        page={page}
-                        onChange={setPage}
-                        showControls
-                    />
-                </div>
-            )}
+      <ProductsTable
+        isLoading={isLoading}
+        products={products}
+        onDelete={handleDeleteProduct}
+        onEdit={handleEditProduct}
+      />
 
-            <ProductFormModal
-                isOpen={productModal.isOpen}
-                onOpenChange={productModal.onOpenChange}
-                onSaved={handleProductSaved}
-                product={selectedProduct}
-            />
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-4">
+          <Pagination
+            showControls
+            page={page}
+            total={totalPages}
+            onChange={setPage}
+          />
+        </div>
+      )}
 
-            <ConfirmationModal
-                isOpen={deleteModal.isOpen}
-                onClose={deleteModal.onClose}
-                onConfirm={confirmDelete}
-                title="Xóa sản phẩm"
-                message="Bạn có chắc chắn muốn xóa sản phẩm này không? Hành động này không thể hoàn tác."
-                confirmText="Xóa"
-                cancelText="Hủy"
-            />
-        </>
-    );
+      <ProductFormModal
+        isOpen={productModal.isOpen}
+        product={selectedProduct}
+        onOpenChange={productModal.onOpenChange}
+        onSaved={handleProductSaved}
+      />
+
+      <ConfirmationModal
+        cancelText="Hủy"
+        confirmText="Xóa"
+        isOpen={deleteModal.isOpen}
+        message="Bạn có chắc chắn muốn xóa sản phẩm này không? Hành động này không thể hoàn tác."
+        title="Xóa sản phẩm"
+        onClose={deleteModal.onClose}
+        onConfirm={confirmDelete}
+      />
+    </>
+  );
 }

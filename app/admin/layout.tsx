@@ -1,5 +1,6 @@
-import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+
+import { auth } from "@/lib/auth";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Navbar } from "@/components/navbar/navbar";
 

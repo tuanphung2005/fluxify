@@ -18,14 +18,10 @@ export default function AuthErrorPage() {
           </p>
           <div className="flex gap-2 justify-center">
             <Link href="/auth/login">
-              <Button color="primary">
-                Try Again
-              </Button>
+              <Button color="primary">Try Again</Button>
             </Link>
             <Link href="/">
-              <Button variant="bordered">
-                Go Home
-              </Button>
+              <Button variant="bordered">Go Home</Button>
             </Link>
           </div>
         </CardBody>

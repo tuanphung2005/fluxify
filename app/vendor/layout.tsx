@@ -1,5 +1,6 @@
-import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+
+import { auth } from "@/lib/auth";
 import { Navbar } from "@/components/navbar/navbar";
 
 export default async function VendorLayout({
@@ -19,9 +20,7 @@ export default async function VendorLayout({
   return (
     <div className="relative flex flex-col h-screen">
       <Navbar />
-      <main className="flex-grow">
-        {children}
-      </main>
+      <main className="flex-grow">{children}</main>
     </div>
   );
 }
