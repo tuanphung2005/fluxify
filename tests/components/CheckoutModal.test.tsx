@@ -109,6 +109,14 @@ describe("CheckoutModal", () => {
     it("should show error for invalid email", async () => {
         render(<CheckoutModal isOpen={true} onOpenChange={vi.fn()} />);
 
+        // Fill in name and phone but leave email empty/invalid
+        fireEvent.change(screen.getByTestId("input-họ-và-tên"), {
+            target: { value: "Nguyễn Văn A" },
+        });
+        fireEvent.change(screen.getByTestId("input-số-điện-thoại"), {
+            target: { value: "0987654321" },
+        });
+
         // Try to submit without valid email
         const payButton = screen.getByRole("button", { name: /Tiếp tục thanh toán/ });
         fireEvent.click(payButton);

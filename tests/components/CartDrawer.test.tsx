@@ -45,21 +45,21 @@ describe("CartDrawer", () => {
 
     it("should not render when closed", () => {
         render(<CartDrawer />);
-        expect(screen.queryByText("Your Cart")).not.toBeInTheDocument();
+        expect(screen.queryByRole("heading", { name: /Giỏ hàng/ })).not.toBeInTheDocument();
     });
 
     it("should render when open", () => {
         useCartStore.setState({ isOpen: true });
         render(<CartDrawer />);
 
-        expect(screen.getByText(/Your Cart/)).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: /Giỏ hàng/ })).toBeInTheDocument();
     });
 
     it("should show empty cart message when no items", () => {
         useCartStore.setState({ isOpen: true });
         render(<CartDrawer />);
 
-        expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
+        expect(screen.getByText("Giỏ hàng trống")).toBeInTheDocument();
     });
 
     it("should display cart items", () => {
@@ -75,7 +75,7 @@ describe("CartDrawer", () => {
         render(<CartDrawer />);
 
         expect(screen.getByText("Test Product")).toBeInTheDocument();
-        expect(screen.getByText("$29.99")).toBeInTheDocument();
+        expect(screen.getByText("29,99₫")).toBeInTheDocument();
         expect(screen.getByText("2")).toBeInTheDocument(); // quantity
     });
 
@@ -93,7 +93,7 @@ describe("CartDrawer", () => {
         render(<CartDrawer />);
 
         // 10 * 2 + 15 * 1 = 35
-        expect(screen.getByText("$35.00")).toBeInTheDocument();
+        expect(screen.getByText("35₫")).toBeInTheDocument();
     });
 
     it("should show checkout button when items exist", () => {
@@ -108,6 +108,6 @@ describe("CartDrawer", () => {
 
         render(<CartDrawer />);
 
-        expect(screen.getByText("Checkout")).toBeInTheDocument();
+        expect(screen.getByText("Thanh toán")).toBeInTheDocument();
     });
 });
