@@ -76,8 +76,6 @@ export default function VendorDashboard({
             id: "recent-activity",
             type: "list",
             size: "md",
-            type: "list",
-            size: "md",
             title: "Hoạt động gần đây",
             items: initialData.recentActivity.map((item) => ({
                 id: item.id,

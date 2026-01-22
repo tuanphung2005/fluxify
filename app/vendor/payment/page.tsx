@@ -216,8 +216,8 @@ export default function PaymentSettingsPage() {
                                             className="w-48 h-53"
                                         />
                                     </div>
-                                    <p className="text-xs text-success text-center">
-                                        ✓ Khách hàng sẽ thấy mã QR này khi thanh toán
+                                    <p className="text-xs text-primary text-center">
+                                        Khách hàng sẽ thấy mã QR này khi thanh toán
                                     </p>
                                 </>
                             ) : (
