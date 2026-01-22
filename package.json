@@ -72,6 +72,7 @@
     "@react-aria/ssr": "3.9.10",
     "@react-aria/visually-hidden": "3.8.28",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.8.0",
     "clsx": "2.1.1",
     "dompurify": "^3.3.0",
     "framer-motion": "11.18.2",

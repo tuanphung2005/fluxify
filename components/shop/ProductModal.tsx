@@ -9,12 +9,16 @@ import { useState } from "react";
 import { useCartStore } from "@/store/cart-store";
 import { toast } from "@/lib/toast";
 import { formatVND } from "@/lib/format";
-import { 
-    getVariantStock, 
-    getVariantStockStatus, 
-    generateVariantKey, 
+import {
+    getVariantStock,
+    getVariantStockStatus,
+    generateVariantKey,
     parseVariantKey,
-    hasVariants 
+    hasVariants,
+    isColorVariant,
+    getVariantDisplayName,
+    parseColorValue,
+    type ColorVariantValue
 } from "@/lib/variant-utils";
 
 interface Product {
@@ -42,7 +46,7 @@ export default function ProductModal({ product, vendorId, vendorName, isOpen, on
     const { addItem, setCurrentVendor } = useCartStore();
 
     // Parse variants if they exist
-    let variants: { name: string; values: string[] }[] = [];
+    let variants: { name: string; values: (string | ColorVariantValue)[] }[] = [];
     try {
         if (product.variants) {
             const variantsData = typeof product.variants === 'string'
@@ -52,7 +56,7 @@ export default function ProductModal({ product, vendorId, vendorName, isOpen, on
             if (typeof variantsData === 'object' && variantsData !== null) {
                 variants = Object.entries(variantsData).map(([name, values]) => ({
                     name,
-                    values: Array.isArray(values) ? (values as string[]) : [],
+                    values: Array.isArray(values) ? values : [],
                 }));
             }
         }
@@ -61,7 +65,7 @@ export default function ProductModal({ product, vendorId, vendorName, isOpen, on
     }
 
     const hasProductVariants = hasVariants(product);
-    const allVariantsSelected = hasProductVariants 
+    const allVariantsSelected = hasProductVariants
         ? variants.every(v => selectedVariants[v.name])
         : true;
 
@@ -69,7 +73,7 @@ export default function ProductModal({ product, vendorId, vendorName, isOpen, on
     const currentVariantKey = allVariantsSelected && hasProductVariants
         ? generateVariantKey(selectedVariants)
         : undefined;
-    
+
     const currentStock = getVariantStock(product, currentVariantKey);
     const stockStatus = getVariantStockStatus(product, currentVariantKey);
 
@@ -244,13 +248,18 @@ export default function ProductModal({ product, vendorId, vendorName, isOpen, on
                                             </h3>
                                             <div className="flex flex-wrap gap-2">
                                                 {variant.values.map((value, vIndex) => {
+                                                    // Extract display name and color from value
+                                                    const displayName = getVariantDisplayName(value);
+                                                    const colorValue = parseColorValue(value);
+                                                    const isThisColorVariant = isColorVariant(variant.name);
+
                                                     // Calculate stock for this specific variant value
                                                     let variantStock = 0;
                                                     let isOutOfStock = false;
 
                                                     if (product.variantStock && typeof product.variantStock === 'object') {
                                                         const variantStockData = product.variantStock as Record<string, number>;
-                                                        
+
                                                         // Sum up stock for all combinations containing this variant value
                                                         Object.entries(variantStockData).forEach(([key, stock]) => {
                                                             // Parse the key to check if it contains this variant value
@@ -258,17 +267,17 @@ export default function ProductModal({ product, vendorId, vendorName, isOpen, on
                                                                 const [name, val] = part.split(':');
                                                                 return { name: name.trim(), value: val.trim() };
                                                             });
-                                                            
-                                                            // Check if any part matches our variant name and value
+
+                                                            // Check if any part matches our variant name and value (using display name)
                                                             const hasMatch = keyParts.some(
-                                                                part => part.name === variant.name && part.value === value
+                                                                part => part.name === variant.name && part.value === displayName
                                                             );
-                                                            
+
                                                             if (hasMatch) {
                                                                 variantStock += typeof stock === 'number' ? stock : 0;
                                                             }
                                                         });
-                                                        
+
                                                         isOutOfStock = variantStock <= 0;
                                                     } else {
                                                         // Fallback to general stock if no variant stock defined
@@ -276,21 +285,28 @@ export default function ProductModal({ product, vendorId, vendorName, isOpen, on
                                                         isOutOfStock = product.stock <= 0;
                                                     }
 
-                                                    const isSelected = selectedVariants[variant.name] === value;
+                                                    const isSelected = selectedVariants[variant.name] === displayName;
 
                                                     return (
                                                         <Chip
                                                             key={vIndex}
                                                             variant={isSelected ? "solid" : "flat"}
                                                             color={isSelected ? "primary" : "default"}
-                                                            className={`cursor-pointer transition-all ${
-                                                                isOutOfStock 
-                                                                    ? "opacity-50 cursor-not-allowed" 
-                                                                    : "hover:scale-105"
-                                                            }`}
-                                                            onClick={() => !isOutOfStock && handleVariantSelect(variant.name, value)}
+                                                            className={`cursor-pointer transition-all ${isOutOfStock
+                                                                ? "opacity-50 cursor-not-allowed"
+                                                                : "hover:scale-105"
+                                                                }`}
+                                                            onClick={() => !isOutOfStock && handleVariantSelect(variant.name, displayName)}
+                                                            startContent={
+                                                                colorValue ? (
+                                                                    <span
+                                                                        className="w-4 h-4 rounded-full border-2 border-white/50 shadow-sm"
+                                                                        style={{ backgroundColor: colorValue.color }}
+                                                                    />
+                                                                ) : undefined
+                                                            }
                                                         >
-                                                            {value} ({isOutOfStock ? "Hết" : variantStock})
+                                                            {displayName} ({isOutOfStock ? "Hết" : variantStock})
                                                         </Chip>
                                                     );
                                                 })}
@@ -315,8 +331,8 @@ export default function ProductModal({ product, vendorId, vendorName, isOpen, on
                                     onPress={handleAddToCart}
                                     isDisabled={currentStock <= 0 || (hasProductVariants && !allVariantsSelected)}
                                 >
-                                    {currentStock <= 0 
-                                        ? "Hết hàng" 
+                                    {currentStock <= 0
+                                        ? "Hết hàng"
                                         : hasProductVariants && !allVariantsSelected
                                             ? "Chọn tùy chọn"
                                             : "Thêm vào giỏ hàng"
