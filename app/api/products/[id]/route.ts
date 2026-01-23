@@ -13,6 +13,25 @@ import {
   getProductById,
 } from "@/lib/db/product-queries";
 
+// GET - Get single product by ID (public endpoint for cart validation)
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const { id } = await params;
+    const product = await getProductById(id);
+
+    if (!product) {
+      return errorResponse("Product not found", 404);
+    }
+
+    return successResponse(product);
+  } catch (error) {
+    return errorResponse("Failed to fetch product", 500, error);
+  }
+}
+
 // Validation schema for updates (all fields optional)
 const updateProductSchema = z.object({
   name: z.string().min(1, "Product name cannot be empty").optional(),

@@ -24,15 +24,15 @@ import {
  */
 const passwordSchema = z
   .string()
-  .min(8, "Password must be at least 8 characters")
-  .regex(/[A-Z]/, "Password must contain an uppercase letter")
-  .regex(/[a-z]/, "Password must contain a lowercase letter")
-  .regex(/[0-9]/, "Password must contain a number");
+  .min(8, "Mật khẩu phải chứa ít nhất 8 ký tự")
+  .regex(/[A-Z]/, "Mật khẩu phải chứa ít nhất 1 chữ cái viết hoa")
+  .regex(/[a-z]/, "Mật khẩu phải chứa ít nhất 1 chữ cái viết thường")
+  .regex(/[0-9]/, "Mật khẩu phải chứa ít nhất 1 số");
 
 const registerSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z.string().email("Địa chỉ email không hợp lệ"),
   password: passwordSchema,
-  name: z.string().min(2, "Name must be at least 2 characters").optional(),
+  name: z.string().min(2, "Tên phải chứa ít nhất 2 ký tự").optional(),
   role: z.enum(["CUSTOMER", "VENDOR"]).default("CUSTOMER"),
 });
 
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingUser) {
-      return errorResponse("User already exists", 400);
+      return errorResponse("Người dùng đã tồn tại", 400);
     }
 
     // Hash password
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
       await prisma.vendorProfile.create({
         data: {
           userId: user.id,
-          storeName: validatedData.name || "My Store",
+          storeName: validatedData.name || "Cửa hàng của tôi",
         },
       });
     }

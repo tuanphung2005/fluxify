@@ -54,7 +54,7 @@ export const NavbarUserMenu = ({ user }: NavbarUserMenuProps) => {
               href="/vendor"
               startContent={<LayoutDashboard size={16} />}
             >
-              Vendor Dashboard
+              Dashboard bán hàng
             </DropdownItem>
           ) : null}
           <DropdownItem

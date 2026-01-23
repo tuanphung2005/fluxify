@@ -106,7 +106,7 @@ export default function RegisterPage() {
               isRequired
               label="Mật khẩu"
               name="password"
-              placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)"
+              placeholder="Nhập mật khẩu (tối thiểu 8 ký tự)"
               type="password"
               variant="bordered"
             />
