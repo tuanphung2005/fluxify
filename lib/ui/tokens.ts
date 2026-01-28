@@ -35,11 +35,6 @@ export const COMPONENT_COLORS: Record<ComponentType, ComponentColors> = {
     bg: "bg-primary-50/10",
     badge: "bg-primary-500 text-white",
   },
-  PRODUCT_GRID: {
-    border: "border-secondary-500/50",
-    bg: "bg-secondary-50/10",
-    badge: "bg-secondary-500 text-white",
-  },
   IMAGE_GALLERY: {
     border: "border-success-500/50",
     bg: "bg-success-50/10",
@@ -98,7 +93,6 @@ export const COMPONENT_COLORS: Record<ComponentType, ComponentColors> = {
 
 export const COMPONENT_LABELS: Record<ComponentType, string> = {
   HERO: "banner chính",
-  PRODUCT_GRID: "lưới sản phẩm",
   IMAGE_GALLERY: "thư viện ảnh",
   VIDEO_EMBED: "video nhúng",
   TEXT_BLOCK: "khối văn bản",
@@ -117,7 +111,6 @@ export const COMPONENT_LABELS: Record<ComponentType, string> = {
 
 export const COMPONENT_ICONS: Record<ComponentType, LucideIcon> = {
   HERO: Image,
-  PRODUCT_GRID: Grid3X3,
   IMAGE_GALLERY: ImageIcon,
   VIDEO_EMBED: Video,
   TEXT_BLOCK: FileText,

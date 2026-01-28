@@ -38,7 +38,6 @@ export interface ComponentMeta {
 
 const COMPONENT_DESCRIPTIONS: Record<ComponentType, string> = {
   HERO: "Banner toàn chiều rộng với tiêu đề, phụ đề và nút kêu gọi hành động",
-  PRODUCT_GRID: "Hiển thị sản phẩm theo dạng lưới tùy chỉnh",
   IMAGE_GALLERY: "Trưng bày hình ảnh theo dạng thư viện",
   VIDEO_EMBED: "Nhúng video từ YouTube, Vimeo hoặc tùy chỉnh",
   TEXT_BLOCK: "Nội dung văn bản phong phú với kiểu dáng tùy chỉnh",
@@ -69,16 +68,6 @@ export const COMPONENT_REGISTRY: Record<ComponentType, ComponentMeta> = {
     defaultConfig: DEFAULT_CONFIGS.HERO,
     Component: lazy(() => import("@/components/shop/components/Hero")),
     ConfigPanel: lazy(() => import("@/components/builder/config/Hero")),
-  },
-  PRODUCT_GRID: {
-    type: "PRODUCT_GRID",
-    label: COMPONENT_LABELS.PRODUCT_GRID,
-    description: COMPONENT_DESCRIPTIONS.PRODUCT_GRID,
-    icon: COMPONENT_ICONS.PRODUCT_GRID,
-    colors: COMPONENT_COLORS.PRODUCT_GRID,
-    defaultConfig: DEFAULT_CONFIGS.PRODUCT_GRID,
-    Component: lazy(() => import("@/components/shop/components/ProductGrid")),
-    ConfigPanel: lazy(() => import("@/components/builder/config/ProductGrid")),
   },
   IMAGE_GALLERY: {
     type: "IMAGE_GALLERY",

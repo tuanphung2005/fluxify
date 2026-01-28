@@ -38,10 +38,10 @@ export default function ConfigurationPanel({
 
     if (typeof field === "object" && field !== null) {
       // Handle partial update
-      newConfig = { ...(localConfig || {}), ...field } as ComponentConfig;
+      newConfig = { ...localConfig, ...field } as ComponentConfig;
     } else {
       // Handle single field update
-      newConfig = { ...(localConfig || {}), [field as string]: value };
+      newConfig = { ...localConfig, [field as string]: value } as ComponentConfig;
     }
 
     setLocalConfig(newConfig);

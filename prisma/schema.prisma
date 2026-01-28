@@ -30,7 +30,6 @@ enum DiscountType {
 
 enum ComponentType {
   HERO
-  PRODUCT_GRID
   IMAGE_GALLERY
   VIDEO_EMBED
   TEXT_BLOCK
