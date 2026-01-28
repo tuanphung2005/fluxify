@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import { Navbar } from "@/components/navbar/navbar";
 import { LoginModal } from "@/components/common/LoginModal";
 import { RegisterModal } from "@/components/common/RegisterModal";
@@ -11,9 +13,10 @@ export default function MainLayout({
     <div className="relative flex flex-col h-screen">
       <Navbar />
       <main className="container max-w-full flex-grow">{children}</main>
-      <LoginModal />
-      <RegisterModal />
+      <Suspense fallback={null}>
+        <LoginModal />
+        <RegisterModal />
+      </Suspense>
     </div>
   );
 }
-
