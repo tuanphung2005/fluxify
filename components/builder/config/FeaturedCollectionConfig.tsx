@@ -45,6 +45,7 @@ export default function FeaturedCollectionConfigPanel({
 }: FeaturedCollectionConfigPanelProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const productIds = config.productIds || [];
+  const showAllProducts = config.showAllProducts ?? false;
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -83,6 +84,18 @@ export default function FeaturedCollectionConfigPanel({
       "productIds",
       productIds.filter((p) => p !== id),
     );
+  };
+
+  const handleShowAllProductsChange = (value: boolean) => {
+    if (value) {
+      // Clear product selection when showing all products
+      onUpdate({
+        showAllProducts: value,
+        productIds: [],
+      });
+    } else {
+      onUpdate("showAllProducts", value);
+    }
   };
 
   // Get product names for display
@@ -140,43 +153,59 @@ export default function FeaturedCollectionConfigPanel({
         Hiển thị nút Thêm vào giỏ
       </Switch>
 
+      <Switch
+        isSelected={config.showSearchBar !== false}
+        onValueChange={(v) => onUpdate("showSearchBar", v)}
+      >
+        Hiển thị thanh tìm kiếm
+      </Switch>
+
       <Divider />
 
-      <div>
-        <div className="flex justify-between items-center mb-2">
-          <h4 className="font-semibold">Sản phẩm ({productIds.length})</h4>
-          <Button color="primary" size="sm" variant="flat" onPress={onOpen}>
-            <Plus size={16} /> Chọn
-          </Button>
-        </div>
+      <Switch
+        isSelected={showAllProducts}
+        onValueChange={handleShowAllProductsChange}
+      >
+        Hiển thị tất cả sản phẩm
+      </Switch>
 
-        {productIds.length === 0 ? (
-          <div className="text-center py-6 bg-default-50 rounded-lg text-default-400">
-            <Package className="mx-auto mb-2 opacity-50" size={32} />
-            <p className="text-sm">Chưa chọn sản phẩm nào</p>
+      {!showAllProducts && (
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <h4 className="font-semibold">Sản phẩm ({productIds.length})</h4>
+            <Button color="primary" size="sm" variant="flat" onPress={onOpen}>
+              <Plus size={16} /> Chọn
+            </Button>
           </div>
-        ) : (
-          <div className="space-y-2">
-            {productIds.map((id) => (
-              <div
-                key={id}
-                className="flex items-center justify-between p-2 bg-default-50 rounded"
-              >
-                <span className="text-sm truncate">{getProductName(id)}</span>
-                <Button
-                  isIconOnly
-                  color="danger"
-                  size="sm"
-                  variant="light"
-                  onPress={() => removeProduct(id)}
+
+          {productIds.length === 0 ? (
+            <div className="text-center py-6 bg-default-50 rounded-lg text-default-400">
+              <Package className="mx-auto mb-2 opacity-50" size={32} />
+              <p className="text-sm">Chưa chọn sản phẩm nào</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {productIds.map((id) => (
+                <div
+                  key={id}
+                  className="flex items-center justify-between p-2 bg-default-50 rounded"
                 >
-                  <X size={14} />
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+                  <span className="text-sm truncate">{getProductName(id)}</span>
+                  <Button
+                    isIconOnly
+                    color="danger"
+                    size="sm"
+                    variant="light"
+                    onPress={() => removeProduct(id)}
+                  >
+                    <X size={14} />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       <ProductSelectorModal
         isLoading={isLoading}

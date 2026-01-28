@@ -2,7 +2,6 @@ import { ComponentType } from "@prisma/client";
 
 import {
   HeroConfig,
-  ProductGridConfig,
   ImageGalleryConfig,
   VideoEmbedConfig,
   TextBlockConfig,
@@ -13,6 +12,7 @@ import {
   NewsletterSignupConfig,
   FaqAccordionConfig,
   BannerCarouselConfig,
+  MapLocationConfig,
   ComponentConfig,
 } from "@/types/shop";
 
@@ -27,12 +27,7 @@ export const DEFAULT_CONFIGS: Record<ComponentType, ComponentConfig> = {
     textColor: "#FFFFFF",
   } as HeroConfig,
 
-  PRODUCT_GRID: {
-    title: "Featured Products",
-    columns: 3,
-    showAddToCart: true,
-    showAllProducts: true,
-  } as ProductGridConfig,
+
 
   IMAGE_GALLERY: {
     images: [
@@ -96,6 +91,8 @@ export const DEFAULT_CONFIGS: Record<ComponentType, ComponentConfig> = {
     layout: "grid",
     columns: 4,
     showAddToCart: true,
+    showAllProducts: false,
+    showSearchBar: true,
   } as FeaturedCollectionConfig,
 
   COUNTDOWN_TIMER: {
@@ -160,11 +157,19 @@ export const DEFAULT_CONFIGS: Record<ComponentType, ComponentConfig> = {
     showDots: true,
     showArrows: true,
   } as BannerCarouselConfig,
+
+  MAP_LOCATION: {
+    title: "Vị trí cửa hàng",
+    address: "",
+    embedUrl: "",
+    height: 400,
+    showDirections: true,
+  } as MapLocationConfig,
 };
 
 /**
  * Get the default configuration for a component type
  */
 export function getDefaultConfig(type: ComponentType): ComponentConfig {
-  return DEFAULT_CONFIGS[type] || {};
+  return DEFAULT_CONFIGS[type];
 }

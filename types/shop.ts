@@ -11,13 +11,7 @@ export interface HeroConfig {
   textColor?: string;
 }
 
-export interface ProductGridConfig {
-  title?: string;
-  productIds?: string[];
-  showAllProducts?: boolean;
-  columns?: number;
-  showAddToCart?: boolean;
-}
+
 
 export interface ImageGalleryConfig {
   images: Array<{
@@ -70,6 +64,8 @@ export interface FeaturedCollectionConfig {
   layout?: "grid" | "list" | "carousel";
   columns?: number;
   showAddToCart?: boolean;
+  showAllProducts?: boolean;
+  showSearchBar?: boolean;
 }
 
 export interface CountdownTimerConfig {
@@ -113,10 +109,17 @@ export interface BannerCarouselConfig {
   showArrows?: boolean;
 }
 
+export interface MapLocationConfig {
+  title?: string;
+  address: string;
+  embedUrl?: string;
+  height?: number;
+  showDirections?: boolean;
+}
+
 // Union type for all component configs
 export type ComponentConfig =
   | HeroConfig
-  | ProductGridConfig
   | ImageGalleryConfig
   | VideoEmbedConfig
   | TextBlockConfig
@@ -126,7 +129,8 @@ export type ComponentConfig =
   | CountdownTimerConfig
   | NewsletterSignupConfig
   | FaqAccordionConfig
-  | BannerCarouselConfig;
+  | BannerCarouselConfig
+  | MapLocationConfig;
 
 // Shop component instance from database
 export interface ShopComponentData {

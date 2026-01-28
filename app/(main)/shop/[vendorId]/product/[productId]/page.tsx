@@ -37,12 +37,12 @@ export default async function ProductPage(props: ProductPageProps) {
 
   const vendorName = product.vendor.storeName;
 
-  // Parse variants if they exist
+  // parse variants
   let variants: { name: string; values: string[] }[] = [];
 
   try {
     if (product.variants) {
-      // Handle both string and object cases for variants
+      // string + object
       const variantsData =
         typeof product.variants === "string"
           ? JSON.parse(product.variants)
@@ -117,6 +117,7 @@ export default async function ProductPage(props: ProductPageProps) {
               </p>
             </div>
 
+            {/* if product variants > 0 */}
             {variants.length > 0 && (
               <div className="space-y-4 py-4 border-y border-divider">
                 {variants.map((variant, index) => (

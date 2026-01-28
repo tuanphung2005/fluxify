@@ -13,6 +13,7 @@ import {
   Mail,
   HelpCircle,
   Images,
+  MapPin,
 } from "lucide-react";
 
 /**
@@ -34,11 +35,6 @@ export const COMPONENT_COLORS: Record<ComponentType, ComponentColors> = {
     border: "border-primary-500/50",
     bg: "bg-primary-50/10",
     badge: "bg-primary-500 text-white",
-  },
-  PRODUCT_GRID: {
-    border: "border-secondary-500/50",
-    bg: "bg-secondary-50/10",
-    badge: "bg-secondary-500 text-white",
   },
   IMAGE_GALLERY: {
     border: "border-success-500/50",
@@ -90,6 +86,11 @@ export const COMPONENT_COLORS: Record<ComponentType, ComponentColors> = {
     bg: "bg-indigo-50/10",
     badge: "bg-indigo-500 text-white",
   },
+  MAP_LOCATION: {
+    border: "border-emerald-500/50",
+    bg: "bg-emerald-50/10",
+    badge: "bg-emerald-500 text-white",
+  },
 };
 
 // =============================================================================
@@ -98,7 +99,6 @@ export const COMPONENT_COLORS: Record<ComponentType, ComponentColors> = {
 
 export const COMPONENT_LABELS: Record<ComponentType, string> = {
   HERO: "banner chính",
-  PRODUCT_GRID: "lưới sản phẩm",
   IMAGE_GALLERY: "thư viện ảnh",
   VIDEO_EMBED: "video nhúng",
   TEXT_BLOCK: "khối văn bản",
@@ -109,6 +109,7 @@ export const COMPONENT_LABELS: Record<ComponentType, string> = {
   NEWSLETTER_SIGNUP: "đăng ký bản tin",
   FAQ_ACCORDION: "câu hỏi thường gặp",
   BANNER_CAROUSEL: "băng chảy banner",
+  MAP_LOCATION: "bản đồ vị trí",
 };
 
 // =============================================================================
@@ -117,7 +118,6 @@ export const COMPONENT_LABELS: Record<ComponentType, string> = {
 
 export const COMPONENT_ICONS: Record<ComponentType, LucideIcon> = {
   HERO: Image,
-  PRODUCT_GRID: Grid3X3,
   IMAGE_GALLERY: ImageIcon,
   VIDEO_EMBED: Video,
   TEXT_BLOCK: FileText,
@@ -128,6 +128,7 @@ export const COMPONENT_ICONS: Record<ComponentType, LucideIcon> = {
   NEWSLETTER_SIGNUP: Mail,
   FAQ_ACCORDION: HelpCircle,
   BANNER_CAROUSEL: Images,
+  MAP_LOCATION: MapPin,
 };
 
 // =============================================================================

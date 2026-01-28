@@ -3,9 +3,10 @@
 import type { FeaturedCollectionConfig } from "@/types/shop";
 import type { ProductData } from "@/types/api";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Spinner } from "@heroui/spinner";
-import { Package } from "lucide-react";
+import { Input } from "@heroui/input";
+import { Package, Search } from "lucide-react";
 
 import { api } from "@/lib/api/api";
 import ProductCard from "@/components/common/ProductCard";
@@ -38,45 +39,34 @@ export default function FeaturedCollectionComponent({
     productIds,
     columns = 4,
     showAddToCart = true,
+    showAllProducts = false,
+    showSearchBar = true,
   } = config;
 
-  const [displayProducts, setDisplayProducts] = useState<ProductData[]>([]);
+  const [allProducts, setAllProducts] = useState<ProductData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const { addItem, setIsOpen } = useCartStore();
 
   useEffect(() => {
     loadProducts();
-  }, [productIds, productsFromParent]);
+  }, [productsFromParent]);
 
   const loadProducts = async () => {
-    if (!productIds || productIds.length === 0) {
-      setIsLoading(false);
-
-      return;
-    }
-
     // If products are provided from parent (public shop page), use them directly
     if (productsFromParent && productsFromParent.length > 0) {
-      const selectedProducts = productsFromParent
-        .filter((p) => productIds.includes(p.id))
-        .map((p) => ({
-          id: p.id,
-          name: p.name,
-          price: p.price,
-          description: p.description,
-          stock: p.stock,
-          images: p.images,
-          variants: p.variants,
-        })) as ProductData[];
+      const mappedProducts = productsFromParent.map((p) => ({
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        description: p.description,
+        stock: p.stock,
+        images: p.images,
+        variants: p.variants,
+      })) as ProductData[];
 
-      // Sort by the order in productIds
-      selectedProducts.sort(
-        (a, b) => productIds.indexOf(a.id) - productIds.indexOf(b.id),
-      );
-
-      setDisplayProducts(selectedProducts);
+      setAllProducts(mappedProducts);
       setIsLoading(false);
-
       return;
     }
 
@@ -86,29 +76,53 @@ export default function FeaturedCollectionComponent({
         { products: ProductData[] } | ProductData[]
       >("/api/products?limit=100");
 
-      let allProducts: ProductData[] = [];
+      let fetchedProducts: ProductData[] = [];
 
       if (Array.isArray(response)) {
-        allProducts = response;
+        fetchedProducts = response;
       } else if (response && "products" in response) {
-        allProducts = response.products || [];
+        fetchedProducts = response.products || [];
       }
 
-      const selectedProducts = allProducts.filter((p) =>
-        productIds.includes(p.id),
-      );
-
-      selectedProducts.sort(
-        (a, b) => productIds.indexOf(a.id) - productIds.indexOf(b.id),
-      );
-
-      setDisplayProducts(selectedProducts);
+      setAllProducts(fetchedProducts);
     } catch (error) {
       console.error("Failed to fetch products:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Filter products based on showAllProducts and productIds
+  const filteredBySelection = useMemo(() => {
+    if (showAllProducts) {
+      return allProducts;
+    }
+
+    if (!productIds || productIds.length === 0) {
+      return [];
+    }
+
+    const selected = allProducts.filter((p) => productIds.includes(p.id));
+    // Sort by the order in productIds
+    selected.sort(
+      (a, b) => productIds.indexOf(a.id) - productIds.indexOf(b.id),
+    );
+    return selected;
+  }, [allProducts, showAllProducts, productIds]);
+
+  // Apply search filter locally (no API calls)
+  const displayProducts = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) {
+      return filteredBySelection;
+    }
+
+    return filteredBySelection.filter(
+      (product) =>
+        product.name.toLowerCase().includes(query) ||
+        product.description?.toLowerCase().includes(query),
+    );
+  }, [filteredBySelection, searchQuery]);
 
   const handleAddToCart = (productId: string) => {
     const product = displayProducts.find((p) => p.id === productId);
@@ -134,16 +148,7 @@ export default function FeaturedCollectionComponent({
     );
   }
 
-  if (displayProducts.length === 0) {
-    return (
-      <section className="py-16 px-4 bg-default-50">
-        <div className="max-w-7xl mx-auto text-center text-default-500">
-          <Package className="mx-auto mb-4 opacity-50" size={48} />
-          <p>Chưa có sản phẩm nào trong bộ sưu tập này.</p>
-        </div>
-      </section>
-    );
-  }
+  const hasProducts = filteredBySelection.length > 0;
 
   const gridCols =
     {
@@ -166,23 +171,56 @@ export default function FeaturedCollectionComponent({
           )}
         </div>
 
-        {/* Products Grid */}
-        <div className={`grid ${gridCols} gap-6`}>
-          {displayProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              id={product.id}
-              images={product.images || []}
-              name={product.name}
-              price={Number(product.price)}
-              showAddToCart={showAddToCart}
-              variantStock={(product as any).variantStock}
-              variants={product.variants}
-              vendorId={vendorId}
-              onAddToCart={handleAddToCart}
+        {/* Search Bar */}
+        {showSearchBar && hasProducts && (
+          <div className="max-w-md mx-auto mb-8">
+            <Input
+              classNames={{
+                inputWrapper: "bg-default-100",
+              }}
+              placeholder="Tìm kiếm sản phẩm..."
+              startContent={<Search className="text-default-400" size={18} />}
+              type="search"
+              value={searchQuery}
+              onValueChange={setSearchQuery}
             />
-          ))}
-        </div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!hasProducts && (
+          <div className="text-center text-default-500 py-8 bg-default-50 rounded-lg">
+            <Package className="mx-auto mb-4 opacity-50" size={48} />
+            <p>Chưa có sản phẩm nào trong bộ sưu tập này.</p>
+          </div>
+        )}
+
+        {/* No Search Results */}
+        {hasProducts && displayProducts.length === 0 && searchQuery && (
+          <div className="text-center text-default-500 py-8">
+            <p>Không tìm thấy sản phẩm nào phù hợp với "{searchQuery}"</p>
+          </div>
+        )}
+
+        {/* Products Grid */}
+        {displayProducts.length > 0 && (
+          <div className={`grid ${gridCols} gap-6`}>
+            {displayProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                id={product.id}
+                images={product.images || []}
+                name={product.name}
+                price={Number(product.price)}
+                showAddToCart={showAddToCart}
+                variantStock={(product as any).variantStock}
+                variants={product.variants}
+                vendorId={vendorId}
+                onAddToCart={handleAddToCart}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -41,7 +41,7 @@ export default async function ShopPage(props: ShopPageProps) {
     notFound();
   }
 
-  // Parse published components
+  // parse component
   const components = (template.publishedComponents as any[]) || [];
   const vendorName = template.vendor.storeName;
   const products = template.vendor.products.map((p) => ({
@@ -77,7 +77,7 @@ export default async function ShopPage(props: ShopPageProps) {
                 Shop Coming Soon
               </h2>
               <p className="text-default-400">
-                This shop is currently being set up. Check back later!
+                  Shop đang được dựng, quay lại sau nhé!
               </p>
             </div>
           </div>
@@ -89,7 +89,7 @@ export default async function ShopPage(props: ShopPageProps) {
           vendorName={vendorName}
         />
 
-        {/* Floating Action Buttons - Chat, Favorite and Cart */}
+        {/* Chat, Favorite, Cart */}
         <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
           <ChatButton vendorId={vendorId} />
           <FavoriteShopButton vendorId={vendorId} />
@@ -102,7 +102,7 @@ export default async function ShopPage(props: ShopPageProps) {
   );
 }
 
-// Generate metadata
+// create metadata
 export async function generateMetadata(props: ShopPageProps) {
   const params = await props.params;
   const { vendorId } = params;
@@ -112,7 +112,7 @@ export async function generateMetadata(props: ShopPageProps) {
   });
 
   return {
-    title: vendor?.storeName || "Shop",
-    description: vendor?.description || "Browse our products",
+    title: vendor?.storeName || "Cửa hàng",
+    description: vendor?.description || "Duyệt một số sản phẩm",
   };
 }

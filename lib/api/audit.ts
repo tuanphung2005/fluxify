@@ -13,7 +13,7 @@ export interface AuditLogEntry {
   details?: Record<string, unknown>;
 }
 
-// In-memory storage for development - replace with database in production
+// In-memory storage for development, TODO: REPLACE WITH DATABASE
 const auditLog: AuditLogEntry[] = [];
 const MAX_LOG_ENTRIES = 1000;
 
