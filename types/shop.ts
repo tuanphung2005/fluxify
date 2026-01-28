@@ -109,6 +109,14 @@ export interface BannerCarouselConfig {
   showArrows?: boolean;
 }
 
+export interface MapLocationConfig {
+  title?: string;
+  address: string;
+  embedUrl?: string;
+  height?: number;
+  showDirections?: boolean;
+}
+
 // Union type for all component configs
 export type ComponentConfig =
   | HeroConfig
@@ -121,7 +129,8 @@ export type ComponentConfig =
   | CountdownTimerConfig
   | NewsletterSignupConfig
   | FaqAccordionConfig
-  | BannerCarouselConfig;
+  | BannerCarouselConfig
+  | MapLocationConfig;
 
 // Shop component instance from database
 export interface ShopComponentData {

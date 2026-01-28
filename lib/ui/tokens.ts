@@ -13,6 +13,7 @@ import {
   Mail,
   HelpCircle,
   Images,
+  MapPin,
 } from "lucide-react";
 
 /**
@@ -85,6 +86,11 @@ export const COMPONENT_COLORS: Record<ComponentType, ComponentColors> = {
     bg: "bg-indigo-50/10",
     badge: "bg-indigo-500 text-white",
   },
+  MAP_LOCATION: {
+    border: "border-emerald-500/50",
+    bg: "bg-emerald-50/10",
+    badge: "bg-emerald-500 text-white",
+  },
 };
 
 // =============================================================================
@@ -103,6 +109,7 @@ export const COMPONENT_LABELS: Record<ComponentType, string> = {
   NEWSLETTER_SIGNUP: "đăng ký bản tin",
   FAQ_ACCORDION: "câu hỏi thường gặp",
   BANNER_CAROUSEL: "băng chảy banner",
+  MAP_LOCATION: "bản đồ vị trí",
 };
 
 // =============================================================================
@@ -121,6 +128,7 @@ export const COMPONENT_ICONS: Record<ComponentType, LucideIcon> = {
   NEWSLETTER_SIGNUP: Mail,
   FAQ_ACCORDION: HelpCircle,
   BANNER_CAROUSEL: Images,
+  MAP_LOCATION: MapPin,
 };
 
 // =============================================================================

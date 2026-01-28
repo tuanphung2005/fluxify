@@ -12,6 +12,7 @@ import {
   NewsletterSignupConfig,
   FaqAccordionConfig,
   BannerCarouselConfig,
+  MapLocationConfig,
   ComponentConfig,
 } from "@/types/shop";
 
@@ -156,6 +157,14 @@ export const DEFAULT_CONFIGS: Record<ComponentType, ComponentConfig> = {
     showDots: true,
     showArrows: true,
   } as BannerCarouselConfig,
+
+  MAP_LOCATION: {
+    title: "Vị trí cửa hàng",
+    address: "",
+    embedUrl: "",
+    height: 400,
+    showDirections: true,
+  } as MapLocationConfig,
 };
 
 /**

@@ -48,6 +48,7 @@ const COMPONENT_DESCRIPTIONS: Record<ComponentType, string> = {
   NEWSLETTER_SIGNUP: "Thu thập đăng ký email",
   FAQ_ACCORDION: "Danh mục câu hỏi thường gặp có thể mở rộng",
   BANNER_CAROUSEL: "Banner xoay vòng với chế độ tự động",
+  MAP_LOCATION: "Hiển thị bản đồ vị trí cửa hàng với Google Maps",
 };
 
 // =============================================================================
@@ -191,6 +192,20 @@ export const COMPONENT_REGISTRY: Record<ComponentType, ComponentMeta> = {
     ),
     ConfigPanel: lazy(
       () => import("@/components/builder/config/BannerCarouselConfig"),
+    ),
+  },
+  MAP_LOCATION: {
+    type: "MAP_LOCATION",
+    label: COMPONENT_LABELS.MAP_LOCATION,
+    description: COMPONENT_DESCRIPTIONS.MAP_LOCATION,
+    icon: COMPONENT_ICONS.MAP_LOCATION,
+    colors: COMPONENT_COLORS.MAP_LOCATION,
+    defaultConfig: DEFAULT_CONFIGS.MAP_LOCATION,
+    Component: lazy(
+      () => import("@/components/shop/components/MapLocationComponent"),
+    ),
+    ConfigPanel: lazy(
+      () => import("@/components/builder/config/MapLocationConfig"),
     ),
   },
 };

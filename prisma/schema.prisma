@@ -40,6 +40,7 @@ enum ComponentType {
   NEWSLETTER_SIGNUP
   FAQ_ACCORDION
   BANNER_CAROUSEL
+  MAP_LOCATION
 }
 
 model User {
