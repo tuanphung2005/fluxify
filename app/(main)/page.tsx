@@ -15,6 +15,7 @@ import {
   BarChart3,
   Package,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const FEATURES = [
   {
@@ -71,6 +72,11 @@ const STATS = [
 
 export default function Home() {
   const { data: session } = useSession();
+  const router = useRouter();
+
+  const openRegister = () => router.push("?modal=register", { scroll: false });
+  const openLogin = () => router.push("?modal=login", { scroll: false });
+
   return (
     <div className="flex flex-col">
       {/* Hero */}
@@ -136,23 +142,21 @@ export default function Home() {
               </Button>
             ) : (
               <Button
-                as={Link}
                 className="px-8 py-6 text-lg font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all"
                 color="primary"
                 endContent={<ArrowRight className="w-5 h-5" />}
-                href="/auth/register"
                 size="lg"
+                onPress={openRegister}
               >
                 Bán hàng ngay
               </Button>
             )}
             {!session?.user && (
               <Button
-                as={Link}
                 className="px-8 py-6 text-lg font-semibold"
-                href="/auth/login"
                 size="lg"
                 variant="bordered"
+                onPress={openLogin}
               >
                 Đăng nhập
               </Button>
