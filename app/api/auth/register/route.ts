@@ -37,7 +37,7 @@ const registerSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  // Apply strict rate limiting to auth endpoints
+  // auth rate limit 
   const rateLimit = checkRateLimit(
     getClientIdentifier(req),
     rateLimitPresets.auth,
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const validatedData = registerSchema.parse(body);
 
-    // Check if user exists
+    // check user ton tai
     const existingUser = await prisma.user.findUnique({
       where: { email: validatedData.email },
     });
@@ -60,10 +60,10 @@ export async function POST(req: NextRequest) {
       return errorResponse("Người dùng đã tồn tại", 400);
     }
 
-    // Hash password
+    // hash pw
     const hashedPassword = await bcrypt.hash(validatedData.password, 12);
 
-    // Create user
+    // new user
     const user = await prisma.user.create({
       data: {
         email: validatedData.email,
@@ -71,6 +71,7 @@ export async function POST(req: NextRequest) {
         name: validatedData.name,
         role: validatedData.role,
         // emailVerified is null - requires verification
+        // TODO IMPLEMENT EMAIL VERIFY
       },
       select: {
         id: true,
@@ -80,7 +81,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // If vendor, create vendor profile
+    // if vendor
     if (validatedData.role === "VENDOR") {
       await prisma.vendorProfile.create({
         data: {

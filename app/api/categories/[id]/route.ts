@@ -41,7 +41,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
   }
 }
 
-// PUT - Update category (Admin only)
+// PUT - Update category - ADMIN
 export async function PUT(req: NextRequest, { params }: RouteParams) {
   try {
     const auth = await requireAdmin();
@@ -66,7 +66,7 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
   }
 }
 
-// DELETE - Delete category (Admin only)
+// DELETE - Delete category - ADMIN
 export async function DELETE(req: NextRequest, { params }: RouteParams) {
   try {
     const auth = await requireAdmin();

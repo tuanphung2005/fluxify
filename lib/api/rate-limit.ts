@@ -1,29 +1,25 @@
 /**
- * Rate limiting module with support for both in-memory (development) and Redis (production) storage.
- *
- * For production multi-instance deployments:
- * - Set REDIS_URL environment variable to enable Redis-based rate limiting
+ * Rate limiting module
  * - Example: REDIS_URL=redis://localhost:6379
- *
- * Without Redis, falls back to in-memory storage (suitable for single-instance or development)
  */
 
 interface RateLimitEntry {
   count: number;
   resetTime: number;
 }
-
+// Time window in milliseconds
+// Maximum requests per window
 interface RateLimitConfig {
-  windowMs: number; // Time window in milliseconds
-  maxRequests: number; // Maximum requests per window
+  windowMs: number;
+  maxRequests: number;
 }
 
 const defaultConfig: RateLimitConfig = {
-  windowMs: 60 * 1000, // 1 minute
-  maxRequests: 100, // 100 requests per minute
+  windowMs: 60 * 1000,
+  maxRequests: 100,
 };
 
-// Maximum entries before forcing cleanup (in-memory only)
+// max entries before cleanup
 const MAX_ENTRIES = 10000;
 
 export interface RateLimitResult {

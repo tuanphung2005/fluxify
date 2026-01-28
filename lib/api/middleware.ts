@@ -43,7 +43,7 @@ export async function requireAuth(
 > {
   const { requiredRoles, rateLimit = "standard" } = options;
 
-  // Apply rate limiting if enabled
+  // rate limiting
   if (rateLimit !== false) {
     const preset = rateLimitPresets[rateLimit];
     const rateLimitResult = checkRateLimit(getClientIdentifier(req), preset);
@@ -53,7 +53,7 @@ export async function requireAuth(
     }
   }
 
-  // Check authentication
+  // Check auth
   const session = await auth();
 
   if (!session?.user?.id || !session.user.email) {
@@ -67,7 +67,7 @@ export async function requireAuth(
     role: session.user.role,
   };
 
-  // Check role authorization if required
+  // check role auth
   if (requiredRoles && requiredRoles.length > 0) {
     if (!requiredRoles.includes(user.role)) {
       return { error: errorResponse("Forbidden", 403) };
@@ -78,14 +78,14 @@ export async function requireAuth(
 }
 
 /**
- * Admin-only middleware shorthand
+ * admin middleware
  */
 export async function requireAdmin(req: NextRequest) {
   return requireAuth(req, { requiredRoles: ["ADMIN"], rateLimit: "admin" });
 }
 
 /**
- * Vendor-only middleware shorthand
+ * Vendor middleware
  */
 export async function requireVendor(req: NextRequest) {
   return requireAuth(req, {
@@ -95,7 +95,7 @@ export async function requireVendor(req: NextRequest) {
 }
 
 /**
- * Customer authentication (any logged-in user)
+ * Customer authentication (any)
  */
 export async function requireUser(req: NextRequest) {
   return requireAuth(req, { rateLimit: "standard" });

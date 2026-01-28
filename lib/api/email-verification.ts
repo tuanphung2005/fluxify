@@ -1,3 +1,5 @@
+// TODO IMLEMENT ACTUAL EMAIL VERIFICATION
+
 import crypto from "crypto";
 
 import { prisma } from "@/lib/prisma";
@@ -111,8 +113,7 @@ export function getVerificationUrl(email: string, token: string): string {
 }
 
 /**
- * Mock email sending function
- * Replace with actual email service (SendGrid, Resend, etc.) in production
+ * Mock email
  */
 export async function sendVerificationEmail(
   email: string,
@@ -120,7 +121,7 @@ export async function sendVerificationEmail(
 ): Promise<void> {
   const verificationUrl = getVerificationUrl(email, token);
 
-  // In production, use an email service:
+  // TODO IMPLEMENT EMAIL VERIFY:
   // await resend.emails.send({
   //     from: "noreply@fluxify.com",
   //     to: email,

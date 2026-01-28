@@ -10,18 +10,18 @@ export default function AuthErrorPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="flex flex-col gap-1 items-center">
           <AlertCircle className="w-12 h-12 text-danger mb-2" />
-          <h1 className="text-2xl font-bold">Authentication Error</h1>
+          <h1 className="text-2xl font-bold">Lỗi đăng nhập</h1>
         </CardHeader>
         <CardBody className="text-center space-y-4">
           <p className="text-default-500">
-            Something went wrong during authentication.
+              Có lỗi xảy ra trong quá trình đăng nhập.
           </p>
           <div className="flex gap-2 justify-center">
             <Link href="/auth/login">
-              <Button color="primary">Try Again</Button>
+              <Button color="primary">Thử lại</Button>
             </Link>
             <Link href="/">
-              <Button variant="bordered">Go Home</Button>
+              <Button variant="bordered">Quay lại</Button>
             </Link>
           </div>
         </CardBody>

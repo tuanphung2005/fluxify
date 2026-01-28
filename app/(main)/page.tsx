@@ -2,6 +2,7 @@
 import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import {
   ShoppingBag,
   Zap,
@@ -18,49 +19,44 @@ import {
 const FEATURES = [
   {
     icon: Store,
-    title: "Beautiful Storefronts",
-    description:
-      "Create stunning shops with our drag-and-drop builder. No coding required.",
+    title: "Đỉnh của đẹp",
+    description: "Tạo cửa hàng đẹp như tranh, chỉ cần kéo thả, không cần code",
     color: "text-primary",
     bg: "bg-primary/10",
   },
   {
     icon: Zap,
-    title: "Lightning Fast",
+    title: "Nhanh như chớp",
     description:
-      "Optimized for speed. Your customers won't wait, and neither should you.",
+      "Đã được tối ưu để bán hàng. Khách hàng không nên đợi, bạn cũng vậy.",
     color: "text-warning",
     bg: "bg-warning/10",
   },
   {
     icon: Shield,
-    title: "Secure Payments",
-    description:
-      "Built-in security with encrypted transactions and fraud protection.",
+    title: "Bảo mật tốt",
+    description: "Bảo mật tốt.",
     color: "text-success",
     bg: "bg-success/10",
   },
   {
     icon: BarChart3,
-    title: "Analytics Dashboard",
-    description:
-      "Track sales, monitor trends, and grow your business with insights.",
+    title: "Dashboard phân tích",
+    description: "Theo dõi đơn hàng, phân tích xu hướng.",
     color: "text-secondary",
     bg: "bg-secondary/10",
   },
   {
     icon: Package,
-    title: "Inventory Management",
-    description:
-      "Manage products, variants, and stock levels all in one place.",
+    title: "Quản lý sản phẩm",
+    description: "Quản lý sản phẩm, loại sản phẩm, và tồn kho ở một trang.",
     color: "text-danger",
     bg: "bg-danger/10",
   },
   {
     icon: Users,
-    title: "Multi-Vendor Support",
-    description:
-      "Host multiple vendors on a single platform. Perfect for marketplaces.",
+    title: "Hỗ trợ nhiều shop",
+    description: "Hỗ trợ nhiều shop ở cùng một nền tảng.",
     color: "text-primary",
     bg: "bg-primary/10",
   },
@@ -74,14 +70,15 @@ const STATS = [
 ];
 
 export default function Home() {
+  const { data: session } = useSession();
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
+      {/* Hero */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-        {/* Gradient Background */}
+
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
 
-        {/* Animated Grid Pattern */}
+        {/* Animated Grid */}
         <div className="absolute inset-0 opacity-30">
           <div
             className="absolute inset-0"
@@ -92,7 +89,7 @@ export default function Home() {
           />
         </div>
 
-        {/* Floating Elements */}
+
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" />
         <div
           className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse"
@@ -100,67 +97,81 @@ export default function Home() {
         />
 
         <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
-          {/* Badge */}
+
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8">
             <Sparkles className="w-4 h-4 text-primary" />
             <span className="text-sm font-medium text-primary">
-              Now in Beta — Start Selling Today
+              Thiết lập ngay hôm nay
             </span>
           </div>
 
-          {/* Main Heading */}
+          {/* Heading */}
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6">
             <span className="bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
-              Selling Made
+              Bán hàng là
             </span>
             <br />
             <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-              Effortless
+              Dễ
             </span>
           </h1>
 
           {/* Subtitle */}
           <p className="text-xl md:text-2xl text-default-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-            The modern e-commerce platform that helps you build, launch, and
-            scale your online store in minutes — not months.
+            Nền tảng giúp bạn xây dựng, phát triển và mở rộng cửa hàng trực tuyến của mình trong vài phút, không phải vài tháng/năm.
           </p>
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button
-              as={Link}
-              className="px-8 py-6 text-lg font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all"
-              color="primary"
-              endContent={<ArrowRight className="w-5 h-5" />}
-              href="/auth/register"
-              size="lg"
-            >
-              Start Selling Free
-            </Button>
-            <Button
-              as={Link}
-              className="px-8 py-6 text-lg font-semibold"
-              href="/auth/login"
-              size="lg"
-              variant="bordered"
-            >
-              Sign In
-            </Button>
+            {session?.user?.role === "VENDOR" ? (
+              <Button
+                as={Link}
+                className="px-8 py-6 text-lg font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all"
+                color="primary"
+                endContent={<ArrowRight className="w-5 h-5" />}
+                href="/vendor"
+                size="lg"
+              >
+                Tới dashboard
+              </Button>
+            ) : (
+              <Button
+                as={Link}
+                className="px-8 py-6 text-lg font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all"
+                color="primary"
+                endContent={<ArrowRight className="w-5 h-5" />}
+                href="/auth/register"
+                size="lg"
+              >
+                Bán hàng ngay
+              </Button>
+            )}
+            {!session?.user && (
+              <Button
+                as={Link}
+                className="px-8 py-6 text-lg font-semibold"
+                href="/auth/login"
+                size="lg"
+                variant="bordered"
+              >
+                Đăng nhập
+              </Button>
+            )}
           </div>
 
           {/* Trust Indicators */}
           <div className="mt-16 flex flex-wrap justify-center gap-8 text-default-400">
             <div className="flex items-center gap-2">
               <CreditCard className="w-5 h-5" />
-              <span className="text-sm">No credit card required</span>
+              <span className="text-sm">Không yêu cầu thẻ tín dụng</span>
             </div>
             <div className="flex items-center gap-2">
               <Shield className="w-5 h-5" />
-              <span className="text-sm">Free forever plan</span>
+              <span className="text-sm">Miễn phí mãi mãi</span>
             </div>
             <div className="flex items-center gap-2">
               <Zap className="w-5 h-5" />
-              <span className="text-sm">Setup in 5 minutes</span>
+              <span className="text-sm">Cài đặt trong 5 phút</span>
             </div>
           </div>
         </div>
