@@ -58,10 +58,6 @@ export const DEFAULT_CONFIGS: Record<ComponentType, ComponentConfig> = {
     padding: "medium",
   } as TextBlockConfig,
 
-  SPACER: {
-    height: 50,
-  } as SpacerConfig,
-
   // New component defaults
   TESTIMONIALS: {
     title: "What Our Customers Say",
