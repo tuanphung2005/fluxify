@@ -1,7 +1,9 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { Button } from "@heroui/button";
 import { Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import ShopComponentWrapper from "@/components/shop/ShopComponentWrapper";
 import { ShopComponentData } from "@/types/shop";
@@ -34,7 +36,14 @@ function CanvasComponent({
   isLast: boolean;
 }) {
   return (
-    <div className="relative group">
+    <motion.div
+      layout
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      initial={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.2 }}
+      className="relative group"
+    >
       {/* Component Controls */}
       <div className="absolute left-full top-0 opacity-0 group-hover:opacity-100 transition-opacity z-20 flex flex-col gap-1 ml-0.5">
         <Button
@@ -74,7 +83,7 @@ function CanvasComponent({
         type={component.type}
         onSelect={onSelect}
       />
-    </div>
+    </motion.div>
   );
 }
 
@@ -85,6 +94,22 @@ export default function BuilderCanvas({
   onDeleteComponent,
   onReorderComponents,
 }: BuilderCanvasProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const prevComponentsLengthRef = useRef(components.length);
+
+  // Auto-scroll to bottom when a new component is added
+  useEffect(() => {
+    if (components.length > prevComponentsLengthRef.current) {
+      if (containerRef.current) {
+        containerRef.current.scrollTo({
+          top: containerRef.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    }
+    prevComponentsLengthRef.current = components.length;
+  }, [components.length]);
+
   const handleMoveUp = (index: number) => {
     if (index === 0) return;
     const newComponents = [...components];
@@ -131,21 +156,26 @@ export default function BuilderCanvas({
   }
 
   return (
-    <div className="flex-1 bg-background p-8 overflow-y-auto">
+    <div
+      ref={containerRef}
+      className="flex-1 bg-background p-8 overflow-y-auto"
+    >
       <div className="max-w-6xl mx-auto space-y-4">
-        {components.map((component, index) => (
-          <CanvasComponent
-            key={component.id}
-            component={component}
-            isFirst={index === 0}
-            isLast={index === components.length - 1}
-            isSelected={selectedComponentId === component.id}
-            onDelete={() => onDeleteComponent(component.id)}
-            onMoveDown={() => handleMoveDown(index)}
-            onMoveUp={() => handleMoveUp(index)}
-            onSelect={() => onSelectComponent(component.id)}
-          />
-        ))}
+        <AnimatePresence mode="popLayout">
+          {components.map((component, index) => (
+            <CanvasComponent
+              key={component.id}
+              component={component}
+              isFirst={index === 0}
+              isLast={index === components.length - 1}
+              isSelected={selectedComponentId === component.id}
+              onDelete={() => onDeleteComponent(component.id)}
+              onMoveDown={() => handleMoveDown(index)}
+              onMoveUp={() => handleMoveUp(index)}
+              onSelect={() => onSelectComponent(component.id)}
+            />
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );
