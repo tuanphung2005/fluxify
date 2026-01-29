@@ -66,10 +66,6 @@ export const featuredCollectionConfigSchema = z.object({
   layout: z.enum(["grid", "carousel"]).optional(),
 });
 
-// Spacer config
-export const spacerConfigSchema = z.object({
-  height: z.number().int().min(8).max(200).optional(),
-});
 
 // Testimonials config
 export const testimonialsConfigSchema = z.object({
@@ -152,7 +148,6 @@ export const componentConfigSchemas: Record<string, z.ZodType> = {
   IMAGE_GALLERY: imageGalleryConfigSchema,
   TEXT_BLOCK: textBlockConfigSchema,
   FEATURED_COLLECTION: featuredCollectionConfigSchema,
-  SPACER: spacerConfigSchema,
   TESTIMONIALS: testimonialsConfigSchema,
   COUNTDOWN_TIMER: countdownTimerConfigSchema,
   NEWSLETTER_SIGNUP: newsletterSignupConfigSchema,

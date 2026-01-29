@@ -1,25 +1,9 @@
 "use client";
-"use client";
 
+import { useRef, useEffect } from "react";
 import { Button } from "@heroui/button";
-import { Trash2, ChevronsUpDown } from "lucide-react";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-  useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import ShopComponentWrapper from "@/components/shop/ShopComponentWrapper";
 import { ShopComponentData } from "@/types/shop";
@@ -32,45 +16,53 @@ interface BuilderCanvasProps {
   onReorderComponents: (components: ShopComponentData[]) => void;
 }
 
-function SortableComponent({
+function CanvasComponent({
   component,
   isSelected,
   onSelect,
   onDelete,
+  onMoveUp,
+  onMoveDown,
+  isFirst,
+  isLast,
 }: {
   component: ShopComponentData;
   isSelected: boolean;
   onSelect: () => void;
   onDelete: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  isFirst: boolean;
+  isLast: boolean;
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: component.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
   return (
-    <div ref={setNodeRef} className="relative group" style={style}>
+    <motion.div
+      layout
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      initial={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.2 }}
+      className="relative group"
+    >
       {/* Component Controls */}
       <div className="absolute left-full top-0 opacity-0 group-hover:opacity-100 transition-opacity z-20 flex flex-col gap-1 ml-0.5">
         <Button
           isIconOnly
-          className="cursor-grab active:cursor-grabbing"
+          isDisabled={isFirst}
           size="sm"
           variant="flat"
-          {...attributes}
-          {...listeners}
+          onPress={onMoveUp}
         >
-          <ChevronsUpDown />
+          <ChevronUp />
+        </Button>
+        <Button
+          isIconOnly
+          isDisabled={isLast}
+          size="sm"
+          variant="flat"
+          onPress={onMoveDown}
+        >
+          <ChevronDown />
         </Button>
         <Button
           isIconOnly
@@ -91,7 +83,7 @@ function SortableComponent({
         type={component.type}
         onSelect={onSelect}
       />
-    </div>
+    </motion.div>
   );
 }
 
@@ -102,29 +94,48 @@ export default function BuilderCanvas({
   onDeleteComponent,
   onReorderComponents,
 }: BuilderCanvasProps) {
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
+  const containerRef = useRef<HTMLDivElement>(null);
+  const prevComponentsLengthRef = useRef(components.length);
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      const oldIndex = components.findIndex((c) => c.id === active.id);
-      const newIndex = components.findIndex((c) => c.id === over.id);
-
-      const reordered = arrayMove(components, oldIndex, newIndex).map(
-        (comp, index) => ({
-          ...comp,
-          order: index,
-        }),
-      );
-
-      onReorderComponents(reordered);
+  // Auto-scroll to bottom when a new component is added
+  useEffect(() => {
+    if (components.length > prevComponentsLengthRef.current) {
+      if (containerRef.current) {
+        containerRef.current.scrollTo({
+          top: containerRef.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }
     }
+    prevComponentsLengthRef.current = components.length;
+  }, [components.length]);
+
+  const handleMoveUp = (index: number) => {
+    if (index === 0) return;
+    const newComponents = [...components];
+    [newComponents[index - 1], newComponents[index]] = [
+      newComponents[index],
+      newComponents[index - 1],
+    ];
+    const reordered = newComponents.map((comp, i) => ({
+      ...comp,
+      order: i,
+    }));
+    onReorderComponents(reordered);
+  };
+
+  const handleMoveDown = (index: number) => {
+    if (index === components.length - 1) return;
+    const newComponents = [...components];
+    [newComponents[index], newComponents[index + 1]] = [
+      newComponents[index + 1],
+      newComponents[index],
+    ];
+    const reordered = newComponents.map((comp, i) => ({
+      ...comp,
+      order: i,
+    }));
+    onReorderComponents(reordered);
   };
 
   if (components.length === 0) {
@@ -145,28 +156,26 @@ export default function BuilderCanvas({
   }
 
   return (
-    <div className="flex-1 bg-background p-8 overflow-y-auto">
+    <div
+      ref={containerRef}
+      className="flex-1 bg-background p-8 overflow-y-auto"
+    >
       <div className="max-w-6xl mx-auto space-y-4">
-        <DndContext
-          collisionDetection={closestCenter}
-          sensors={sensors}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={components.map((c) => c.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            {components.map((component) => (
-              <SortableComponent
-                key={component.id}
-                component={component}
-                isSelected={selectedComponentId === component.id}
-                onDelete={() => onDeleteComponent(component.id)}
-                onSelect={() => onSelectComponent(component.id)}
-              />
-            ))}
-          </SortableContext>
-        </DndContext>
+        <AnimatePresence mode="popLayout">
+          {components.map((component, index) => (
+            <CanvasComponent
+              key={component.id}
+              component={component}
+              isFirst={index === 0}
+              isLast={index === components.length - 1}
+              isSelected={selectedComponentId === component.id}
+              onDelete={() => onDeleteComponent(component.id)}
+              onMoveDown={() => handleMoveDown(index)}
+              onMoveUp={() => handleMoveUp(index)}
+              onSelect={() => onSelectComponent(component.id)}
+            />
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );

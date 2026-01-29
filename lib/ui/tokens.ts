@@ -51,11 +51,6 @@ export const COMPONENT_COLORS: Record<ComponentType, ComponentColors> = {
     bg: "bg-danger-50/10",
     badge: "bg-danger-500 text-white",
   },
-  SPACER: {
-    border: "border-default-500/50",
-    bg: "bg-default-50/10",
-    badge: "bg-default-500 text-white",
-  },
   TESTIMONIALS: {
     border: "border-pink-500/50",
     bg: "bg-pink-50/10",
@@ -102,7 +97,6 @@ export const COMPONENT_LABELS: Record<ComponentType, string> = {
   IMAGE_GALLERY: "thư viện ảnh",
   VIDEO_EMBED: "video nhúng",
   TEXT_BLOCK: "khối văn bản",
-  SPACER: "khoảng cách",
   TESTIMONIALS: "đánh giá",
   FEATURED_COLLECTION: "bộ sưu tập nổi bật",
   COUNTDOWN_TIMER: "đếm ngược",
@@ -121,7 +115,6 @@ export const COMPONENT_ICONS: Record<ComponentType, LucideIcon> = {
   IMAGE_GALLERY: ImageIcon,
   VIDEO_EMBED: Video,
   TEXT_BLOCK: FileText,
-  SPACER: Minus,
   TESTIMONIALS: MessageSquareQuote,
   FEATURED_COLLECTION: Star,
   COUNTDOWN_TIMER: Timer,

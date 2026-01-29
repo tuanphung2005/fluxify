@@ -1,6 +1,6 @@
 "use client";
 
-import { Image as HeroUIImage } from "@heroui/image";
+import { Image } from "@heroui/image";
 
 import { ImageGalleryConfig } from "@/types/shop";
 import { BaseComponentProps } from "@/types/shop-components";
@@ -37,17 +37,18 @@ export default function ImageGallery({
         {images.map((image, index) => (
           <div
             key={index}
-            className={`relative overflow-hidden ${aspectClasses}`}
+            className={`relative overflow-hidden rounded-xl ${aspectClasses}`}
           >
-            <HeroUIImage
+            <Image
               alt={image.alt}
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              className="w-full h-full object-cover"
               height="100%"
-              src={image.url}
+              src={image.url || "https://placehold.co/600x400/EEE/31343C"}
               width="100%"
+              isZoomed
             />
             {image.caption && (
-              <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-3">
+              <div className="absolute bottom-0 left-0 right-0 bg-black/10 text-white p-3 backdrop-blur-sm z-20">
                 <p className="text-sm">{image.caption}</p>
               </div>
             )}

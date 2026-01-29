@@ -1,10 +1,124 @@
+import { useRef } from "react";
 import { Input } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/select";
 import { Button } from "@heroui/button";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Upload, Loader2, Image as ImageIcon } from "lucide-react";
 
+import { useCloudinaryUpload } from "@/hooks/use-cloudinary-upload";
 import { BaseComponentConfigProps } from "@/types/shop-components";
 import { ImageGalleryConfig as ImageGalleryConfigType } from "@/types/shop";
+
+interface GalleryImageProps {
+  image: { url: string; alt: string; caption?: string };
+  index: number;
+  onUpdate: (index: number, field: string, value: string) => void;
+  onRemove: (index: number) => void;
+}
+
+function GalleryImageRow({
+  image,
+  index,
+  onUpdate,
+  onRemove,
+}: GalleryImageProps) {
+  const { upload, isUploading } = useCloudinaryUpload();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    try {
+      const result = await upload(file);
+
+      if (result) {
+        onUpdate(index, "url", result.url);
+      }
+    } catch (error) {
+      console.error("Upload failed:", error);
+    } finally {
+      // Reset input so same file can be selected again if needed
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  return (
+    <div className="p-3 bg-default-100 rounded-lg space-y-3 relative group">
+      <input
+        ref={fileInputRef}
+        accept="image/*"
+        className="hidden"
+        type="file"
+        onChange={handleFileChange}
+      />
+
+      <div className="flex items-start justify-between gap-2">
+        <h4 className="text-xs font-semibold text-default-500 uppercase mt-1">
+          Image {index + 1}
+        </h4>
+        <Button
+          isIconOnly
+          className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 min-w-6"
+          color="danger"
+          size="sm"
+          variant="light"
+          onPress={() => onRemove(index)}
+        >
+          <X className="w-3 h-3" />
+        </Button>
+      </div>
+
+      <div className="flex gap-2">
+        <Input
+          className="flex-1"
+          label="Image URL"
+          placeholder="https://..."
+          size="sm"
+          startContent={
+            <ImageIcon className="w-3 h-3 text-default-400 pointer-events-none flex-shrink-0" />
+          }
+          value={image.url}
+          onValueChange={(value) => onUpdate(index, "url", value)}
+        />
+        <Button
+          isIconOnly
+          isLoading={isUploading}
+          className="h-full aspect-square"
+          color="primary"
+          title="Upload Image"
+          variant="flat"
+          onPress={handleUploadClick}
+        >
+          {!isUploading && <Upload className="w-4 h-4" />}
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <Input
+          label="Alt Text"
+          placeholder="Description"
+          size="sm"
+          value={image.alt}
+          onValueChange={(value) => onUpdate(index, "alt", value)}
+        />
+        <Input
+          label="Caption (Optional)"
+          placeholder="Caption"
+          size="sm"
+          value={image.caption || ""}
+          onValueChange={(value) => onUpdate(index, "caption", value)}
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function ImageGallery({
   config,
@@ -13,7 +127,7 @@ export default function ImageGallery({
   const images = config.images || [];
 
   const handleAddImage = () => {
-    const newImages = [...images, { url: "", alt: "" }];
+    const newImages = [...images, { url: "", alt: "", caption: "" }];
 
     onUpdate("images", newImages);
   };
@@ -78,38 +192,13 @@ export default function ImageGallery({
 
         <div className="space-y-4">
           {images.map((image: any, index: number) => (
-            <div
+            <GalleryImageRow
               key={index}
-              className="p-3 bg-default-100 rounded-lg space-y-2 relative group"
-            >
-              <Button
-                isIconOnly
-                className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                color="danger"
-                size="sm"
-                variant="light"
-                onPress={() => handleRemoveImage(index)}
-              >
-                <X className="w-4 h-4" />
-              </Button>
-
-              <Input
-                label="Image URL"
-                size="sm"
-                value={image.url}
-                onValueChange={(value) =>
-                  handleUpdateImage(index, "url", value)
-                }
-              />
-              <Input
-                label="Alt Text"
-                size="sm"
-                value={image.alt}
-                onValueChange={(value) =>
-                  handleUpdateImage(index, "alt", value)
-                }
-              />
-            </div>
+              image={image}
+              index={index}
+              onRemove={handleRemoveImage}
+              onUpdate={handleUpdateImage}
+            />
           ))}
         </div>
       </div>
