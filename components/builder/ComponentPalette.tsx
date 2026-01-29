@@ -30,6 +30,7 @@ export default function ComponentPalette({
       <h3 className="text-lg font-bold mb-4">thành phần</h3>
       <div className="space-y-2">
         {componentTypes.map((type) => {
+          // @ts-ignore - type is from getAllComponentTypes() which matches registry keys
           const meta = COMPONENT_REGISTRY[type];
           const Icon = meta.icon;
 

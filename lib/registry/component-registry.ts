@@ -36,7 +36,7 @@ export interface ComponentMeta {
 // COMPONENT DESCRIPTIONS
 // =============================================================================
 
-const COMPONENT_DESCRIPTIONS: Record<Exclude<ComponentType, "SPACER">, string> = {
+const COMPONENT_DESCRIPTIONS: Record<ComponentType, string> = {
   HERO: "Banner toàn chiều rộng với tiêu đề, phụ đề và nút kêu gọi hành động",
   IMAGE_GALLERY: "Trưng bày hình ảnh theo dạng thư viện",
   VIDEO_EMBED: "Nhúng video từ YouTube, Vimeo hoặc tùy chỉnh",
@@ -59,10 +59,7 @@ const COMPONENT_DESCRIPTIONS: Record<Exclude<ComponentType, "SPACER">, string> =
  * Central registry for all shop builder components
  * Provides lazy-loaded components, configs, and metadata
  */
-export const COMPONENT_REGISTRY: Record<
-  Exclude<ComponentType, "SPACER">,
-  ComponentMeta
-> = {
+export const COMPONENT_REGISTRY: Record<ComponentType, ComponentMeta> = {
   HERO: {
     type: "HERO",
     label: COMPONENT_LABELS.HERO,
@@ -214,8 +211,7 @@ export const COMPONENT_REGISTRY: Record<
 export function getComponentMeta(
   type: ComponentType,
 ): ComponentMeta | undefined {
-  // @ts-ignore - Validated by runtime check or we accept undefined for excluded types
-  return COMPONENT_REGISTRY[type as keyof typeof COMPONENT_REGISTRY];
+  return COMPONENT_REGISTRY[type];
 }
 
 /**
@@ -228,8 +224,8 @@ export function getDefaultConfig(type: ComponentType): ComponentConfig {
 /**
  * Get all component types as an array for iteration
  */
-export function getAllComponentTypes(): Exclude<ComponentType, "SPACER">[] {
-  return Object.keys(COMPONENT_REGISTRY) as Exclude<ComponentType, "SPACER">[];
+export function getAllComponentTypes(): ComponentType[] {
+  return Object.keys(COMPONENT_REGISTRY) as ComponentType[];
 }
 
 /**

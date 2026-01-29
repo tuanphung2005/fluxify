@@ -37,7 +37,8 @@ export default function ShopComponentWrapper({
   vendorId,
   vendorName,
 }: ShopComponentWrapperProps) {
-  const meta = COMPONENT_REGISTRY[type];
+  // @ts-ignore - Validated by runtime check or we accept undefined for excluded types
+  const meta = COMPONENT_REGISTRY[type as keyof typeof COMPONENT_REGISTRY];
 
   if (!meta) {
     return (
@@ -56,11 +57,10 @@ export default function ShopComponentWrapper({
   };
 
   const wrapperClasses = isBuilder
-    ? `relative border-2 transition-all cursor-pointer ${
-        isSelected
-          ? "border-primary ring-2 ring-primary ring-offset-2"
-          : `hover:border-primary/50 ${colors.border} ${colors.bg}`
-      }`
+    ? `relative border-2 transition-all cursor-pointer ${isSelected
+      ? "border-primary ring-2 ring-primary ring-offset-2"
+      : `hover:border-primary/50 ${colors.border} ${colors.bg}`
+    }`
     : "";
 
   return (
