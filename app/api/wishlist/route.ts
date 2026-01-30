@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 
-import { successResponse, errorResponse } from "@/lib/api/responses";
-import { requireUser } from "@/lib/api/middleware";
+import { successResponse, errorResponse, isErrorResult } from "@/lib/api/responses";
+import { getAuthenticatedUser } from "@/lib/api/auth-helpers";
 import {
   getOrCreateWishlist,
   addToWishlist,
@@ -10,9 +10,10 @@ import {
 
 // GET - Get user's wishlist
 export async function GET(req: NextRequest) {
-  const auth = await requireUser(req);
-
-  if (auth.error) return auth.error;
+  const auth = await getAuthenticatedUser();
+  if (isErrorResult(auth)) {
+    return errorResponse(auth.error, auth.status);
+  }
 
   try {
     const wishlist = await getOrCreateWishlist(auth.user.id);
@@ -25,9 +26,10 @@ export async function GET(req: NextRequest) {
 
 // POST - Add item to wishlist
 export async function POST(req: NextRequest) {
-  const auth = await requireUser(req);
-
-  if (auth.error) return auth.error;
+  const auth = await getAuthenticatedUser();
+  if (isErrorResult(auth)) {
+    return errorResponse(auth.error, auth.status);
+  }
 
   try {
     const body = await req.json();
@@ -50,9 +52,10 @@ export async function POST(req: NextRequest) {
 
 // DELETE - Remove item from wishlist
 export async function DELETE(req: NextRequest) {
-  const auth = await requireUser(req);
-
-  if (auth.error) return auth.error;
+  const auth = await getAuthenticatedUser();
+  if (isErrorResult(auth)) {
+    return errorResponse(auth.error, auth.status);
+  }
 
   try {
     const { searchParams } = new URL(req.url);

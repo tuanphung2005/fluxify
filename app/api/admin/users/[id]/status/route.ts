@@ -1,16 +1,17 @@
 import { NextRequest } from "next/server";
 
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/api/middleware";
-import { errorResponse, successResponse } from "@/lib/api/responses";
+import { requireAdmin } from "@/lib/api/auth-helpers";
+import { errorResponse, successResponse, isErrorResult } from "@/lib/api/responses";
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const auth = await requireAdmin(request);
-
-  if (auth.error) return auth.error;
+  const auth = await requireAdmin();
+  if (isErrorResult(auth)) {
+    return errorResponse(auth.error, auth.status);
+  }
 
   try {
     const { isActive } = await request.json();
