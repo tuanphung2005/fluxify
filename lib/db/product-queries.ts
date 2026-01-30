@@ -143,5 +143,57 @@ export function restoreProduct(id: string) {
   });
 }
 
+/**
+ * Atomically update product stock (variant or standard)
+ * Handles both increment and decrement operations
+ */
+export async function updateVariantStock(
+  tx: Omit<
+    Prisma.TransactionClient,
+    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+  >,
+  productId: string,
+  quantity: number,
+  operation: "increment" | "decrement",
+  selectedVariant?: string,
+) {
+  if (selectedVariant) {
+    
+    if (operation === "increment") {
+      await tx.$executeRaw`
+        UPDATE "Product"
+        SET "variantStock" = jsonb_set(
+            COALESCE("variantStock", '{}'::jsonb),
+            ${[selectedVariant]}::text[],
+            to_jsonb(
+                COALESCE(("variantStock"->${selectedVariant})::int, 0) + ${quantity}
+            )
+        )
+        WHERE id = ${productId}`;
+    } else {
+      await tx.$executeRaw`
+        UPDATE "Product"
+        SET "variantStock" = jsonb_set(
+            COALESCE("variantStock", '{}'::jsonb),
+            ${[selectedVariant]}::text[],
+            to_jsonb(
+                COALESCE(("variantStock"->${selectedVariant})::int, 0) - ${quantity}
+            )
+        )
+        WHERE id = ${productId}`;
+    }
+  } else {
+    // General stock uses Prisma's atomic operations
+    await tx.product.update({
+      where: { id: productId },
+      data: {
+        stock: {
+          [operation]: quantity,
+        },
+      },
+    });
+  }
+}
+
 // Export utilities for reuse
 export { MAX_PAGE_SIZE, DEFAULT_PAGE_SIZE };

@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 import { prisma } from "@/lib/prisma";
+import { updateVariantStock } from "@/lib/db/product-queries";
 import {
   errorResponse,
   successResponse,
@@ -98,30 +99,13 @@ export async function PATCH(req: NextRequest) {
     const updatedOrder = await prisma.$transaction(async (tx) => {
       // Restore stock for each item
       for (const item of order.items) {
-        if (item.selectedVariant) {
-          // Use raw SQL for atomic variant stock restoration
-          await tx.$executeRaw`
-                        UPDATE "Product"
-                        SET "variantStock" = jsonb_set(
-                            COALESCE("variantStock", '{}'::jsonb),
-                            ${[item.selectedVariant]}::text[],
-                            to_jsonb(
-                                COALESCE(("variantStock"->${item.selectedVariant})::int, 0) + ${item.quantity}
-                            )
-                        )
-                        WHERE id = ${item.productId}
-                    `;
-        } else {
-          // General stock uses Prisma's atomic increment
-          await tx.product.update({
-            where: { id: item.productId },
-            data: {
-              stock: {
-                increment: item.quantity,
-              },
-            },
-          });
-        }
+        await updateVariantStock(
+          tx,
+          item.productId,
+          item.quantity,
+          "increment",
+          item.selectedVariant || undefined,
+        );
       }
 
       // Update order status

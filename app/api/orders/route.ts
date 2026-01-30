@@ -13,6 +13,7 @@ import {
   rateLimitExceededResponse,
 } from "@/lib/api/rate-limit";
 import { getVariantStockForKey } from "@/lib/variant-utils";
+import { updateVariantStock } from "@/lib/db/product-queries";
 
 import { MAX_QUANTITY_PER_ITEM, orderSchema } from "@/lib/validations";
 
@@ -136,32 +137,15 @@ export async function POST(req: NextRequest) {
       });
 
       // 5. Update stock atomically (prevents race conditions)
+      // 5. Update stock atomically (prevents race conditions)
       for (const update of stockUpdates) {
-        if (update.selectedVariant) {
-          // Use raw SQL for atomic variant stock update with PostgreSQL jsonb_set
-          // This atomically decrements the variant stock without read-modify-write race
-          await tx.$executeRaw`
-                        UPDATE "Product"
-                        SET "variantStock" = jsonb_set(
-                            COALESCE("variantStock", '{}'::jsonb),
-                            ${[update.selectedVariant]}::text[],
-                            to_jsonb(
-                                COALESCE(("variantStock"->${update.selectedVariant})::int, 0) - ${update.quantity}
-                            )
-                        )
-                        WHERE id = ${update.productId}
-                    `;
-        } else {
-          // General stock uses Prisma's atomic decrement (already race-safe)
-          await tx.product.update({
-            where: { id: update.productId },
-            data: {
-              stock: {
-                decrement: update.quantity,
-              },
-            },
-          });
-        }
+        await updateVariantStock(
+          tx,
+          update.productId,
+          update.quantity,
+          "decrement",
+          update.selectedVariant,
+        );
       }
 
       return order;
