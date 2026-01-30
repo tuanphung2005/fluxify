@@ -1,5 +1,7 @@
 "use client";
 
+import { z } from "zod";
+
 import {
   Modal,
   ModalContent,
@@ -21,6 +23,7 @@ import {
   hasPaymentConfigured,
   type VietQRBank,
 } from "@/lib/vietqr";
+import { phoneSchema, emailSchema } from "@/lib/validations";
 
 interface VendorPaymentInfo {
   bankId: string | null;
@@ -115,23 +118,16 @@ export default function CheckoutModal({
     }
 
     // Phone validation (Vietnamese format)
-    const phoneRegex = /^0\d{9}$/;
-
-    if (
-      !formData.phoneNumber ||
-      !phoneRegex.test(formData.phoneNumber.replace(/\s/g, ""))
-    ) {
+    const phoneResult = phoneSchema.safeParse(formData.phoneNumber.replace(/\s/g, ""));
+    if (!phoneResult.success) {
       toast.error("Vui lòng nhập số điện thoại hợp lệ (10 số, bắt đầu bằng 0)");
-
       return;
     }
 
     // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!formData.email || !emailRegex.test(formData.email)) {
+    const emailResult = emailSchema.safeParse(formData.email);
+    if (!emailResult.success) {
       toast.error("Vui lòng nhập email hợp lệ");
-
       return;
     }
 
@@ -182,7 +178,7 @@ export default function CheckoutModal({
       console.error("Order creation failed:", error);
       toast.error(
         error.message ||
-          "Không thể tạo đơn hàng. Một số sản phẩm có thể đã hết hàng.",
+        "Không thể tạo đơn hàng. Một số sản phẩm có thể đã hết hàng.",
       );
     } finally {
       setIsLoading(false);
@@ -224,12 +220,12 @@ export default function CheckoutModal({
   // Generate VietQR URL
   const qrUrl = hasVendorPayment
     ? generateVietQRUrl({
-        bankId: vendorPayment.bankId!,
-        accountNo: vendorPayment.bankAccount!,
-        accountName: vendorPayment.bankAccountName!,
-        amount: Math.max(1000, Math.round(total())), // Ensure minimum 1000 VND
-        description: `DH${orderId}`,
-      })
+      bankId: vendorPayment.bankId!,
+      accountNo: vendorPayment.bankAccount!,
+      accountName: vendorPayment.bankAccountName!,
+      amount: Math.max(1000, Math.round(total())), // Ensure minimum 1000 VND
+      description: `DH${orderId}`,
+    })
     : null;
 
   return (

@@ -14,36 +14,7 @@ import {
 } from "@/lib/api/rate-limit";
 import { getVariantStockForKey } from "@/lib/variant-utils";
 
-const MAX_QUANTITY_PER_ITEM = 999;
-
-const orderSchema = z.object({
-  fullName: z.string().min(2, "Full name is required"),
-  phoneNumber: z.string().regex(/^0\d{9}$/, "Invalid Vietnamese phone number"),
-  email: z.string().email(),
-  items: z
-    .array(
-      z.object({
-        productId: z.string(),
-        quantity: z
-          .number()
-          .min(1)
-          .max(
-            MAX_QUANTITY_PER_ITEM,
-            `Maximum ${MAX_QUANTITY_PER_ITEM} items per product`,
-          ),
-        price: z.number().min(0),
-        selectedVariant: z.string().optional(),
-      }),
-    )
-    .min(1, "At least one item is required"),
-  address: z.object({
-    street: z.string().min(1),
-    city: z.string().min(1),
-    state: z.string().min(1),
-    zipCode: z.string().min(1),
-    country: z.string().min(1),
-  }),
-});
+import { MAX_QUANTITY_PER_ITEM, orderSchema } from "@/lib/validations";
 
 export async function POST(req: NextRequest) {
   // Apply rate limiting to order creation
