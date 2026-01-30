@@ -12,6 +12,7 @@ import CancelOrderModal from "./CancelOrderModal";
 
 import { toast } from "@/lib/toast";
 import { api } from "@/lib/api/api";
+import ErrorDisplay from "@/app/error";
 
 export default function PersonalDashboard() {
   const [data, setData] = useState<PersonalData | null>(null);
@@ -78,11 +79,10 @@ export default function PersonalDashboard() {
     }
   };
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">My Account</h1>
+  const renderContent = () => {
+    // Loading state
+    if (isLoading) {
+      return (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
@@ -99,50 +99,56 @@ export default function PersonalDashboard() {
             ))}
           </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  // Error state
-  if (!data) {
-    return (
-      <div className="container mx-auto px-4 py-8">
+    // Error state
+    if (!data) {
+      return (
         <Card className="border-none shadow-md">
-          <CardBody className="text-center py-16">
-            <p className="text-default-500">Failed to load personal data</p>
-            <Button className="mt-4" color="primary" onPress={fetchData}>
-              Try Again
-            </Button>
+          <CardBody>
+            <ErrorDisplay
+              minimal
+              error={new Error("Failed to load personal data") as any}
+              reset={fetchData}
+            />
           </CardBody>
         </Card>
-      </div>
+      );
+    }
+
+    // Loaded state
+    return (
+      <>
+        <StatsCards
+          memberSince={data.user.memberSince}
+          totalOrders={data.stats.totalOrders}
+          totalSpent={data.stats.totalSpent}
+        />
+
+        {/* Favorite Shops left and Orders right */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <FavoriteShopsSection
+            removingShopId={removingShopId}
+            shops={data.favoriteShops}
+            onRemove={handleRemoveFavoriteShop}
+          />
+
+          <OrdersSection
+            cancellingOrderId={cancellingOrderId}
+            orders={data.orders}
+            onCancelClick={handleCancelClick}
+          />
+        </div>
+      </>
     );
-  }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">My Account</h1>
+      <h1 className="text-2xl font-bold mb-6">Tài khoản của tôi</h1>
 
-      <StatsCards
-        memberSince={data.user.memberSince}
-        totalOrders={data.stats.totalOrders}
-        totalSpent={data.stats.totalSpent}
-      />
-
-      {/* Two Column Layout: Favorite Shops (left) and Orders (right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <FavoriteShopsSection
-          removingShopId={removingShopId}
-          shops={data.favoriteShops}
-          onRemove={handleRemoveFavoriteShop}
-        />
-
-        <OrdersSection
-          cancellingOrderId={cancellingOrderId}
-          orders={data.orders}
-          onCancelClick={handleCancelClick}
-        />
-      </div>
+      {renderContent()}
 
       <CancelOrderModal
         isLoading={cancellingOrderId !== null}

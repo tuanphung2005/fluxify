@@ -62,7 +62,7 @@ export const NavbarUserMenu = ({ user }: NavbarUserMenuProps) => {
             href="/orders"
             startContent={<Package2 size={16} />}
           >
-            my orders
+            Tài khoản của tôi
           </DropdownItem>
           <DropdownItem
             key="logout"
