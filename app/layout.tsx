@@ -6,6 +6,7 @@ import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 export const metadata: Metadata = {
   title: {
@@ -40,7 +41,9 @@ export default function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          <div className="relative flex flex-col h-screen">{children}</div>
+          <ErrorBoundary>
+            <div className="relative flex flex-col h-screen">{children}</div>
+          </ErrorBoundary>
         </Providers>
       </body>
     </html>

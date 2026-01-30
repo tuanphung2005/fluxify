@@ -3,32 +3,23 @@ import { addToast } from "@heroui/toast";
 export const toast = {
   success: (message: string) => {
     addToast({
-      title: message.toLowerCase(),
+      title: message,
       color: "success",
       radius: "none",
-      classNames: {
-        title: "lowercase",
-      },
     });
   },
   error: (message: string) => {
     addToast({
-      title: message.toLowerCase(),
+      title: message,
       color: "danger",
       radius: "none",
-      classNames: {
-        title: "lowercase",
-      },
     });
   },
   info: (message: string) => {
     addToast({
-      title: message.toLowerCase(),
+      title: message,
       color: "primary",
       radius: "none",
-      classNames: {
-        title: "lowercase",
-      },
     });
   },
   promise: <T>(
@@ -41,11 +32,8 @@ export const toast = {
   ) => {
     // Show loading toast
     const toastId = addToast({
-      title: messages.loading.toLowerCase(),
+      title: messages.loading,
       radius: "none",
-      classNames: {
-        title: "lowercase",
-      },
     });
 
     // Handle success/error

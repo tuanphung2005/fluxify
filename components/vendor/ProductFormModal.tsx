@@ -14,6 +14,39 @@ import VariantBuilder from "./VariantBuilder";
 import ImageBuilder from "./ImageBuilder";
 
 import { api } from "@/lib/api/api";
+import { z } from "zod";
+import { useFormValidation } from "@/hooks/use-form-validation";
+import { ValidatedInput } from "@/components/ui/validated-input";
+
+const productSchema = z.object({
+  name: z.string().min(1, "Tên sản phẩm là bắt buộc"),
+  description: z.string().optional(),
+  price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, {
+    message: "Giá phải là số dương",
+  }),
+  stock: z.string().refine((val) => !isNaN(parseInt(val)) && parseInt(val) >= 0, {
+    message: "Tồn kho phải là số nguyên không âm",
+  }),
+  images: z.string(),
+  variants: z.string().refine((val) => {
+    if (!val.trim()) return true;
+    try {
+      JSON.parse(val);
+      return true;
+    } catch {
+      return false;
+    }
+  }, "JSON tùy chọn không hợp lệ"),
+  variantStock: z.string().refine((val) => {
+    if (!val.trim()) return true;
+    try {
+      JSON.parse(val);
+      return true;
+    } catch {
+      return false;
+    }
+  }, "JSON tồn kho không hợp lệ"),
+});
 
 export interface Product {
   id: string;
@@ -39,89 +72,86 @@ export default function ProductFormModal({
   onSaved,
   product,
 }: ProductFormModalProps) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [stock, setStock] = useState("");
-  const [images, setImages] = useState("");
-  const [variants, setVariants] = useState("");
-  const [variantStock, setVariantStock] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [generalError, setGeneralError] = useState("");
 
+  const {
+    values,
+    setValues,
+    errors,
+    handleChange,
+    validate,
+    resetForm,
+  } = useFormValidation({
+    schema: productSchema,
+    initialValues: {
+      name: "",
+      description: "",
+      price: "",
+      stock: "",
+      images: "",
+      variants: "",
+      variantStock: "",
+    },
+    onSubmit: async (formValues) => {
+      // Logic handled in handleSubmit below because we need async state (isLoading) 
+      // and specific error handling that might technically be outside the hook's scope 
+      // if we want to keep it simple. But here I will call processSubmit.
+    },
+  });
+
+  // Effect to populate form when product changes
   useEffect(() => {
     if (isOpen) {
       if (product) {
-        setName(product.name);
-        setDescription(product.description || "");
-        setPrice(String(product.price));
-        setStock(String(product.stock));
-        setImages(product.images.join("\n"));
-        // Handle variants whether it's already a string or an object
-        if (product.variants) {
-          const variantsString =
-            typeof product.variants === "string"
+        setValues({
+          name: product.name,
+          description: product.description || "",
+          price: String(product.price),
+          stock: String(product.stock),
+          images: product.images.join("\n"),
+          variants: product.variants
+            ? typeof product.variants === "string"
               ? product.variants
-              : JSON.stringify(product.variants, null, 2);
-
-          setVariants(variantsString);
-        } else {
-          setVariants("");
-        }
-        // Handle variant stock
-        if (product.variantStock) {
-          const stockString =
-            typeof product.variantStock === "string"
+              : JSON.stringify(product.variants, null, 2)
+            : "",
+          variantStock: product.variantStock
+            ? typeof product.variantStock === "string"
               ? product.variantStock
-              : JSON.stringify(product.variantStock, null, 2);
-
-          setVariantStock(stockString);
-        } else {
-          setVariantStock("");
-        }
+              : JSON.stringify(product.variantStock, null, 2)
+            : "",
+        });
       } else {
-        setName("");
-        setDescription("");
-        setPrice("");
-        setStock("");
-        setImages("");
-        setVariants("");
-        setVariantStock("");
+        resetForm();
       }
-      setError("");
+      setGeneralError("");
     }
-  }, [isOpen, product]);
+  }, [isOpen, product, setValues, resetForm]);
 
-  const handleSubmit = async () => {
+  const processSubmit = async () => {
+    if (!validate()) return;
+
     setIsLoading(true);
-    setError("");
+    setGeneralError("");
 
     try {
-      const imageUrls = images.split("\n").filter((url) => url.trim() !== "");
+      const imageUrls = values.images.split("\n").filter((url) => url.trim() !== "");
       let variantsData = null;
       let variantStockData = null;
 
-      if (variants.trim()) {
-        try {
-          variantsData = JSON.parse(variants);
-        } catch {
-          throw new Error("Dữ liệu tùy chọn không hợp lệ");
-        }
+      if (values.variants.trim()) {
+        variantsData = JSON.parse(values.variants);
       }
 
-      if (variantStock.trim()) {
-        try {
-          variantStockData = JSON.parse(variantStock);
-        } catch {
-          throw new Error("Dữ liệu tồn kho không hợp lệ");
-        }
+      if (values.variantStock.trim()) {
+        variantStockData = JSON.parse(values.variantStock);
       }
 
       const payload = {
-        name,
-        description,
-        price: parseFloat(price),
-        stock: parseInt(stock),
+        name: values.name,
+        description: values.description,
+        price: parseFloat(values.price),
+        stock: parseInt(values.stock),
         images: imageUrls,
         variants: variantsData,
         variantStock: variantStockData,
@@ -133,17 +163,9 @@ export default function ProductFormModal({
         await api.post("/api/products", payload);
       }
 
-      // Reset form
-      setName("");
-      setDescription("");
-      setPrice("");
-      setStock("");
-      setImages("");
-      setVariants("");
-      setVariantStock("");
       onSaved();
     } catch (err: any) {
-      setError(err.message || "Không thể lưu sản phẩm");
+      setGeneralError(err.message || "Không thể lưu sản phẩm");
     } finally {
       setIsLoading(false);
     }
@@ -164,54 +186,73 @@ export default function ProductFormModal({
             </ModalHeader>
             <ModalBody>
               <div className="flex flex-col gap-4">
-                <Input
+                <ValidatedInput
                   isRequired
                   label="Tên sản phẩm"
-                  value={name}
-                  onValueChange={setName}
+                  value={values.name}
+                  onValueChange={(v) => handleChange("name", v)}
+                  error={errors.name}
                 />
+
                 <Textarea
                   label="Mô tả"
-                  value={description}
-                  onValueChange={setDescription}
+                  value={values.description}
+                  onValueChange={(v) => handleChange("description", v)}
                 />
+
                 <div className="flex gap-4">
-                  <Input
+                  <ValidatedInput
                     isRequired
                     endContent="₫"
                     label="Giá (₫)"
                     type="number"
-                    value={price}
-                    onValueChange={setPrice}
+                    value={values.price}
+                    onValueChange={(v) => handleChange("price", v)}
+                    error={errors.price}
                   />
-                  <Input
+                  <ValidatedInput
                     isRequired
                     description="Tồn kho mặc định nếu không có tùy chọn"
                     label="Tồn kho (chung)"
                     type="number"
-                    value={stock}
-                    onValueChange={setStock}
+                    value={values.stock}
+                    onValueChange={(v) => handleChange("stock", v)}
+                    error={errors.stock}
                   />
                 </div>
+
                 <div className="flex flex-col gap-2">
                   <span className="text-small font-medium">
                     Hình ảnh sản phẩm
                   </span>
-                  <ImageBuilder value={images} onChange={setImages} />
+                  <div className={errors.images ? "border-danger border rounded-md p-2" : ""}>
+                    <ImageBuilder
+                      value={values.images}
+                      onChange={(v) => handleChange("images", v)}
+                    />
+                  </div>
+                  {errors.images && <p className="text-tiny text-danger">{errors.images}</p>}
                 </div>
+
                 <div className="flex flex-col gap-2">
                   <span className="text-small font-medium">
                     Tùy chọn sản phẩm
                   </span>
-                  <VariantBuilder
-                    key={product?.id || "new"}
-                    stockValue={variantStock}
-                    value={variants}
-                    onChange={setVariants}
-                    onStockChange={setVariantStock}
-                  />
+                  <div className={errors.variants || errors.variantStock ? "border-danger border rounded-md p-2" : ""}>
+                    <VariantBuilder
+                      key={product?.id || "new"}
+                      stockValue={values.variantStock}
+                      value={values.variants}
+                      onChange={(v) => handleChange("variants", v)}
+                      onStockChange={(v) => handleChange("variantStock", v)}
+                    />
+                  </div>
+                  {(errors.variants || errors.variantStock) && (
+                    <p className="text-tiny text-danger">{errors.variants || errors.variantStock}</p>
+                  )}
                 </div>
-                {error && <p className="text-danger text-sm">{error}</p>}
+
+                {generalError && <p className="text-danger text-sm">{generalError}</p>}
               </div>
             </ModalBody>
             <ModalFooter>
@@ -226,7 +267,7 @@ export default function ProductFormModal({
               <Button
                 color="primary"
                 isLoading={isLoading}
-                onPress={handleSubmit}
+                onPress={processSubmit}
               >
                 {product ? "Lưu thay đổi" : "Thêm sản phẩm"}
               </Button>
