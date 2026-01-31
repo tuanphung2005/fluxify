@@ -182,6 +182,7 @@ model ChatMessage {
 
   @@index([conversationId])
   @@index([createdAt])
+  @@index([conversationId, isRead, senderType]) // Composite index for unread count queries
   @@map("chat_messages")
 }
 

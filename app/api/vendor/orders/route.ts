@@ -15,16 +15,32 @@ export async function GET(req: NextRequest) {
       return errorResponse(auth.error, auth.status);
     }
 
-    const orders = await prisma.order.findMany({
-      where: {
-        items: {
-          some: {
-            product: {
-              vendorId: auth.vendor.id,
-            },
+    // Parse pagination and filter params
+    const searchParams = req.nextUrl.searchParams;
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20")));
+    const status = searchParams.get("status");
+    const skip = (page - 1) * limit;
+
+    // Build where clause
+    const whereClause = {
+      items: {
+        some: {
+          product: {
+            vendorId: auth.vendor.id,
           },
         },
       },
+      ...(status && { status }),
+    };
+
+    // Get total count for pagination
+    const totalOrders = await prisma.order.count({
+      where: whereClause,
+    });
+
+    const orders = await prisma.order.findMany({
+      where: whereClause,
       select: {
         id: true,
         fullName: true,
@@ -54,9 +70,22 @@ export async function GET(req: NextRequest) {
       orderBy: {
         createdAt: "desc",
       },
+      skip,
+      take: limit,
     });
 
-    return successResponse(orders);
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    return successResponse({
+      orders,
+      pagination: {
+        page,
+        limit,
+        totalOrders,
+        totalPages,
+        hasMore: page < totalPages,
+      },
+    });
   } catch (error) {
     return errorResponse("Failed to fetch orders", 500, error);
   }
