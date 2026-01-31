@@ -2,18 +2,21 @@
 
 import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
-import { useState, useEffect, useCallback } from "react";
-import { CheckCircle, AlertCircle, Mail } from "lucide-react";
+import { useState, useEffect } from "react";
+import { CheckCircle, AlertCircle, Mail, KeyRound, X } from "lucide-react";
 
 import { PersonalData, Order } from "./types";
 import StatsCards from "./StatsCards";
 import FavoriteShopsSection from "./FavoriteShopsSection";
 import OrdersSection from "./OrdersSection";
 import CancelOrderModal from "./CancelOrderModal";
+import ChangePasswordModal from "./ChangePasswordModal";
 
 import { toast } from "@/lib/toast";
 import { api } from "@/lib/api/api";
 import ErrorDisplay from "@/app/error";
+
+const VERIFIED_BANNER_DISMISSED_KEY = "email_verified_banner_dismissed";
 
 export default function PersonalDashboard() {
   const [data, setData] = useState<PersonalData | null>(null);
@@ -24,6 +27,8 @@ export default function PersonalDashboard() {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState<Order | null>(null);
   const [removingShopId, setRemovingShopId] = useState<string | null>(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showVerifiedBanner, setShowVerifiedBanner] = useState(true);
 
   // Email verification state
   const [isResending, setIsResending] = useState(false);
@@ -45,6 +50,11 @@ export default function PersonalDashboard() {
 
   useEffect(() => {
     fetchData();
+    // Check if verified banner was dismissed
+    const dismissed = localStorage.getItem(VERIFIED_BANNER_DISMISSED_KEY);
+    if (dismissed === "true") {
+      setShowVerifiedBanner(false);
+    }
   }, []);
 
   // Cooldown timer
@@ -116,18 +126,33 @@ export default function PersonalDashboard() {
     }
   };
 
+  const handleDismissVerifiedBanner = () => {
+    setShowVerifiedBanner(false);
+    localStorage.setItem(VERIFIED_BANNER_DISMISSED_KEY, "true");
+  };
+
   const renderVerificationBanner = () => {
     if (!data) return null;
 
     if (data.user.emailVerified) {
+      if (!showVerifiedBanner) return null;
+
       return (
         <div className="mb-6 p-4 bg-success-50 dark:bg-success-900/20 rounded-lg border border-success-200 dark:border-success-800 flex items-center gap-3">
           <CheckCircle className="text-success flex-shrink-0" size={20} />
-          <div>
+          <div className="flex-1">
             <p className="font-medium text-success-700 dark:text-success-400">
               Email đã được xác thực
             </p>
           </div>
+          <Button
+            isIconOnly
+            size="sm"
+            variant="light"
+            onPress={handleDismissVerifiedBanner}
+          >
+            <X size={16} className="text-success-600" />
+          </Button>
         </div>
       );
     }
@@ -223,6 +248,29 @@ export default function PersonalDashboard() {
             onCancelClick={handleCancelClick}
           />
         </div>
+
+        {/* Security Section */}
+        <Card className="mt-15 border-none shadow-md">
+          <CardBody className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Bảo mật</h3>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Mật khẩu</p>
+                <p className="text-sm text-default-500">
+                  Đổi mật khẩu để bảo vệ tài khoản của bạn
+                </p>
+              </div>
+              <Button
+                className="border-danger text-danger"
+                startContent={<KeyRound size={16} />}
+                variant="bordered"
+                onPress={() => setShowPasswordModal(true)}
+              >
+                Đổi mật khẩu
+              </Button>
+            </div>
+          </CardBody>
+        </Card>
       </>
     );
   };
@@ -239,6 +287,11 @@ export default function PersonalDashboard() {
         order={orderToCancel}
         onClose={() => setShowCancelModal(false)}
         onConfirm={handleCancelConfirm}
+      />
+
+      <ChangePasswordModal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
       />
     </div>
   );
