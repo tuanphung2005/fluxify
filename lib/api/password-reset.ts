@@ -136,10 +136,16 @@ export async function resetPassword(
     const bcrypt = await import("bcryptjs");
     const hashedPassword = await bcrypt.hash(newPassword, 12);
 
-    // Update password
-    await prisma.user.update({
+    // Update password and get user ID
+    const user = await prisma.user.update({
         where: { email },
         data: { password: hashedPassword },
+        select: { id: true },
+    });
+
+    // Invalidate all existing sessions for security
+    await prisma.session.deleteMany({
+        where: { userId: user.id },
     });
 
     // Delete the used token
