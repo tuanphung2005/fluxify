@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
       let user = await tx.user.findUnique({ where: { email } });
 
       if (!user) {
+
         // Generate secure random password for guest users
         const randomPassword = crypto.randomBytes(32).toString("hex");
         const hashedPassword = await bcrypt.hash(randomPassword, 12);
@@ -56,6 +57,7 @@ export async function POST(req: NextRequest) {
             // emailVerified is null - user must verify to access account
           },
         });
+        
       }
 
       // 2. Create address
@@ -94,7 +96,7 @@ export async function POST(req: NextRequest) {
         const product = productMap.get(item.productId);
 
         if (!product) {
-          throw new Error(`Product not found: ${item.productId}`);
+          throw new Error(`Không tìm thấy sản phẩm: ${item.productId}`);
         }
 
         // Check variant stock if variant is selected
@@ -104,11 +106,13 @@ export async function POST(req: NextRequest) {
 
         if (availableStock < item.quantity) {
           throw new Error(
-            `Insufficient stock for product: ${product.name}${item.selectedVariant ? ` (${item.selectedVariant})` : ""}`,
+            `Không đủ hàng cho sản phẩm: ${product.name}${item.selectedVariant ? ` (${item.selectedVariant})` : ""}`,
           );
         }
 
-        total += item.price * item.quantity;
+        
+        total += Number(product.price) * item.quantity;
+
         stockUpdates.push({
           productId: item.productId,
           quantity: item.quantity,
@@ -129,14 +133,13 @@ export async function POST(req: NextRequest) {
             create: items.map((item) => ({
               productId: item.productId,
               quantity: item.quantity,
-              price: item.price,
+              price: productMap.get(item.productId)!.price,
               selectedVariant: item.selectedVariant,
             })),
           },
         },
       });
 
-      // 5. Update stock atomically (prevents race conditions)
       // 5. Update stock atomically (prevents race conditions)
       for (const update of stockUpdates) {
         await updateVariantStock(
@@ -154,7 +157,7 @@ export async function POST(req: NextRequest) {
     return successResponse(result, 201);
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Failed to create order";
+      error instanceof Error ? error.message : "Không thể tạo đơn hàng";
 
     return errorResponse(message, 500, error);
   }
