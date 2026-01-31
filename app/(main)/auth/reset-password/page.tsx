@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Card, CardBody, Button, Input, Spinner } from "@heroui/react";
-import { CheckCircle, XCircle, Eye, EyeOff, Lock, KeyRound } from "lucide-react";
+import { CheckCircle, XCircle, Lock, KeyRound } from "lucide-react";
 import Link from "next/link";
 
 import { api } from "@/lib/api/api";
@@ -14,8 +14,6 @@ function ResetPasswordContent() {
     const [status, setStatus] = useState<"form" | "loading" | "success" | "error">("loading");
     const [message, setMessage] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const [formData, setFormData] = useState({
@@ -112,49 +110,23 @@ function ResetPasswordContent() {
 
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <Input
-                                    endContent={
-                                        <button
-                                            className="focus:outline-none"
-                                            type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                        >
-                                            {showPassword ? (
-                                                <EyeOff className="text-default-400" size={20} />
-                                            ) : (
-                                                <Eye className="text-default-400" size={20} />
-                                            )}
-                                        </button>
-                                    }
                                     errorMessage={errors.newPassword}
                                     isInvalid={!!errors.newPassword}
                                     label="Mật khẩu mới"
                                     placeholder="Nhập mật khẩu mới"
                                     startContent={<Lock className="text-default-400" size={18} />}
-                                    type={showPassword ? "text" : "password"}
+                                    type="password"
                                     value={formData.newPassword}
                                     onValueChange={(value) => handleChange("newPassword", value)}
                                 />
 
                                 <Input
-                                    endContent={
-                                        <button
-                                            className="focus:outline-none"
-                                            type="button"
-                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        >
-                                            {showConfirmPassword ? (
-                                                <EyeOff className="text-default-400" size={20} />
-                                            ) : (
-                                                <Eye className="text-default-400" size={20} />
-                                            )}
-                                        </button>
-                                    }
                                     errorMessage={errors.confirmPassword}
                                     isInvalid={!!errors.confirmPassword}
                                     label="Xác nhận mật khẩu"
                                     placeholder="Nhập lại mật khẩu mới"
                                     startContent={<Lock className="text-default-400" size={18} />}
-                                    type={showConfirmPassword ? "text" : "password"}
+                                    type="password"
                                     value={formData.confirmPassword}
                                     onValueChange={(value) => handleChange("confirmPassword", value)}
                                 />
