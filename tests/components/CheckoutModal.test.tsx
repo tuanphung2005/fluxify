@@ -4,6 +4,15 @@ import { useCartStore } from "@/store/cart-store";
 import { api } from "@/lib/api/api";
 import { toast } from "@/lib/toast";
 
+// Mock next-auth
+vi.mock("next-auth/react", () => ({
+    useSession: vi.fn(() => ({
+        data: null,
+        status: "unauthenticated",
+    })),
+    SessionProvider: ({ children }: any) => children,
+}));
+
 // Mock HeroUI components
 vi.mock("@heroui/react", () => ({
     Modal: ({ children, isOpen }: any) => isOpen ? <div data-testid="modal">{children}</div> : null,
@@ -24,6 +33,9 @@ vi.mock("@heroui/react", () => ({
                 data-testid={`input-${label?.toLowerCase().replace(/\s|\//g, "-")}`}
             />
         </div>
+    ),
+    Link: ({ children, href, ...props }: any) => (
+        <a href={href} {...props}>{children}</a>
     ),
 }));
 
