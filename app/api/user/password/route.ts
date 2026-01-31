@@ -1,8 +1,6 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import bcrypt from "bcryptjs";
 
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { errorResponse, successResponse } from "@/lib/api/responses";
 import {
@@ -10,29 +8,39 @@ import {
     getClientIdentifier,
     rateLimitExceededResponse,
 } from "@/lib/api/rate-limit";
+import {
+    createPasswordResetToken,
+    sendPasswordResetEmail,
+    resetPassword,
+} from "@/lib/api/password-reset";
 
-const changePasswordSchema = z
+const requestResetSchema = z.object({
+    email: z.string().email("Email không hợp lệ"),
+});
+
+const resetPasswordSchema = z
     .object({
-        currentPassword: z.string().min(1, "Current password is required"),
+        email: z.string().email(),
+        token: z.string().min(1),
         newPassword: z
             .string()
-            .min(8, "Password must be at least 8 characters")
+            .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
             .regex(
                 /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-                "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+                "Mật khẩu phải có ít nhất 1 chữ hoa, 1 chữ thường và 1 số",
             ),
-        confirmPassword: z.string().min(1, "Please confirm your password"),
+        confirmPassword: z.string().min(1),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
-        message: "Passwords do not match",
+        message: "Mật khẩu xác nhận không khớp",
         path: ["confirmPassword"],
     });
 
 /**
- * PATCH /api/user/password - Change user's password
+ * POST /api/user/password - Request password reset email
  */
-export async function PATCH(req: NextRequest) {
-    // Rate limit password change attempts
+export async function POST(req: NextRequest) {
+    // Rate limit password reset requests
     const rateLimit = checkRateLimit(getClientIdentifier(req), {
         windowMs: 15 * 60 * 1000, // 15 minutes
         maxRequests: 5, // 5 attempts per 15 minutes
@@ -43,62 +51,74 @@ export async function PATCH(req: NextRequest) {
     }
 
     try {
-        const session = await auth();
-
-        if (!session?.user?.email) {
-            return errorResponse("Chưa xác thực", 401);
-        }
-
         const body = await req.json();
-        const validation = changePasswordSchema.safeParse(body);
+        const validation = requestResetSchema.safeParse(body);
 
         if (!validation.success) {
             return errorResponse(validation.error.issues[0].message, 400);
         }
 
-        const { currentPassword, newPassword } = validation.data;
+        const { email } = validation.data;
 
-        // Get user with password
-        const user = await prisma.user.findUnique({
-            where: { email: session.user.email },
-            select: { id: true, password: true },
-        });
+        const result = await createPasswordResetToken(email);
 
-        if (!user || !user.password) {
-            return errorResponse("User not found or no password set", 404);
-        }
-
-        // Verify current password
-        const isCurrentPasswordValid = await bcrypt.compare(
-            currentPassword,
-            user.password,
-        );
-
-        if (!isCurrentPasswordValid) {
-            return errorResponse("Mật khẩu hiện tại không đúng", 400);
-        }
-
-        // Check if new password is different from current
-        const isSamePassword = await bcrypt.compare(newPassword, user.password);
-
-        if (isSamePassword) {
+        if ("cooldownRemaining" in result) {
             return errorResponse(
-                "Mật khẩu mới phải khác mật khẩu hiện tại",
-                400,
+                `Vui lòng đợi ${result.cooldownRemaining} giây trước khi gửi lại`,
+                429,
             );
         }
 
-        // Hash new password
-        const hashedPassword = await bcrypt.hash(newPassword, 12);
+        if ("error" in result) {
+            return errorResponse(result.error, 400);
+        }
 
-        // Update password
-        await prisma.user.update({
-            where: { id: user.id },
-            data: { password: hashedPassword },
+        // Check if this is a real token (user exists)
+        if (result.token !== "fake") {
+            await sendPasswordResetEmail(email, result.token);
+        }
+
+        // Always return success to not reveal if user exists
+        return successResponse({
+            message: "Nếu email tồn tại, bạn sẽ nhận được link đặt lại mật khẩu",
         });
-
-        return successResponse({ message: "Đổi mật khẩu thành công" });
     } catch (error) {
-        return errorResponse("Không thể đổi mật khẩu", 500, error);
+        return errorResponse("Không thể gửi email đặt lại mật khẩu", 500, error);
+    }
+}
+
+/**
+ * PATCH /api/user/password - Reset password with token
+ */
+export async function PATCH(req: NextRequest) {
+    // Rate limit password reset attempts
+    const rateLimit = checkRateLimit(getClientIdentifier(req), {
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        maxRequests: 5, // 5 attempts per 15 minutes
+    });
+
+    if (!rateLimit.allowed) {
+        return rateLimitExceededResponse(rateLimit.resetTime);
+    }
+
+    try {
+        const body = await req.json();
+        const validation = resetPasswordSchema.safeParse(body);
+
+        if (!validation.success) {
+            return errorResponse(validation.error.issues[0].message, 400);
+        }
+
+        const { email, token, newPassword } = validation.data;
+
+        const result = await resetPassword(email, token, newPassword);
+
+        if (!result.success) {
+            return errorResponse(result.error || "Đặt lại mật khẩu thất bại", 400);
+        }
+
+        return successResponse({ message: "Đặt lại mật khẩu thành công" });
+    } catch (error) {
+        return errorResponse("Không thể đặt lại mật khẩu", 500, error);
     }
 }

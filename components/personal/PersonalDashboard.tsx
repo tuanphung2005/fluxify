@@ -291,6 +291,7 @@ export default function PersonalDashboard() {
 
       <ChangePasswordModal
         isOpen={showPasswordModal}
+        userEmail={data?.user.email || ""}
         onClose={() => setShowPasswordModal(false)}
       />
     </div>

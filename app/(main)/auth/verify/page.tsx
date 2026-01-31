@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Card, CardBody, Button, Spinner } from "@heroui/react";
 import { CheckCircle, XCircle, Mail } from "lucide-react";
 import Link from "next/link";
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
@@ -104,5 +104,27 @@ export default function VerifyEmailPage() {
                 </CardBody>
             </Card>
         </div>
+    );
+}
+
+export default function VerifyEmailPage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="min-h-[80vh] flex items-center justify-center p-4">
+                    <Card className="max-w-md w-full">
+                        <CardBody className="flex flex-col items-center gap-6 py-8">
+                            <Spinner size="lg" />
+                            <div className="text-center">
+                                <h1 className="text-xl font-semibold">Đang xác thực email...</h1>
+                                <p className="text-default-500 mt-2">Vui lòng đợi trong giây lát</p>
+                            </div>
+                        </CardBody>
+                    </Card>
+                </div>
+            }
+        >
+            <VerifyEmailContent />
+        </Suspense>
     );
 }

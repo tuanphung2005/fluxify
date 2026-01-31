@@ -8,9 +8,8 @@ import {
     ModalBody,
     ModalFooter,
     Button,
-    Input,
 } from "@heroui/react";
-import { Eye, EyeOff, Lock, ShieldCheck } from "lucide-react";
+import { Mail, ShieldCheck, CheckCircle } from "lucide-react";
 
 import { api } from "@/lib/api/api";
 import { toast } from "@/lib/toast";
@@ -18,84 +17,33 @@ import { toast } from "@/lib/toast";
 interface ChangePasswordModalProps {
     isOpen: boolean;
     onClose: () => void;
+    userEmail: string;
 }
 
 export default function ChangePasswordModal({
     isOpen,
     onClose,
+    userEmail,
 }: ChangePasswordModalProps) {
     const [isLoading, setIsLoading] = useState(false);
-    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-    const [showNewPassword, setShowNewPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSent, setIsSent] = useState(false);
 
-    const [formData, setFormData] = useState({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-    });
-
-    const validateForm = () => {
-        const newErrors: Record<string, string> = {};
-
-        if (!formData.currentPassword) {
-            newErrors.currentPassword = "Vui lòng nhập mật khẩu hiện tại";
-        }
-
-        if (!formData.newPassword) {
-            newErrors.newPassword = "Vui lòng nhập mật khẩu mới";
-        } else if (formData.newPassword.length < 8) {
-            newErrors.newPassword = "Mật khẩu phải có ít nhất 8 ký tự";
-        } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.newPassword)) {
-            newErrors.newPassword =
-                "Mật khẩu phải có ít nhất 1 chữ hoa, 1 chữ thường và 1 số";
-        }
-
-        if (!formData.confirmPassword) {
-            newErrors.confirmPassword = "Vui lòng xác nhận mật khẩu";
-        } else if (formData.newPassword !== formData.confirmPassword) {
-            newErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = async () => {
-        if (!validateForm()) return;
-
+    const handleSendResetLink = async () => {
         setIsLoading(true);
         try {
-            await api.patch("/api/user/password", formData);
-            toast.success("Đổi mật khẩu thành công!");
-            handleClose();
+            await api.post("/api/user/password", { email: userEmail });
+            setIsSent(true);
+            toast.success("Link đặt lại mật khẩu đã được gửi!");
         } catch (error: any) {
-            toast.error(error.message || "Không thể đổi mật khẩu");
+            toast.error(error.message || "Không thể gửi email");
         } finally {
             setIsLoading(false);
         }
     };
 
     const handleClose = () => {
-        setFormData({
-            currentPassword: "",
-            newPassword: "",
-            confirmPassword: "",
-        });
-        setErrors({});
-        setShowCurrentPassword(false);
-        setShowNewPassword(false);
-        setShowConfirmPassword(false);
+        setIsSent(false);
         onClose();
-    };
-
-    const handleChange = (field: string, value: string) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
-        // Clear error when user starts typing
-        if (errors[field]) {
-            setErrors((prev) => ({ ...prev, [field]: "" }));
-        }
     };
 
     return (
@@ -103,105 +51,61 @@ export default function ChangePasswordModal({
             <ModalContent>
                 <ModalHeader className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                        <ShieldCheck className="text-primary" size={24} />
+                        <ShieldCheck className="text-danger" size={24} />
                         <span>Đổi mật khẩu</span>
                     </div>
-                    <p className="text-sm text-default-500 font-normal">
-                        Nhập mật khẩu hiện tại và mật khẩu mới của bạn
-                    </p>
                 </ModalHeader>
                 <ModalBody>
-                    <div className="space-y-4">
-                        <Input
-                            endContent={
-                                <button
-                                    className="focus:outline-none"
-                                    type="button"
-                                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                >
-                                    {showCurrentPassword ? (
-                                        <EyeOff className="text-default-400" size={20} />
-                                    ) : (
-                                        <Eye className="text-default-400" size={20} />
-                                    )}
-                                </button>
-                            }
-                            errorMessage={errors.currentPassword}
-                            isInvalid={!!errors.currentPassword}
-                            label="Mật khẩu hiện tại"
-                            placeholder="Nhập mật khẩu hiện tại"
-                            startContent={<Lock className="text-default-400" size={18} />}
-                            type={showCurrentPassword ? "text" : "password"}
-                            value={formData.currentPassword}
-                            onValueChange={(value) => handleChange("currentPassword", value)}
-                        />
-
-                        <Input
-                            endContent={
-                                <button
-                                    className="focus:outline-none"
-                                    type="button"
-                                    onClick={() => setShowNewPassword(!showNewPassword)}
-                                >
-                                    {showNewPassword ? (
-                                        <EyeOff className="text-default-400" size={20} />
-                                    ) : (
-                                        <Eye className="text-default-400" size={20} />
-                                    )}
-                                </button>
-                            }
-                            errorMessage={errors.newPassword}
-                            isInvalid={!!errors.newPassword}
-                            label="Mật khẩu mới"
-                            placeholder="Nhập mật khẩu mới"
-                            startContent={<Lock className="text-default-400" size={18} />}
-                            type={showNewPassword ? "text" : "password"}
-                            value={formData.newPassword}
-                            onValueChange={(value) => handleChange("newPassword", value)}
-                        />
-
-                        <Input
-                            endContent={
-                                <button
-                                    className="focus:outline-none"
-                                    type="button"
-                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                >
-                                    {showConfirmPassword ? (
-                                        <EyeOff className="text-default-400" size={20} />
-                                    ) : (
-                                        <Eye className="text-default-400" size={20} />
-                                    )}
-                                </button>
-                            }
-                            errorMessage={errors.confirmPassword}
-                            isInvalid={!!errors.confirmPassword}
-                            label="Xác nhận mật khẩu mới"
-                            placeholder="Nhập lại mật khẩu mới"
-                            startContent={<Lock className="text-default-400" size={18} />}
-                            type={showConfirmPassword ? "text" : "password"}
-                            value={formData.confirmPassword}
-                            onValueChange={(value) => handleChange("confirmPassword", value)}
-                        />
-
-                        <div className="text-xs text-default-400 space-y-1">
-                            <p>Mật khẩu phải:</p>
-                            <ul className="list-disc list-inside ml-2">
-                                <li>Có ít nhất 8 ký tự</li>
-                                <li>Có ít nhất 1 chữ hoa</li>
-                                <li>Có ít nhất 1 chữ thường</li>
-                                <li>Có ít nhất 1 số</li>
-                            </ul>
+                    {isSent ? (
+                        <div className="flex flex-col items-center gap-4 py-4">
+                            <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center">
+                                <CheckCircle className="w-8 h-8 text-success" />
+                            </div>
+                            <div className="text-center">
+                                <p className="font-medium">Email đã được gửi!</p>
+                                <p className="text-sm text-default-500 mt-2">
+                                    Kiểm tra hộp thư <strong>{userEmail}</strong> để nhận link đặt lại mật khẩu.
+                                </p>
+                                <p className="text-xs text-default-400 mt-2">
+                                    Link sẽ hết hạn sau 1 giờ.
+                                </p>
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="space-y-4">
+                            <p className="text-default-600">
+                                Chúng tôi sẽ gửi link đặt lại mật khẩu đến email của bạn:
+                            </p>
+                            <div className="p-3 bg-default-100 rounded-lg flex items-center gap-3">
+                                <Mail className="text-default-500" size={20} />
+                                <span className="font-medium">{userEmail}</span>
+                            </div>
+                            <p className="text-sm text-default-500">
+                                Nhấn vào link trong email để tạo mật khẩu mới. Link sẽ hết hạn sau 1 giờ.
+                            </p>
+                        </div>
+                    )}
                 </ModalBody>
                 <ModalFooter>
-                    <Button variant="flat" onPress={handleClose}>
-                        Hủy
-                    </Button>
-                    <Button color="primary" isLoading={isLoading} onPress={handleSubmit}>
-                        Đổi mật khẩu
-                    </Button>
+                    {isSent ? (
+                        <Button color="primary" onPress={handleClose}>
+                            Đóng
+                        </Button>
+                    ) : (
+                        <>
+                            <Button variant="flat" onPress={handleClose}>
+                                Hủy
+                            </Button>
+                            <Button
+                                color="danger"
+                                isLoading={isLoading}
+                                startContent={!isLoading && <Mail size={16} />}
+                                onPress={handleSendResetLink}
+                            >
+                                Gửi link đặt lại
+                            </Button>
+                        </>
+                    )}
                 </ModalFooter>
             </ModalContent>
         </Modal>

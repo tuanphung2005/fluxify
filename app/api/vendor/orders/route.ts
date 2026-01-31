@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
+import { OrderStatus, Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 import { errorResponse, successResponse } from "@/lib/api/responses";
@@ -19,11 +20,17 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20")));
-    const status = searchParams.get("status");
+    const statusParam = searchParams.get("status");
     const skip = (page - 1) * limit;
 
+    // Validate status is a valid OrderStatus
+    const validStatuses = Object.values(OrderStatus);
+    const status = statusParam && validStatuses.includes(statusParam as OrderStatus)
+      ? (statusParam as OrderStatus)
+      : undefined;
+
     // Build where clause
-    const whereClause = {
+    const whereClause: Prisma.OrderWhereInput = {
       items: {
         some: {
           product: {
