@@ -6,7 +6,14 @@ import { prisma } from "@/lib/prisma";
 const VERIFICATION_TOKEN_EXPIRY_HOURS = 24;
 const RESEND_COOLDOWN_SECONDS = 60;
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy-initialize Resend to avoid build-time errors
+let resend: Resend | null = null;
+function getResend(): Resend {
+    if (!resend) {
+        resend = new Resend(process.env.RESEND_API_KEY);
+    }
+    return resend;
+}
 
 /**
  * Generate a secure verification token
@@ -166,7 +173,7 @@ export async function sendVerificationEmail(
   }
 
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: process.env.RESEND_FROM_EMAIL || "Fluxify <onboarding@phungtuan.io.vn>",
       to: email,
       subject: "Xác thực email của bạn - Fluxify",
