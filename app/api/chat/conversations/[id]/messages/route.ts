@@ -184,7 +184,7 @@ export async function POST(request: NextRequest, props: RouteParams) {
         "ol",
         "li",
         "a",
-        "span", // valid for style/class
+        "span",
       ],
       ALLOWED_ATTR: ["href", "target", "rel", "style", "class"],
     });

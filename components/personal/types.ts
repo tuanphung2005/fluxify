@@ -49,6 +49,7 @@ export interface PersonalData {
     name: string | null;
     email: string;
     memberSince: string;
+    emailVerified: string | null;
   };
   stats: {
     totalOrders: number;

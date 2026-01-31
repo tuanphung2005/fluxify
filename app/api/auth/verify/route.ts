@@ -102,10 +102,17 @@ export async function PUT(req: NextRequest) {
       return errorResponse("Email is already verified", 400);
     }
 
-    // Create and send new token
-    const token = await createVerificationToken(email);
+    // Create and send new token (with cooldown check)
+    const tokenResult = await createVerificationToken(email);
 
-    await sendVerificationEmail(email, token);
+    if ('cooldownRemaining' in tokenResult) {
+      return errorResponse(
+        `Vui lòng đợi ${tokenResult.cooldownRemaining} giây trước khi gửi lại`,
+        429
+      );
+    }
+
+    await sendVerificationEmail(email, tokenResult.token);
 
     return successResponse({ message: "Verification email sent" });
   } catch (error) {

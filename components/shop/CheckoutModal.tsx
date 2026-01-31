@@ -10,9 +10,11 @@ import {
   ModalFooter,
   Button,
   Input,
+  Link,
 } from "@heroui/react";
 import { useState, useEffect } from "react";
-import { CheckCircle, QrCode, AlertCircle, Maximize2 } from "lucide-react";
+import { CheckCircle, QrCode, AlertCircle, Maximize2, ShieldAlert } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 import { useCartStore } from "@/store/cart-store";
 import { api } from "@/lib/api/api";
@@ -40,6 +42,7 @@ export default function CheckoutModal({
   isOpen,
   onOpenChange,
 }: CheckoutModalProps) {
+  const { data: session } = useSession();
   const { getItems, total, clearCart, currentVendorId, currentVendorName } =
     useCartStore();
   const items = getItems();
@@ -53,6 +56,7 @@ export default function CheckoutModal({
   const [bankInfo, setBankInfo] = useState<VietQRBank | undefined>(undefined);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
   const [orderId, setOrderId] = useState<string>("");
+  const [isEmailVerified, setIsEmailVerified] = useState<boolean | null>(null);
   const [formData, setFormData] = useState({
     fullName: "",
     phoneNumber: "",
@@ -65,10 +69,11 @@ export default function CheckoutModal({
   });
   const [saveDetails, setSaveDetails] = useState(false);
 
-  // Fetch vendor payment info when modal opens
+  // Fetch vendor payment info and check email verification when modal opens
   useEffect(() => {
     if (isOpen && currentVendorId) {
       fetchVendorPayment();
+      checkEmailVerification();
 
       // Load saved buyer details from localStorage
       const saved = localStorage.getItem("fluxify-buyer-details");
@@ -90,6 +95,16 @@ export default function CheckoutModal({
       }
     }
   }, [isOpen, currentVendorId]);
+
+  const checkEmailVerification = async () => {
+    try {
+      const data = await api.get<{ user: { emailVerified: string | null } }>("/api/user/personal");
+      setIsEmailVerified(!!data.user.emailVerified);
+    } catch (error) {
+      // If not logged in or error, assume not verified
+      setIsEmailVerified(false);
+    }
+  };
 
   const fetchVendorPayment = async () => {
     try {
@@ -242,6 +257,26 @@ export default function CheckoutModal({
               <ModalBody>
                 {step === "details" && (
                   <div className="space-y-4">
+                    {/* Email verification warning */}
+                    {isEmailVerified === false && (
+                      <div className="p-4 bg-danger-50 dark:bg-danger-900/20 rounded-lg border border-danger-200 dark:border-danger-800">
+                        <div className="flex items-start gap-3">
+                          <ShieldAlert className="text-danger flex-shrink-0 mt-0.5" size={20} />
+                          <div className="flex-1">
+                            <p className="font-medium text-danger-700 dark:text-danger-400">
+                              Email chưa được xác thực
+                            </p>
+                            <p className="text-sm text-danger-600 dark:text-danger-500 mt-1">
+                              Vui lòng xác thực email trước khi mua hàng.{" "}
+                              <Link href="/order" className="underline font-medium">
+                                Xác thực ngay
+                              </Link>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     <div className="p-4 bg-default-50 rounded-lg">
                       <div className="flex justify-between font-semibold">
                         <span>Tổng tiền</span>
@@ -423,12 +458,12 @@ export default function CheckoutModal({
                     </Button>
                     <Button
                       color="primary"
-                      isDisabled={!hasVendorPayment}
+                      isDisabled={!hasVendorPayment || isEmailVerified === false}
                       isLoading={isLoading}
                       startContent={!isLoading && <QrCode size={18} />}
                       onPress={handleProceedToPayment}
                     >
-                      Tiếp tục thanh toán
+                      {isEmailVerified === false ? "Xác thực email để mua" : "Tiếp tục thanh toán"}
                     </Button>
                   </>
                 )}

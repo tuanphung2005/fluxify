@@ -24,7 +24,7 @@ export async function GET() {
       // Get full user data
       prisma.user.findUnique({
         where: { id: auth.user.id },
-        select: { name: true, email: true, createdAt: true },
+        select: { name: true, email: true, createdAt: true, emailVerified: true },
       }),
 
       // Orders with items and address
@@ -83,6 +83,7 @@ export async function GET() {
         name: user?.name,
         email: user?.email,
         memberSince: user?.createdAt,
+        emailVerified: user?.emailVerified,
       },
       stats: {
         totalOrders: stats._count.id || 0,
