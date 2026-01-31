@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import DOMPurify from "isomorphic-dompurify";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -164,13 +165,41 @@ export async function POST(request: NextRequest, props: RouteParams) {
       return errorResponse("Tin nhắn quá dài (tối đa 2000 ký tự)", 400);
     }
 
+    // Sanitize content
+    const sanitizedContent = DOMPurify.sanitize(content.trim(), {
+      ALLOWED_TAGS: [
+        "p",
+        "br",
+        "strong",
+        "b",
+        "em",
+        "i",
+        "u",
+        "s",
+        "strike",
+        "h1",
+        "h2",
+        "h3",
+        "ul",
+        "ol",
+        "li",
+        "a",
+        "span", // valid for style/class
+      ],
+      ALLOWED_ATTR: ["href", "target", "rel", "style", "class"],
+    });
+
+    if (sanitizedContent.length === 0) {
+      return errorResponse("Nội dung tin nhắn không hợp lệ", 400);
+    }
+
     // Create the message
     const message = await prisma.chatMessage.create({
       data: {
         conversationId,
         senderId: user.id,
         senderType: isVendor ? "VENDOR" : "USER",
-        content: content.trim(),
+        content: sanitizedContent,
       },
     });
 
