@@ -11,52 +11,116 @@ import {
   TableCell,
 } from "@heroui/table";
 import { Chip } from "@heroui/chip";
+import { Pagination } from "@heroui/pagination";
+import { Select, SelectItem } from "@heroui/select";
 import { Eye, ListOrdered, RefreshCw } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import { api } from "@/lib/api/api";
 import OrderDetailsModal from "@/components/vendor/OrderDetailsModal";
+
+interface PaginationInfo {
+  page: number;
+  limit: number;
+  totalOrders: number;
+  totalPages: number;
+  hasMore: boolean;
+}
+
+interface OrdersResponse {
+  orders: any[];
+  pagination: PaginationInfo;
+}
+
+const STATUS_OPTIONS = [
+  { key: "", label: "Tất cả" },
+  { key: "PENDING", label: "Chờ xử lý" },
+  { key: "PROCESSING", label: "Đang xử lý" },
+  { key: "SHIPPED", label: "Đang giao" },
+  { key: "DELIVERED", label: "Đã giao" },
+  { key: "CANCELLED", label: "Đã hủy" },
+];
 
 export default function VendorOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState("");
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    page: 1,
+    limit: 20,
+    totalOrders: 0,
+    totalPages: 1,
+    hasMore: false,
+  });
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await api.get<any[]>("/api/vendor/orders");
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: "20",
+      });
 
-      setOrders(data);
+      if (statusFilter) {
+        params.set("status", statusFilter);
+      }
+
+      const data = await api.get<OrdersResponse>(`/api/vendor/orders?${params}`);
+
+      setOrders(data.orders);
+      setPagination(data.pagination);
     } catch (e) {
       console.error("Failed to fetch orders", e);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [page, statusFilter]);
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [fetchOrders]);
 
   const handleViewOrder = (order: any) => {
     setSelectedOrder(order);
     setIsOrderModalOpen(true);
   };
 
+  const handleStatusFilterChange = (value: string) => {
+    setStatusFilter(value);
+    setPage(1); // Reset to first page when filter changes
+  };
+
   return (
     <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Đơn hàng</h2>
-        <Button
-          isLoading={isLoading}
-          startContent={<RefreshCw size={18} />}
-          variant="flat"
-          onPress={fetchOrders}
-        >
-          Làm mới
-        </Button>
+        <div className="flex gap-3 items-center">
+          <Select
+            className="w-40"
+            placeholder="Lọc trạng thái"
+            selectedKeys={statusFilter ? [statusFilter] : []}
+            size="sm"
+            onSelectionChange={(keys) => {
+              const selected = Array.from(keys)[0] as string;
+              handleStatusFilterChange(selected || "");
+            }}
+          >
+            {STATUS_OPTIONS.map((status) => (
+              <SelectItem key={status.key}>{status.label}</SelectItem>
+            ))}
+          </Select>
+          <Button
+            isLoading={isLoading}
+            startContent={<RefreshCw size={18} />}
+            variant="flat"
+            onPress={fetchOrders}
+          >
+            Làm mới
+          </Button>
+        </div>
       </div>
 
       <Card className="border-none shadow-md">
@@ -135,6 +199,22 @@ export default function VendorOrdersPage() {
           )}
         </CardBody>
       </Card>
+
+      {/* Pagination */}
+      {pagination.totalPages > 1 && (
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-default-500">
+            Hiển thị {orders.length} / {pagination.totalOrders} đơn hàng
+          </span>
+          <Pagination
+            isCompact
+            showControls
+            page={page}
+            total={pagination.totalPages}
+            onChange={setPage}
+          />
+        </div>
+      )}
 
       <OrderDetailsModal
         isOpen={isOrderModalOpen}
