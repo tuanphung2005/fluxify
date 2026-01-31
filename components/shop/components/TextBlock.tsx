@@ -1,72 +1,43 @@
 "use client";
 
-import { useMemo } from "react";
-import DOMPurify from "dompurify";
-
 import { TextBlockConfig } from "@/types/shop";
-import { BaseComponentProps } from "@/types/shop-components";
+import { cn } from "@/lib/utils";
 
-export default function TextBlock({
-  config,
-}: BaseComponentProps<TextBlockConfig>) {
+interface TextBlockProps {
+  config: TextBlockConfig;
+}
+
+export default function TextBlock({ config }: TextBlockProps) {
   const {
-    content = "<p>Add your text content here...</p>",
+    content,
     alignment = "left",
-    backgroundColor,
+    backgroundColor = "transparent",
     textColor,
     padding = "medium",
-  } = config as TextBlockConfig;
-
-  const alignmentClasses = {
-    left: "text-left",
-    center: "text-center",
-    right: "text-right",
-  }[alignment];
+  } = config;
 
   const paddingClasses = {
-    small: "py-6 px-4",
-    medium: "py-12 px-6",
-    large: "py-20 px-8",
-  }[padding];
-
-  // sanitizer
-  const sanitizedContent = useMemo(() => {
-    if (typeof window === "undefined") return content;
-
-    return DOMPurify.sanitize(content, {
-      ALLOWED_TAGS: [
-        "p",
-        "br",
-        "strong",
-        "em",
-        "u",
-        "h1",
-        "h2",
-        "h3",
-        "h4",
-        "h5",
-        "h6",
-        "ul",
-        "ol",
-        "li",
-        "a",
-        "blockquote",
-      ],
-      ALLOWED_ATTR: ["href", "target", "rel"],
-    });
-  }, [content]);
+    small: "py-4 px-4",
+    medium: "py-8 px-6",
+    large: "py-16 px-8",
+  };
 
   return (
     <div
-      className={`${paddingClasses}`}
+      className={cn("w-full transition-colors", paddingClasses[padding])}
       style={{
-        backgroundColor: backgroundColor || "transparent",
-        color: textColor || "inherit",
+        backgroundColor,
+        color: textColor,
       }}
     >
       <div
-        dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-        className={`max-w-4xl mx-auto prose prose-lg ${alignmentClasses}`}
+        className={cn("prose max-w-none dark:prose-invert", {
+          "text-left": alignment === "left",
+          "text-center": alignment === "center",
+          "text-right": alignment === "right",
+        })}
+        dangerouslySetInnerHTML={{ __html: content }}
+        style={{ color: textColor }}
       />
     </div>
   );

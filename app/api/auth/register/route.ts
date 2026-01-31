@@ -91,10 +91,12 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Send verification email
-    const token = await createVerificationToken(user.email);
+    // Send verification email (bypass cooldown for new registration)
+    const tokenResult = await createVerificationToken(user.email, true);
 
-    await sendVerificationEmail(user.email, token);
+    if ('token' in tokenResult) {
+      await sendVerificationEmail(user.email, tokenResult.token);
+    }
 
     return successResponse(
       {
