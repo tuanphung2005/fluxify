@@ -9,10 +9,10 @@ const RESEND_COOLDOWN_SECONDS = 60;
 // Lazy-initialize Resend to avoid build-time errors
 let resend: Resend | null = null;
 function getResend(): Resend {
-    if (!resend) {
-        resend = new Resend(process.env.RESEND_API_KEY);
-    }
-    return resend;
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
 }
 
 /**
@@ -153,7 +153,13 @@ export async function isEmailVerified(email: string): Promise<boolean> {
  * Get verification URL for email
  */
 export function getVerificationUrl(email: string, token: string): string {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+  if (!baseUrl) {
+    if (process.env.NODE_ENV === "development") {
+      baseUrl = "http://localhost:3000";
+    }
+  }
 
   return `${baseUrl}/auth/verify?email=${encodeURIComponent(email)}&token=${token}`;
 }
