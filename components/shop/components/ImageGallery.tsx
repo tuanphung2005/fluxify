@@ -42,12 +42,12 @@ export default function ImageGallery({
           {images.map((image, index) => (
             <div
               key={index}
-              className={`relative overflow-hidden rounded-xl ${aspectClasses} cursor-pointer group`}
+              className={`relative overflow-hidden rounded-xl ${aspectClasses} cursor-pointer group/image`}
               onClick={() => setSelectedImage(image)}
             >
               <Image
                 alt={image.alt}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover/image:scale-110"
                 height="100%"
                 src={image.url || "https://placehold.co/600x400/EEE/31343C"}
                 width="100%"

@@ -75,7 +75,7 @@ export function useShopBuilder() {
   const createNewTemplate = async () => {
     try {
       const response = await api.post<ShopTemplateData>("/api/shop/template", {
-        name: "My Shop",
+        name: "Cửa hàng của tôi",
       });
 
       if (response) {
@@ -200,9 +200,9 @@ export function useShopBuilder() {
 
     try {
       await toast.promise(performSave(), {
-        loading: "saving changes...",
-        success: "changes saved successfully",
-        error: "failed to save changes",
+        loading: "Đang lưu thay đổi...",
+        success: "Đã lưu thay đổi thành công",
+        error: "Thất bại khi lưu thay đổi",
       });
     } catch (error) {
       console.error("Error saving:", error);
@@ -236,9 +236,9 @@ export function useShopBuilder() {
 
     try {
       await toast.promise(publishPromise(), {
-        loading: "publishing shop...",
-        success: "shop published successfully",
-        error: "failed to publish shop",
+        loading: "Đang xuất bản cửa hàng...",
+        success: "Đã xuất bản cửa hàng thành công",
+        error: "Thất bại khi xuất bản cửa hàng",
       });
     } catch (error) {
       console.error("Error publishing template:", error);
@@ -268,12 +268,12 @@ export function useShopBuilder() {
 
     try {
       await toast.promise(unpublishPromise(), {
-        loading: "unpublishing shop...",
-        success: "shop unpublished successfully",
-        error: "failed to unpublish shop",
+        loading: "Đang ẩn cửa hàng...",
+        success: "Đã ẩn cửa hàng thành công",
+        error: "Thất bại khi ẩn cửa hàng",
       });
     } catch (error) {
-      console.error("Error unpublishing template:", error);
+      console.error(error);
     } finally {
       setIsOperating(false);
     }

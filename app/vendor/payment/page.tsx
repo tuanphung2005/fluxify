@@ -238,18 +238,15 @@ export default function PaymentSettingsPage() {
                   <div className="bg-white p-4 rounded-xl shadow-lg">
                     <img
                       alt="VietQR Preview"
-                      className="w-48 h-53"
+                      className="w-60 h-auto"
                       src={previewQrUrl!}
                     />
                   </div>
-                  <p className="text-xs text-primary text-center">
-                    Khách hàng sẽ thấy mã QR này khi thanh toán
-                  </p>
                 </>
               ) : (
                 <div className="text-center text-default-400 py-8">
                   <QrCode className="mx-auto mb-4 opacity-30" size={48} />
-                  <p>Điền đầy đủ thông tin để xem trước mã QR</p>
+                  <p>Hãy điền đầy đủ thông tin để xem trước mã QR</p>
                 </div>
               )}
             </CardBody>
