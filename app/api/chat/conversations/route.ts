@@ -12,7 +12,7 @@ import {
 
 /**
  * GET /api/chat/conversations
- * List all conversations for the current user (as customer or vendor)
+ * List all conversations for the current user
  */
 export async function GET(request: NextRequest) {
   try {
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     }
 
     const searchParams = request.nextUrl.searchParams;
-    const role = searchParams.get("role"); // "user" or "vendor"
+    const role = searchParams.get("role"); // "user" || "vendor"
 
     let conversations;
 
@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
  * Start a new conversation with a vendor or get existing one
  */
 export async function POST(request: NextRequest) {
-  // Rate limit conversation creation
+  // Rate limit
   const rateLimit = checkRateLimit(
     getClientIdentifier(request),
     rateLimitPresets.write,
@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
       return errorResponse("Không tìm thấy cửa hàng", 404);
     }
 
-    // Check if user is trying to chat with their own shop
+    // if user chat with their own shop -> ignore
     if (vendor.userId === user.id) {
       return errorResponse(
         "Không thể trò chuyện với cửa hàng của chính bạn",

@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      // 3. Batch fetch all products to avoid N+1 queries
+      // 3. Batch fetch all products
       const productIds = items.map((item) => item.productId);
       const products = await tx.product.findMany({
         where: { id: { in: productIds } },
@@ -140,7 +140,7 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      // 5. Update stock atomically (prevents race conditions)
+      // 5. Update stock atomically
       for (const update of stockUpdates) {
         await updateVariantStock(
           tx,

@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed.",
+            "Sai định dạng tệp. Chỉ JPEG, PNG, WebP và GIF được phép.",
         },
         { status: 400 },
       );
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json(
-        { error: "File too large. Maximum size is 10MB." },
+        { error: "File quá lớn. Kích thước tối đa là 10MB." },
         { status: 400 },
       );
     }
@@ -61,10 +61,8 @@ export async function POST(request: NextRequest) {
       height: result.height,
     });
   } catch (error: any) {
-    console.error("Upload error:", error);
-
     return NextResponse.json(
-      { error: error.message || "Upload failed" },
+      { error: error.message || "Tải lên thất bại" },
       { status: 500 },
     );
   }

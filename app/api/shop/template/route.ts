@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     const template = await prisma.shopTemplate.create({
       data: {
         vendorId: auth.vendor.id,
-        name: name || "My Shop",
+        name: name || "Cửa hàng của tôi",
         isPublished: false,
       },
       include: {
@@ -149,7 +149,7 @@ export async function DELETE(req: NextRequest) {
       return errorResponse(ownershipCheck.error, ownershipCheck.status);
     }
 
-    // Delete template (cascade will delete components)
+    // Delete template
     await prisma.shopTemplate.delete({
       where: { id },
     });

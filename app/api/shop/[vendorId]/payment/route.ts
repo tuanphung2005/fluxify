@@ -12,7 +12,7 @@ interface RouteParams {
 /**
  * GET /api/shop/[vendorId]/payment
  * Get vendor's public payment info for checkout
- * This is a public endpoint - no authentication required
+ * public endpoint
  */
 export async function GET(req: NextRequest, { params }: RouteParams) {
   try {

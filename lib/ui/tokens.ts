@@ -51,11 +51,7 @@ export const COMPONENT_COLORS: Record<ComponentType, ComponentColors> = {
     bg: "bg-danger-50/10",
     badge: "bg-danger-500 text-white",
   },
-  TESTIMONIALS: {
-    border: "border-pink-500/50",
-    bg: "bg-pink-50/10",
-    badge: "bg-pink-500 text-white",
-  },
+
   FEATURED_COLLECTION: {
     border: "border-purple-500/50",
     bg: "bg-purple-50/10",
@@ -66,11 +62,7 @@ export const COMPONENT_COLORS: Record<ComponentType, ComponentColors> = {
     bg: "bg-orange-50/10",
     badge: "bg-orange-500 text-white",
   },
-  NEWSLETTER_SIGNUP: {
-    border: "border-cyan-500/50",
-    bg: "bg-cyan-50/10",
-    badge: "bg-cyan-500 text-white",
-  },
+
   FAQ_ACCORDION: {
     border: "border-teal-500/50",
     bg: "bg-teal-50/10",
@@ -97,10 +89,10 @@ export const COMPONENT_LABELS: Record<ComponentType, string> = {
   IMAGE_GALLERY: "thư viện ảnh",
   VIDEO_EMBED: "video nhúng",
   TEXT_BLOCK: "khối văn bản",
-  TESTIMONIALS: "đánh giá",
+
   FEATURED_COLLECTION: "bộ sưu tập nổi bật",
   COUNTDOWN_TIMER: "đếm ngược",
-  NEWSLETTER_SIGNUP: "đăng ký bản tin",
+
   FAQ_ACCORDION: "câu hỏi thường gặp",
   BANNER_CAROUSEL: "băng chảy banner",
   MAP_LOCATION: "bản đồ vị trí",
@@ -115,10 +107,10 @@ export const COMPONENT_ICONS: Record<ComponentType, LucideIcon> = {
   IMAGE_GALLERY: ImageIcon,
   VIDEO_EMBED: Video,
   TEXT_BLOCK: FileText,
-  TESTIMONIALS: MessageSquareQuote,
+
   FEATURED_COLLECTION: Star,
   COUNTDOWN_TIMER: Timer,
-  NEWSLETTER_SIGNUP: Mail,
+
   FAQ_ACCORDION: HelpCircle,
   BANNER_CAROUSEL: Images,
   MAP_LOCATION: MapPin,

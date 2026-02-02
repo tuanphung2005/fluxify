@@ -209,9 +209,8 @@ export async function getReviewSummary(productId: string) {
     distribution,
   };
 }
-
+// TODO:
 export async function createReview(data: ReviewCreateInput) {
-  // Check if user already reviewed this product
   const existing = await prisma.review.findUnique({
     where: {
       productId_userId: {
@@ -222,7 +221,7 @@ export async function createReview(data: ReviewCreateInput) {
   });
 
   if (existing) {
-    throw new Error("You have already reviewed this product");
+    throw new Error("Bạn đã đánh giá sản phẩm này");
   }
 
   // Check if user has purchased this product

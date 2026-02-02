@@ -44,18 +44,7 @@ export interface SpacerConfig {
 }
 
 // New component configs for Phase 4
-export interface TestimonialsConfig {
-  title?: string;
-  testimonials: Array<{
-    name: string;
-    avatar?: string;
-    rating: number;
-    comment: string;
-    role?: string;
-  }>;
-  layout?: "grid" | "carousel";
-  backgroundColor?: string;
-}
+
 
 export interface FeaturedCollectionConfig {
   title: string;
@@ -77,14 +66,7 @@ export interface CountdownTimerConfig {
   textColor?: string;
 }
 
-export interface NewsletterSignupConfig {
-  title: string;
-  subtitle?: string;
-  buttonText?: string;
-  placeholder?: string;
-  backgroundColor?: string;
-  textColor?: string;
-}
+
 
 export interface FaqAccordionConfig {
   title?: string;
@@ -124,10 +106,10 @@ export type ComponentConfig =
   | VideoEmbedConfig
   | TextBlockConfig
   | SpacerConfig
-  | TestimonialsConfig
+
   | FeaturedCollectionConfig
   | CountdownTimerConfig
-  | NewsletterSignupConfig
+
   | FaqAccordionConfig
   | BannerCarouselConfig
   | MapLocationConfig;

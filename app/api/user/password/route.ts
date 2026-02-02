@@ -91,10 +91,10 @@ export async function POST(req: NextRequest) {
  * PATCH /api/user/password - Reset password with token
  */
 export async function PATCH(req: NextRequest) {
-    // Rate limit password reset attempts
+    // Rate limit
     const rateLimit = checkRateLimit(getClientIdentifier(req), {
-        windowMs: 15 * 60 * 1000, // 15 minutes
-        maxRequests: 5, // 5 attempts per 15 minutes
+        windowMs: 15 * 60 * 1000,
+        maxRequests: 5,
     });
 
     if (!rateLimit.allowed) {
@@ -114,7 +114,7 @@ export async function PATCH(req: NextRequest) {
         const result = await resetPassword(email, token, newPassword);
 
         if (!result.success) {
-            return errorResponse(result.error || "Đặt lại mật khẩu thất bại", 400);
+            return errorResponse(result.error || "Không thể đặt lại mật khẩu", 400);
         }
 
         return successResponse({ message: "Đặt lại mật khẩu thành công" });

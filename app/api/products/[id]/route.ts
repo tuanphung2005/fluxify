@@ -13,7 +13,7 @@ import {
   getProductById,
 } from "@/lib/db/product-queries";
 
-// GET - Get single product by ID (public endpoint for cart validation)
+// GET - Get single product by ID
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -32,7 +32,7 @@ export async function GET(
   }
 }
 
-// Validation schema for updates (all fields optional)
+// Validation schema
 const updateProductSchema = z.object({
   name: z.string().min(1, "Product name cannot be empty").optional(),
   description: z.string().optional(),

@@ -80,7 +80,7 @@ export async function PATCH(req: NextRequest) {
     });
 
     if (!order) {
-      return errorResponse("Order not found", 404);
+      return errorResponse("Không tìm thấy đơn hàng", 404);
     }
 
     if (order.userId !== auth.user.id) {
@@ -90,7 +90,7 @@ export async function PATCH(req: NextRequest) {
     // Only allow cancellation if PENDING or PROCESSING
     if (order.status !== "PENDING" && order.status !== "PROCESSING") {
       return errorResponse(
-        "Order cannot be cancelled. Only pending or processing orders can be cancelled.",
+        "Đơn hàng Không thể hủy. Chỉ có đơn hàng đang chờ xử lý hoặc đang xử lý mới có thể hủy",
         400,
       );
     }

@@ -40,7 +40,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       return errorResponse(ownershipCheck.error, ownershipCheck.status);
     }
 
-    // Validate and sanitize config (same as POST endpoint)
+    // Validate and sanitize config
     const configValidation = validateComponentConfig(
       ownershipCheck.component.type,
       config,
@@ -54,7 +54,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       config,
     );
 
-    // Update component with validated and sanitized config
+    // Update component
     const updatedComponent = await prisma.shopComponent.update({
       where: { id },
       data: { config: sanitizedConfig || {} },

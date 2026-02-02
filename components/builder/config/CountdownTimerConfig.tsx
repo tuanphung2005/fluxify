@@ -83,9 +83,7 @@ export default function CountdownTimerConfigPanel({
         />
       </div>
 
-      <p className="text-xs text-default-400">
-        Gợi ý: Để có màu nền gradient, hãy sửa trong CSS theme.
-      </p>
+
     </div>
   );
 }

@@ -6,10 +6,9 @@ import {
   VideoEmbedConfig,
   TextBlockConfig,
   SpacerConfig,
-  TestimonialsConfig,
   FeaturedCollectionConfig,
   CountdownTimerConfig,
-  NewsletterSignupConfig,
+
   FaqAccordionConfig,
   BannerCarouselConfig,
   MapLocationConfig,
@@ -58,27 +57,7 @@ export const DEFAULT_CONFIGS: Record<ComponentType, ComponentConfig> = {
     padding: "medium",
   } as TextBlockConfig,
 
-  // New component defaults
-  TESTIMONIALS: {
-    title: "What Our Customers Say",
-    testimonials: [
-      {
-        name: "John Doe",
-        rating: 5,
-        comment:
-          "Amazing products and fast shipping! Highly recommend this store.",
-        role: "Verified Buyer",
-      },
-      {
-        name: "Jane Smith",
-        rating: 5,
-        comment:
-          "Great quality and excellent customer service. Will buy again!",
-        role: "Verified Buyer",
-      },
-    ],
-    layout: "carousel",
-  } as TestimonialsConfig,
+
 
   FEATURED_COLLECTION: {
     title: "Featured Collection",
@@ -100,13 +79,7 @@ export const DEFAULT_CONFIGS: Record<ComponentType, ComponentConfig> = {
     textColor: "#ffffff",
   } as CountdownTimerConfig,
 
-  NEWSLETTER_SIGNUP: {
-    title: "Stay in the Loop",
-    subtitle: "Subscribe to our newsletter for exclusive deals and updates",
-    buttonText: "Subscribe",
-    placeholder: "Enter your email",
-    backgroundColor: "#f8fafc",
-  } as NewsletterSignupConfig,
+
 
   FAQ_ACCORDION: {
     title: "Frequently Asked Questions",

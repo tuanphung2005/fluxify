@@ -39,7 +39,7 @@ export async function GET(request: NextRequest, props: RouteParams) {
         const params = await props.params;
         const conversationId = params.id;
 
-        // Verify conversation exists and user has access
+        // Verify
         const conversation = await prisma.chatConversation.findUnique({
             where: { id: conversationId },
         });
@@ -71,14 +71,14 @@ export async function GET(request: NextRequest, props: RouteParams) {
             }),
         });
 
-        // Check if there are more messages
+        // check if more msg -> pop
         const hasMore = messages.length > limit;
 
         if (hasMore) {
             messages.pop();
         }
 
-        // Mark messages as read
+        // mark as read
         const senderTypeToMark = isVendor ? "USER" : "VENDOR";
 
         await prisma.chatMessage.updateMany({
@@ -91,7 +91,7 @@ export async function GET(request: NextRequest, props: RouteParams) {
         });
 
         return successResponse({
-            messages: messages.reverse(), // Return in chronological order
+            messages: messages.reverse(),
             hasMore,
             nextCursor: hasMore ? messages[messages.length - 1]?.id : null,
         });
@@ -105,7 +105,7 @@ export async function GET(request: NextRequest, props: RouteParams) {
  * Send a new message
  */
 export async function POST(request: NextRequest, props: RouteParams) {
-    // Rate limit message sending
+    // Rate limit
     const rateLimit = checkRateLimit(
         getClientIdentifier(request),
         rateLimitPresets.write,
@@ -134,7 +134,7 @@ export async function POST(request: NextRequest, props: RouteParams) {
         const params = await props.params;
         const conversationId = params.id;
 
-        // Verify conversation exists and user has access
+        // verify convo exists
         const conversation = await prisma.chatConversation.findUnique({
             where: { id: conversationId },
         });

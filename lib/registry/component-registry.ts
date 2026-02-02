@@ -42,10 +42,10 @@ const COMPONENT_DESCRIPTIONS: Record<ComponentType, string> = {
   VIDEO_EMBED: "Nhúng video từ YouTube, Vimeo hoặc tùy chỉnh",
   TEXT_BLOCK: "Nội dung văn bản phong phú với kiểu dáng tùy chỉnh",
 
-  TESTIMONIALS: "Hiển thị đánh giá và nhận xét của khách hàng",
   FEATURED_COLLECTION: "Nổi bật bộ sưu tập sản phẩm được chọn lọc",
   COUNTDOWN_TIMER: "Tạo sự khẩn cấp với đồng hồ đếm ngược",
-  NEWSLETTER_SIGNUP: "Thu thập đăng ký email",
+
+
   FAQ_ACCORDION: "Danh mục câu hỏi thường gặp có thể mở rộng",
   BANNER_CAROUSEL: "Banner xoay vòng với chế độ tự động",
   MAP_LOCATION: "Hiển thị bản đồ vị trí cửa hàng với Google Maps",
@@ -101,20 +101,7 @@ export const COMPONENT_REGISTRY: Record<ComponentType, ComponentMeta> = {
     ConfigPanel: lazy(() => import("@/components/builder/config/TextBlock")),
   },
 
-  TESTIMONIALS: {
-    type: "TESTIMONIALS",
-    label: COMPONENT_LABELS.TESTIMONIALS,
-    description: COMPONENT_DESCRIPTIONS.TESTIMONIALS,
-    icon: COMPONENT_ICONS.TESTIMONIALS,
-    colors: COMPONENT_COLORS.TESTIMONIALS,
-    defaultConfig: DEFAULT_CONFIGS.TESTIMONIALS,
-    Component: lazy(
-      () => import("@/components/shop/components/TestimonialsComponent"),
-    ),
-    ConfigPanel: lazy(
-      () => import("@/components/builder/config/TestimonialsConfig"),
-    ),
-  },
+
   FEATURED_COLLECTION: {
     type: "FEATURED_COLLECTION",
     label: COMPONENT_LABELS.FEATURED_COLLECTION,
@@ -143,20 +130,7 @@ export const COMPONENT_REGISTRY: Record<ComponentType, ComponentMeta> = {
       () => import("@/components/builder/config/CountdownTimerConfig"),
     ),
   },
-  NEWSLETTER_SIGNUP: {
-    type: "NEWSLETTER_SIGNUP",
-    label: COMPONENT_LABELS.NEWSLETTER_SIGNUP,
-    description: COMPONENT_DESCRIPTIONS.NEWSLETTER_SIGNUP,
-    icon: COMPONENT_ICONS.NEWSLETTER_SIGNUP,
-    colors: COMPONENT_COLORS.NEWSLETTER_SIGNUP,
-    defaultConfig: DEFAULT_CONFIGS.NEWSLETTER_SIGNUP,
-    Component: lazy(
-      () => import("@/components/shop/components/NewsletterSignupComponent"),
-    ),
-    ConfigPanel: lazy(
-      () => import("@/components/builder/config/NewsletterSignupConfig"),
-    ),
-  },
+
   FAQ_ACCORDION: {
     type: "FAQ_ACCORDION",
     label: COMPONENT_LABELS.FAQ_ACCORDION,
