@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Get unique product IDs from order items (avoid duplicates)
-        const uniqueProductIds = [...new Set(order.items.map((item) => item.productId))];
+        const uniqueProductIds = Array.from(new Set(order.items.map((item) => item.productId)));
 
         // Check which products user has already reviewed
         const existingReviews = await prisma.review.findMany({

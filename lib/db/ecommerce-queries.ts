@@ -35,12 +35,12 @@ export async function getAllCategories(
     include: {
       children: includeChildren
         ? {
-            include: {
-              _count: includeProductCount
-                ? { select: { products: true } }
-                : undefined,
-            },
-          }
+          include: {
+            _count: includeProductCount
+              ? { select: { products: true } }
+              : undefined,
+          },
+        }
         : false,
       _count: includeProductCount ? { select: { products: true } } : undefined,
     },
@@ -211,12 +211,10 @@ export async function getReviewSummary(productId: string) {
 }
 // TODO:
 export async function createReview(data: ReviewCreateInput) {
-  const existing = await prisma.review.findUnique({
+  const existing = await prisma.review.findFirst({
     where: {
-      productId_userId: {
-        productId: data.productId,
-        userId: data.userId,
-      },
+      productId: data.productId,
+      userId: data.userId,
     },
   });
 
