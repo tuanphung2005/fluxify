@@ -8,6 +8,8 @@ import ChatButton from "@/components/shop/ChatButton";
 import FavoriteShopButton from "@/components/shop/FavoriteShopButton";
 import ShopProductModalManager from "@/components/shop/ShopProductModalManager";
 import VendorCartProvider from "@/components/shop/VendorCartProvider";
+import ShopOverview from "@/components/shop/ShopOverview";
+import ShopReviewsSection from "@/components/shop/ShopReviewsSection";
 
 interface ShopPageProps {
   params: Promise<{
@@ -58,6 +60,11 @@ export default async function ShopPage(props: ShopPageProps) {
   return (
     <VendorCartProvider vendorId={vendorId} vendorName={vendorName}>
       <div className="min-h-screen">
+        {/* Shop Overview Stats */}
+        <div className="container mx-auto px-4 pt-4">
+          <ShopOverview vendorId={vendorId} />
+        </div>
+
         {components.map((component) => (
           <ShopComponentWrapper
             key={component.id}
@@ -77,11 +84,16 @@ export default async function ShopPage(props: ShopPageProps) {
                 Shop Coming Soon
               </h2>
               <p className="text-default-400">
-                  Shop đang được dựng, quay lại sau nhé!
+                Shop đang được dựng, quay lại sau nhé!
               </p>
             </div>
           </div>
         )}
+
+        {/* Customer Reviews Section */}
+        <div className="container mx-auto px-4 py-8">
+          <ShopReviewsSection vendorId={vendorId} />
+        </div>
 
         <ShopProductModalManager
           products={products}

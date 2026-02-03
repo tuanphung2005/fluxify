@@ -1,31 +1,55 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Image } from "@heroui/image";
-import { Package, ShoppingBag, X, ChevronRight } from "lucide-react";
+import { Package, ShoppingBag, X, ChevronRight, Star, CheckCircle } from "lucide-react";
 
-import { Order, formatDate, canCancelOrder } from "./types";
+import { Order, OrderItem, formatDate, canCancelOrder } from "./types";
 
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
+import ReviewModal from "@/components/shop/ReviewModal";
 
 interface OrdersSectionProps {
   orders: Order[];
   cancellingOrderId: string | null;
   onCancelClick: (order: Order) => void;
+  onReviewSuccess?: () => void;
+}
+
+interface ReviewableItem {
+  id: string;
+  productName: string;
+  productImage: string | null;
+  selectedVariant: string | null;
 }
 
 export default function OrdersSection({
   orders,
   cancellingOrderId,
   onCancelClick,
+  onReviewSuccess,
 }: OrdersSectionProps) {
+  const [reviewItem, setReviewItem] = useState<ReviewableItem | null>(null);
+
+  const handleReviewClick = (item: OrderItem) => {
+    setReviewItem({
+      id: item.id,
+      productName: item.product.name,
+      productImage: item.product.images?.[0] || null,
+      selectedVariant: item.selectedVariant,
+    });
+  };
+
+  const canReviewOrder = (order: Order) => order.status === "DELIVERED";
+
   return (
     <section>
       <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
         <Package size={20} />
-        My Orders
+        Đơn hàng
       </h2>
       {orders.length > 0 ? (
         <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
@@ -45,7 +69,7 @@ export default function OrdersSection({
                     </p>
                   </div>
                   <p className="font-semibold">
-                    ${Number(order.total).toFixed(2)}
+                    {Number(order.total).toFixed(2)}₫
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -75,7 +99,7 @@ export default function OrdersSection({
                     title={
                       <span className="text-sm font-medium">
                         {order.items.length}{" "}
-                        {order.items.length === 1 ? "item" : "items"}
+                        {order.items.length === 1 ? "sản phẩm" : "sản phẩm"}
                       </span>
                     }
                   >
@@ -104,11 +128,35 @@ export default function OrdersSection({
                             </p>
                             <p className="text-xs text-default-500">
                               {item.quantity} × ${Number(item.price).toFixed(2)}
+                              {item.selectedVariant && (
+                                <span className="ml-1 text-default-400">
+                                  ({item.selectedVariant})
+                                </span>
+                              )}
                             </p>
                           </div>
-                          <p className="font-semibold text-sm">
-                            ${(Number(item.price) * item.quantity).toFixed(2)}
-                          </p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold text-sm">
+                              {(Number(item.price) * item.quantity).toFixed(2)}₫
+                            </p>
+                            {canReviewOrder(order) && (
+                              item.hasReview ? (
+                                <span className="flex items-center gap-1 text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full">
+                                  <CheckCircle size={12} />
+                                  Đã đánh giá
+                                </span>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  startContent={<Star size={12} />}
+                                  variant="flat"
+                                  onPress={() => handleReviewClick(item)}
+                                >
+                                  Đánh giá
+                                </Button>
+                              )
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -122,15 +170,25 @@ export default function OrdersSection({
         <Card className="border-none shadow-sm h-full">
           <CardBody className="text-center py-8 flex flex-col items-center justify-center">
             <ShoppingBag className="mx-auto mb-3 text-default-300" size={40} />
-            <h3 className="font-semibold mb-1">No orders yet</h3>
+            <h3 className="font-semibold mb-1">Chưa có đơn nào</h3>
             <p className="text-default-500 text-sm mb-4">
-              When you place orders, they will appear here.
+              Khi bạn đặt hàng thành công thì đơn hàng sẽ hiện ở đây.
             </p>
             <Button as="a" color="primary" href="/" size="sm">
-              Start Shopping
+              Bắt đầu mua sắm
             </Button>
           </CardBody>
         </Card>
+      )}
+
+      {/* Review Modal */}
+      {reviewItem && (
+        <ReviewModal
+          isOpen={!!reviewItem}
+          orderItem={reviewItem}
+          onClose={() => setReviewItem(null)}
+          onSuccess={onReviewSuccess}
+        />
       )}
     </section>
   );

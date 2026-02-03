@@ -37,7 +37,7 @@ export async function POST(
         sendOrderReceiptEmail({
             orderId: order.id,
             email: order.user.email,
-            fullName: order.fullName,
+            fullName: order.fullName || "",
             items: order.items.map((item) => ({
                 name: item.product.name,
                 quantity: item.quantity,

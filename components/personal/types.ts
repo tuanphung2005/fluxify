@@ -4,6 +4,8 @@ export interface OrderItem {
   id: string;
   quantity: number;
   price: number;
+  selectedVariant: string | null;
+  hasReview: boolean;
   product: {
     id: string;
     name: string;

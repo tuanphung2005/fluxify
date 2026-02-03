@@ -24,7 +24,7 @@ export default function StatsCards({
             <ShoppingBag className="text-primary" size={24} />
           </div>
           <div>
-            <p className="text-sm text-default-500">Total Orders</p>
+            <p className="text-sm text-default-500">Tổng đơn</p>
             <p className="text-2xl font-bold">{totalOrders}</p>
           </div>
         </CardBody>
@@ -36,8 +36,8 @@ export default function StatsCards({
             <DollarSign className="text-success" size={24} />
           </div>
           <div>
-            <p className="text-sm text-default-500">Total Spent</p>
-            <p className="text-2xl font-bold">${totalSpent.toFixed(2)}</p>
+            <p className="text-sm text-default-500">Tổng chi tiêu</p>
+            <p className="text-2xl font-bold">{totalSpent.toFixed(2)}₫</p>
           </div>
         </CardBody>
       </Card>
@@ -48,7 +48,7 @@ export default function StatsCards({
             <Calendar className="text-secondary" size={24} />
           </div>
           <div>
-            <p className="text-sm text-default-500">Member Since</p>
+            <p className="text-sm text-default-500">Đăng ký từ</p>
             <p className="text-lg font-semibold">{formatDate(memberSince)}</p>
           </div>
         </CardBody>

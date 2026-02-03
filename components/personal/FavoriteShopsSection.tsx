@@ -23,7 +23,7 @@ export default function FavoriteShopsSection({
     <section>
       <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
         <Heart className="text-danger" size={20} />
-        Favorite Shops
+        Shop yêu thích
       </h2>
       {shops.length > 0 ? (
         <div className="space-y-3">
@@ -47,10 +47,10 @@ export default function FavoriteShopsSection({
                       {shop.vendor.storeName}
                     </h3>
                     <p className="text-sm text-default-500 line-clamp-1">
-                      {shop.vendor.description || "No description"}
+                      {shop.vendor.description || "Không mô tả"}
                     </p>
                     <p className="text-xs text-default-400 mt-1">
-                      {shop.vendor.productCount} products
+                      {shop.vendor.productCount} sản phẩm
                     </p>
                   </div>
                 </div>
@@ -65,7 +65,7 @@ export default function FavoriteShopsSection({
                   startContent={<ExternalLink size={14} />}
                   variant="flat"
                 >
-                  Visit Shop
+                  Ghé tới shop
                 </Button>
                 <Button
                   isIconOnly

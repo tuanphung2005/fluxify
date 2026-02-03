@@ -292,6 +292,7 @@ model Order {
   address Address     @relation(fields: [addressId], references: [id])
   coupon  Coupon?     @relation(fields: [couponId], references: [id], onDelete: SetNull)
   items   OrderItem[]
+  reviews Review[]
 
   @@index([status])
   @@index([userId])
@@ -309,6 +310,7 @@ model OrderItem {
 
   order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])
+  review  Review? // One review per order item
 
   @@map("order_items")
 }
@@ -331,22 +333,28 @@ model Address {
 
 // Review system
 model Review {
-  id         String   @id @default(cuid())
-  productId  String
-  userId     String
-  rating     Int      // 1-5
-  title      String?
-  comment    String?  @db.Text
-  isVerified Boolean  @default(false) // Did user purchase product?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id             String   @id @default(cuid())
+  productId      String
+  userId         String
+  orderId        String?        // Link to order (for order-based reviews)
+  orderItemId    String? @unique // Link to specific order item (one review per item)
+  rating         Int            // 1-5 (product rating)
+  shippingRating Int?           // 1-5 (shipping rating, required for order reviews)
+  title          String?
+  comment        String?  @db.Text
+  isVerified     Boolean  @default(false) // Did user purchase product?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order     Order?     @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  orderItem OrderItem? @relation(fields: [orderItemId], references: [id], onDelete: SetNull)
 
   @@unique([productId, userId])
   @@index([productId])
   @@index([userId])
+  @@index([orderId])
   @@map("reviews")
 }
 

@@ -21,11 +21,11 @@ const statusConfig: Record<
     color: "warning" | "primary" | "secondary" | "success" | "danger";
   }
 > = {
-  PENDING: { label: "Pending", color: "warning" },
-  PROCESSING: { label: "Processing", color: "primary" },
-  SHIPPED: { label: "Shipped", color: "secondary" },
-  DELIVERED: { label: "Delivered", color: "success" },
-  CANCELLED: { label: "Cancelled", color: "danger" },
+  PENDING: { label: "Đang chờ", color: "warning" },
+  PROCESSING: { label: "Đang xử lý", color: "primary" },
+  SHIPPED: { label: "Đang giao hàng", color: "secondary" },
+  DELIVERED: { label: "Đã giao hàng", color: "success" },
+  CANCELLED: { label: "Đã hủy", color: "danger" },
 };
 
 export default function OrderStatusBadge({

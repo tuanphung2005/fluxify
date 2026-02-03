@@ -41,6 +41,9 @@ export async function GET() {
                   price: true,
                 },
               },
+              review: {
+                select: { id: true },
+              },
             },
           },
           address: true,
@@ -89,7 +92,17 @@ export async function GET() {
         totalOrders: stats._count.id || 0,
         totalSpent: Number(stats._sum.total) || 0,
       },
-      orders,
+      orders: orders.map((order) => ({
+        ...order,
+        items: order.items.map((item) => ({
+          id: item.id,
+          quantity: item.quantity,
+          price: item.price,
+          selectedVariant: item.selectedVariant,
+          hasReview: !!item.review,
+          product: item.product,
+        })),
+      })),
       favoriteShops: favoriteShops.map((fs) => ({
         id: fs.id,
         addedAt: fs.addedAt,
