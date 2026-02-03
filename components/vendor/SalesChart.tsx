@@ -1,6 +1,15 @@
 "use client";
+
 import { Card, CardBody, CardHeader } from "@heroui/react";
-import { motion } from "framer-motion";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 interface SalesData {
   month: string;
@@ -12,43 +21,91 @@ interface SalesChartProps {
 }
 
 export default function SalesChart({ data }: SalesChartProps) {
-  const maxSales = Math.max(...data.map((d) => d.sales), 100);
+  // Format currency for axis and tooltip
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-content1 p-3 rounded-lg shadow-lg border border-divider">
+          <p className="text-sm font-semibold mb-1">{label}</p>
+          <p className="text-primary font-bold">
+            {formatCurrency(payload[0].value)}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <Card className="w-full border-none shadow-md h-full">
       <CardHeader className="flex flex-col items-start px-6 pt-6 pb-0">
-        <h4 className="text-xl font-bold">Revenue Overview</h4>
-        <p className="text-sm text-default-500">Monthly sales performance</p>
+        <h4 className="text-xl font-bold">Tổng quan doanh thu</h4>
+        <p className="text-sm text-default-500">Hiệu suất thu nhập tháng</p>
       </CardHeader>
-      <CardBody className="px-6 py-6">
-        <div className="flex items-end justify-between h-64 gap-4 w-full mt-4">
-          {data.map((item, index) => (
-            <div
-              key={index}
-              className="flex flex-col items-center gap-3 flex-1 h-full justify-end group"
-            >
-              <div className="relative w-full flex justify-center h-full items-end">
-                <motion.div
-                  animate={{ height: `${(item.sales / maxSales) * 100}%` }}
-                  className="w-full max-w-[40px] bg-primary rounded-t-xl opacity-80 group-hover:opacity-100 transition-all duration-300 relative hover:shadow-lg hover:shadow-primary/30"
-                  initial={{ height: 0 }}
-                  transition={{
-                    duration: 0.8,
-                    delay: index * 0.1,
-                    type: "spring",
-                  }}
-                >
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-content1 px-3 py-1.5 rounded-lg shadow-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap z-10 border border-divider transform translate-y-2 group-hover:translate-y-0">
-                    ${item.sales.toLocaleString()}
-                  </div>
-                </motion.div>
-              </div>
-              <span className="text-xs text-default-500 font-medium uppercase tracking-wider">
-                {item.month}
-              </span>
-            </div>
-          ))}
-        </div>
+      <CardBody className="px-2 pb-2 h-[350px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart
+            data={data}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 10,
+            }}
+          >
+            <defs>
+              <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="hsl(var(--heroui-primary))" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="hsl(var(--heroui-primary))" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke="hsl(var(--heroui-default-200))"
+            />
+            <XAxis
+              dataKey="month"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "hsl(var(--heroui-default-500))", fontSize: 12 }}
+              dy={10}
+            />
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "hsl(var(--heroui-default-500))", fontSize: 12 }}
+              tickFormatter={(value) => {
+                if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+                if (value >= 1000) return `${(value / 1000).toFixed(0)}k`;
+                return value;
+              }}
+            />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
+            <Area
+              type="monotone"
+              dataKey="sales"
+              stroke="hsl(var(--heroui-primary))"
+              strokeWidth={3}
+              fillOpacity={1}
+              fill="url(#colorSales)"
+              activeDot={{
+                r: 6,
+                fill: "hsl(var(--heroui-background))",
+                stroke: "hsl(var(--heroui-primary))",
+                strokeWidth: 3,
+              }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
       </CardBody>
     </Card>
   );
