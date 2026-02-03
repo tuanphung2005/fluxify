@@ -12,8 +12,8 @@ interface AddToCartButtonProps {
     price: number;
     images: string[];
   };
-  vendorId?: string; // Kept for compatibility but no longer needed
-  vendorName?: string; // Kept for compatibility but no longer needed
+  vendorId?: string; // TODO: REMOVE
+  vendorName?: string; // TODO: REMOVE
   disabled?: boolean;
 }
 

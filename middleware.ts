@@ -21,7 +21,7 @@ export default auth((req) => {
 
   // => login if not auth
   if (isProtectedRoute && !session) {
-    return NextResponse.redirect(new URL("/auth/login", req.url));
+    return NextResponse.redirect(new URL("/?modal=login", req.url));
   }
 
   // role control
