@@ -66,6 +66,16 @@ interface ProductFormModalProps {
   product: Product | null;
 }
 
+const DEFAULT_PRODUCT_VALUES = {
+  name: "",
+  description: "",
+  price: "",
+  stock: "",
+  images: "",
+  variants: "",
+  variantStock: "",
+};
+
 export default function ProductFormModal({
   isOpen,
   onOpenChange,
@@ -84,15 +94,7 @@ export default function ProductFormModal({
     resetForm,
   } = useFormValidation({
     schema: productSchema,
-    initialValues: {
-      name: "",
-      description: "",
-      price: "",
-      stock: "",
-      images: "",
-      variants: "",
-      variantStock: "",
-    },
+    initialValues: DEFAULT_PRODUCT_VALUES,
     onSubmit: async (formValues) => {
       // Logic handled in handleSubmit below because we need async state (isLoading) 
       // and specific error handling that might technically be outside the hook's scope 
