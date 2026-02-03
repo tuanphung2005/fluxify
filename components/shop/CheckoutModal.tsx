@@ -211,6 +211,12 @@ export default function CheckoutModal({
   };
 
   const handleConfirmPayment = () => {
+    // Send receipt email (fire-and-forget)
+    if (orderId) {
+      fetch(`/api/orders/${orderId}/receipt`, { method: "POST" }).catch((err) =>
+        console.error("Failed to send receipt:", err)
+      );
+    }
     clearCart();
     setStep("success");
   };
