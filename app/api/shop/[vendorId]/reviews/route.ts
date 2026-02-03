@@ -21,7 +21,7 @@ function anonymizeUserName(name: string | null): string {
 }
 
 /**
- * GET /api/shop/[vendorId]/reviews - Get shop reviews with pagination
+ * GET /api/shop/[vendorId]/reviews - Get shop reviews with pagination and filters
  */
 export async function GET(req: NextRequest, { params }: RouteParams) {
     try {
@@ -30,6 +30,10 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
         const page = parseInt(searchParams.get("page") || "1");
         const limit = parseInt(searchParams.get("limit") || "10");
         const skip = (page - 1) * limit;
+
+        // Rating filters (1-5)
+        const productRatingFilter = searchParams.get("productRating");
+        const shippingRatingFilter = searchParams.get("shippingRating");
 
         // Verify vendor exists
         const vendor = await prisma.vendorProfile.findUnique({
@@ -47,13 +51,23 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
         });
         const productIds = vendorProducts.map((p) => p.id);
 
-        // Get reviews for all vendor products with pagination
-        const [reviews, total] = await Promise.all([
+        // Base where clause for order-based reviews
+        const baseWhere = {
+            productId: { in: productIds },
+            orderId: { not: null },
+        };
+
+        // Build filter where clause
+        const filterWhere = {
+            ...baseWhere,
+            ...(productRatingFilter && { rating: parseInt(productRatingFilter) }),
+            ...(shippingRatingFilter && { shippingRating: parseInt(shippingRatingFilter) }),
+        };
+
+        // Get reviews with filters and rating distribution in parallel
+        const [reviews, total, distributionData] = await Promise.all([
             prisma.review.findMany({
-                where: {
-                    productId: { in: productIds },
-                    orderId: { not: null }, // Only order-based reviews
-                },
+                where: filterWhere,
                 include: {
                     user: {
                         select: { name: true },
@@ -70,12 +84,21 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
                 take: limit,
             }),
             prisma.review.count({
-                where: {
-                    productId: { in: productIds },
-                    orderId: { not: null },
-                },
+                where: filterWhere,
+            }),
+            // Get rating distribution (always unfiltered to show full picture)
+            prisma.review.groupBy({
+                by: ["rating"],
+                where: baseWhere,
+                _count: { rating: true },
             }),
         ]);
+
+        // Transform distribution to {1: count, 2: count, ...}
+        const distribution: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        distributionData.forEach((item) => {
+            distribution[item.rating] = item._count.rating;
+        });
 
         // Transform reviews with anonymized names
         const transformedReviews = reviews.map((review) => ({
@@ -102,8 +125,10 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
                 total,
                 totalPages: Math.ceil(total / limit),
             },
+            distribution,
         });
     } catch (error) {
         return errorResponse("Failed to fetch reviews", 500, error);
     }
 }
+
