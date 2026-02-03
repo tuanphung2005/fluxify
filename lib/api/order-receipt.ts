@@ -129,7 +129,7 @@ export async function sendOrderReceiptEmail(data: OrderReceiptData): Promise<voi
             <!-- Total -->
             <div style="padding: 20px 32px; border-top: 2px solid #18181b; margin-top: 8px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 16px; font-weight: 600; color: #18181b;">Tổng cộng</span>
+                <span style="font-size: 16px; font-weight: 600; color: #18181b;">Tổng cộng: </span>
                 <span style="font-size: 18px; font-weight: 700; color: #18181b;">${formatCurrency(total)}</span>
               </div>
             </div>
