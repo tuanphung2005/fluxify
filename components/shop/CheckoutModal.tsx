@@ -87,6 +87,11 @@ export default function CheckoutModal({
             fullName: parsed.fullName || "",
             phoneNumber: parsed.phoneNumber || "",
             email: parsed.email || "",
+            street: parsed.street || "",
+            city: parsed.city || "",
+            state: parsed.state || "",
+            zipCode: parsed.zipCode || "",
+            country: parsed.country || "Việt Nam",
           }));
           setSaveDetails(true);
         } catch (e) {
@@ -160,6 +165,11 @@ export default function CheckoutModal({
           fullName: formData.fullName,
           phoneNumber: formData.phoneNumber,
           email: formData.email,
+          street: formData.street,
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.zipCode,
+          country: formData.country,
         }),
       );
     } else {

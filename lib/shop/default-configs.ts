@@ -52,7 +52,7 @@ export const DEFAULT_CONFIGS: Record<ComponentType, ComponentConfig> = {
   } as VideoEmbedConfig,
 
   TEXT_BLOCK: {
-    content: "<p>Add your custom text here...</p>",
+    content: "bla bla bla",
     alignment: "left",
     padding: "medium",
   } as TextBlockConfig,
@@ -60,8 +60,8 @@ export const DEFAULT_CONFIGS: Record<ComponentType, ComponentConfig> = {
 
 
   FEATURED_COLLECTION: {
-    title: "Featured Collection",
-    description: "Hand-picked products just for you",
+    title: "Bộ sưu tập nổi bật",
+    description: "Sản phẩm rành riêng cho bạn",
     productIds: [],
     layout: "grid",
     columns: 4,

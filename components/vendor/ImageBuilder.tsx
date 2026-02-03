@@ -215,7 +215,7 @@ export default function ImageBuilder({ value, onChange }: ImageBuilderProps) {
                 width={48}
               />
               <span className="flex-1 text-sm truncate text-default-600">
-                {url.includes("cloudinary") ? "Cloudinary image" : url}
+                {url.includes("cloudinary") ? "Ảnh" : url}
               </span>
               <Button
                 isIconOnly

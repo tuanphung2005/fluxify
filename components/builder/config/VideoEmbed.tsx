@@ -12,18 +12,18 @@ export default function VideoEmbed({
   return (
     <>
       <Input
-        label="Video URL (YouTube/Vimeo)"
+        label="Đường dẫn video Youtube"
         placeholder="https://www.youtube.com/watch?v=..."
         value={config.videoUrl || ""}
         onValueChange={(value) => onUpdate("videoUrl", value)}
       />
       <Input
-        label="Title (Optional)"
+        label="Tiêu đề (Không bắt buộc)"
         value={config.title || ""}
         onValueChange={(value) => onUpdate("title", value)}
       />
       <Select
-        label="Aspect Ratio"
+        label="Tỷ lệ khung hình"
         selectedKeys={[config.aspectRatio || "16:9"]}
         onSelectionChange={(keys) => {
           const value = Array.from(keys)[0];
@@ -40,13 +40,13 @@ export default function VideoEmbed({
         isSelected={config.autoplay ?? false}
         onValueChange={(value) => onUpdate("autoplay", value)}
       >
-        Autoplay
+        Tự động phát
       </Switch>
       <Switch
         isSelected={config.loop ?? false}
         onValueChange={(value) => onUpdate("loop", value)}
       >
-        Loop Video
+        Lặp lại video
       </Switch>
     </>
   );

@@ -110,7 +110,7 @@ export default function FeaturedCollectionComponent({
     return selected;
   }, [allProducts, showAllProducts, productIds]);
 
-  // Apply search filter locally (no API calls)
+  // Apply search filter locally
   const displayProducts = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) {
