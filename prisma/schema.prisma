@@ -351,7 +351,7 @@ model Review {
   order     Order?     @relation(fields: [orderId], references: [id], onDelete: SetNull)
   orderItem OrderItem? @relation(fields: [orderItemId], references: [id], onDelete: SetNull)
 
-  @@unique([productId, userId])
+  @@unique([orderId, productId])
   @@index([productId])
   @@index([userId])
   @@index([orderId])

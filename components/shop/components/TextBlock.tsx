@@ -30,15 +30,18 @@ export default function TextBlock({ config }: TextBlockProps) {
         color: textColor,
       }}
     >
-      <div
-        className={cn("prose max-w-none dark:prose-invert", {
-          "text-left": alignment === "left",
-          "text-center": alignment === "center",
-          "text-right": alignment === "right",
-        })}
-        dangerouslySetInnerHTML={{ __html: content }}
-        style={{ color: textColor }}
-      />
+      <div className="max-w-4xl mx-auto">
+        <div
+          className={cn("prose dark:prose-invert", {
+            "text-left": alignment === "left",
+            "text-center mx-auto": alignment === "center",
+            "text-right ml-auto": alignment === "right",
+          })}
+          dangerouslySetInnerHTML={{ __html: content }}
+          style={{ color: textColor }}
+        />
+      </div>
     </div>
   );
 }
+

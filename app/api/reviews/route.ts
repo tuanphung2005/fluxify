@@ -9,14 +9,14 @@ import { updateProductRating } from "@/lib/db/ecommerce-queries";
 
 // Validation schema for creating a review
 const createReviewSchema = z.object({
-    orderItemId: z.string().min(1, "Order item ID is required"),
+    orderId: z.string().min(1, "Order ID is required"),
     rating: z.number().int().min(1).max(5, "Product rating must be 1-5"),
     shippingRating: z.number().int().min(1).max(5, "Shipping rating must be 1-5"),
     comment: z.string().max(2000).optional(),
 });
 
 /**
- * POST /api/reviews - Create a review for an order item
+ * POST /api/reviews - Create reviews for all products in an order
  */
 export async function POST(req: NextRequest) {
     try {
@@ -33,61 +33,98 @@ export async function POST(req: NextRequest) {
         if (!validation.success) {
             return errorResponse(validation.error.issues[0].message, 400);
         }
-        const { orderItemId, rating, shippingRating, comment } = validation.data;
+        const { orderId, rating, shippingRating, comment } = validation.data;
 
-        // Get order item with order details
-        const orderItem = await prisma.orderItem.findUnique({
-            where: { id: orderItemId },
+        // Get order with items
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
             include: {
-                order: true,
-                product: true,
-                review: true,
+                items: {
+                    include: {
+                        product: true,
+                    },
+                },
+                reviews: true,
             },
         });
 
-        if (!orderItem) {
-            return errorResponse("Order item not found", 404);
+        if (!order) {
+            return errorResponse("Không tìm thấy đơn hàng", 404);
         }
 
         // Verify order belongs to user
-        if (orderItem.order.userId !== user.id) {
-            return errorResponse("You cannot review this order", 403);
+        if (order.userId !== user.id) {
+            return errorResponse("Bạn không thể đánh giá đơn hàng này", 403);
         }
 
         // Verify order is delivered
-        if (orderItem.order.status !== "DELIVERED") {
-            return errorResponse("You can only review delivered orders", 400);
+        if (order.status !== "DELIVERED") {
+            return errorResponse("Chỉ có thể đánh giá đơn hàng đã giao", 400);
         }
 
         // Check if already reviewed
-        if (orderItem.review) {
-            return errorResponse("You have already reviewed this item", 400);
+        if (order.reviews.length > 0) {
+            return errorResponse("Bạn đã đánh giá đơn hàng này rồi", 400);
         }
 
-        // Create the review
-        const review = await prisma.review.create({
-            data: {
-                productId: orderItem.productId,
+        // Get unique product IDs from order items (avoid duplicates)
+        const uniqueProductIds = [...new Set(order.items.map((item) => item.productId))];
+
+        // Check which products user has already reviewed
+        const existingReviews = await prisma.review.findMany({
+            where: {
                 userId: user.id,
-                orderId: orderItem.orderId,
-                orderItemId: orderItem.id,
-                rating,
-                shippingRating,
-                comment: comment || null,
-                isVerified: true, // Order-based reviews are automatically verified
+                productId: { in: uniqueProductIds },
             },
-            include: {
-                product: {
-                    select: { id: true, name: true },
-                },
-            },
+            select: { productId: true },
+        });
+        const alreadyReviewedProductIds = new Set(existingReviews.map((r) => r.productId));
+
+        // Filter to only products not yet reviewed
+        const productsToReview = uniqueProductIds.filter(
+            (productId) => !alreadyReviewedProductIds.has(productId)
+        );
+
+        if (productsToReview.length === 0) {
+            return errorResponse("Tất cả sản phẩm trong đơn hàng đã được đánh giá trước đó", 400);
+        }
+
+        // Create reviews for new products only
+        const createdReviews = await prisma.$transaction(async (tx) => {
+            const reviews = [];
+
+            for (const productId of productsToReview) {
+                // Find the order item for this product
+                const orderItem = order.items.find((item) => item.productId === productId);
+
+                const review = await tx.review.create({
+                    data: {
+                        productId,
+                        userId: user.id,
+                        orderId: order.id,
+                        orderItemId: orderItem?.id,
+                        rating,
+                        shippingRating,
+                        comment: comment || null,
+                        isVerified: true,
+                    },
+                });
+                reviews.push(review);
+            }
+
+            return reviews;
         });
 
-        // Update product average rating
-        await updateProductRating(orderItem.productId);
+        // Update product ratings for all reviewed products
+        for (const productId of productsToReview) {
+            await updateProductRating(productId);
+        }
 
-        return successResponse(review, 201);
+        return successResponse({
+            message: `Đã tạo ${createdReviews.length} đánh giá thành công`,
+            reviewCount: createdReviews.length,
+        }, 201);
     } catch (error) {
-        return errorResponse("Failed to create review", 500, error);
+        return errorResponse("Không thể tạo đánh giá", 500, error);
     }
 }

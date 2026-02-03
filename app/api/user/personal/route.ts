@@ -41,12 +41,13 @@ export async function GET() {
                   price: true,
                 },
               },
-              review: {
-                select: { id: true },
-              },
             },
           },
           address: true,
+          reviews: {
+            select: { id: true },
+            take: 1,
+          },
         },
         orderBy: { createdAt: "desc" },
       }),
@@ -94,12 +95,12 @@ export async function GET() {
       },
       orders: orders.map((order) => ({
         ...order,
+        hasReview: order.reviews.length > 0,
         items: order.items.map((item) => ({
           id: item.id,
           quantity: item.quantity,
           price: item.price,
           selectedVariant: item.selectedVariant,
-          hasReview: !!item.review,
           product: item.product,
         })),
       })),

@@ -5,7 +5,6 @@ export interface OrderItem {
   quantity: number;
   price: number;
   selectedVariant: string | null;
-  hasReview: boolean;
   product: {
     id: string;
     name: string;
@@ -32,6 +31,7 @@ export interface Order {
   address: Address;
   trackingNumber?: string;
   estimatedDelivery?: string;
+  hasReview: boolean;
 }
 
 export interface FavoriteShop {
