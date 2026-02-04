@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { SessionProvider } from "next-auth/react";
 
+import { useLogoutListener } from "@/hooks/useLogoutSync";
+
 export interface ProvidersProps {
   children: React.ReactNode;
   themeProps?: ThemeProviderProps;
@@ -24,6 +26,9 @@ declare module "@react-types/shared" {
 
 export function Providers({ children, themeProps }: ProvidersProps) {
   const router = useRouter();
+
+  // Listen for logout events from other tabs
+  useLogoutListener();
 
   return (
     <HeroUIProvider navigate={router.push}>

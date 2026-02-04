@@ -6,7 +6,7 @@ import { useEffect, ReactNode } from "react";
 import { Spinner } from "@heroui/spinner";
 import { Button } from "@heroui/button";
 import { Settings, LogOut } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { signOutWithBroadcast } from "@/hooks/useLogoutSync";
 
 import DashboardSidebar, {
   SidebarMenuItem,
@@ -69,7 +69,7 @@ export default function DashboardLayout({
   showLogout = true,
   showSettings = true,
   unauthorizedRedirect = "/",
-  loginRedirect = "/auth/login",
+  loginRedirect = "/?modal=login",
 }: DashboardLayoutProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -105,7 +105,8 @@ export default function DashboardLayout({
   ]);
 
   const handleLogout = () => {
-    signOut({ callbackUrl: loginRedirect });
+    // Always redirect to home with login modal instead of loginRedirect
+    signOutWithBroadcast("/?modal=login");
   };
 
   // Show loading while checking auth

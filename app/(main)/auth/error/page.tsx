@@ -14,10 +14,10 @@ export default function AuthErrorPage() {
         </CardHeader>
         <CardBody className="text-center space-y-4">
           <p className="text-default-500">
-              Có lỗi xảy ra trong quá trình đăng nhập.
+            Có lỗi xảy ra trong quá trình đăng nhập.
           </p>
           <div className="flex gap-2 justify-center">
-            <Link href="/auth/login">
+            <Link href="/?modal=login">
               <Button color="primary">Thử lại</Button>
             </Link>
             <Link href="/">

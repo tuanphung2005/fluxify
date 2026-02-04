@@ -33,7 +33,7 @@ declare module "next-auth" {
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
   pages: {
-    signIn: "/auth/login",
+    signIn: "/?modal=login", // Use modal at home page instead of separate page
     error: "/auth/error",
   },
   providers: [
@@ -100,6 +100,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const shouldCheckStatus = now - lastCheck > STATUS_CHECK_INTERVAL;
 
       if (shouldCheckStatus && token.id) {
+        // Skip DB check in Edge runtime (middleware)
+        if (process.env.NEXT_RUNTIME === "edge") {
+          return token;
+        }
+
         try {
           const { prisma } = await import("@/lib/prisma");
           const dbUser = await prisma.user.findUnique({
@@ -111,8 +116,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             token.isActive = dbUser.isActive;
             token.lastActiveCheck = now;
           }
-        } catch (error) {
+        } catch (error: any) {
           // If check fails, keep the previous status
+          // Suppress specific edge runtime error that happens in middleware
+          if (error?.message?.includes("The edge runtime does not support Node.js")) {
+            return token;
+          }
           console.error("Error checking user active status:", error);
         }
       }

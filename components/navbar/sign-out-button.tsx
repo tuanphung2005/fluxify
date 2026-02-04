@@ -1,12 +1,12 @@
 "use client";
 
-import { signOut } from "next-auth/react";
+import { signOutWithBroadcast } from "@/hooks/useLogoutSync";
 
 export function SignOutButton() {
   return (
     <button
       className="w-full text-left"
-      onClick={() => signOut({ callbackUrl: "/" })}
+      onClick={() => signOutWithBroadcast("/?modal=login")}
     >
       sign out
     </button>

@@ -9,7 +9,7 @@ export default async function VendorPage() {
   const auth = await getAuthenticatedVendor();
 
   if ("error" in auth) {
-    redirect("/auth/login");
+    redirect("/?modal=login");
   }
 
   // 1. Get vendor products

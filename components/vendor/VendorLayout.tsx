@@ -12,8 +12,9 @@ import {
 } from "lucide-react";
 
 import { DashboardLayout } from "@/components/dashboard";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 
-const VENDOR_MENU_ITEMS: SidebarMenuItem[] = [
+const BASE_MENU_ITEMS: Omit<SidebarMenuItem, "badge">[] = [
   {
     key: "dashboard",
     label: "Tổng quan",
@@ -52,9 +53,17 @@ export default function VendorLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const { unreadCount } = useUnreadMessages({ role: "vendor" });
+
+  // Add badge to chat menu item
+  const menuItems: SidebarMenuItem[] = BASE_MENU_ITEMS.map((item) => ({
+    ...item,
+    badge: item.key === "chat" ? unreadCount : undefined,
+  }));
+
   return (
     <DashboardLayout
-      menuItems={VENDOR_MENU_ITEMS}
+      menuItems={menuItems}
       requiredRole="VENDOR"
       showLogout={false}
     >

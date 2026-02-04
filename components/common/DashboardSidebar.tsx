@@ -9,6 +9,7 @@ export interface SidebarMenuItem {
   label: string;
   icon: LucideIcon;
   path: string;
+  badge?: number; // Optional badge for notifications (e.g., unread messages)
 }
 
 interface DashboardSidebarProps {
@@ -48,6 +49,13 @@ export default function DashboardSidebar({
               className={`w-full justify-start ${isActive ? "font-semibold" : "text-default-500"}`}
               color={isActive ? "primary" : "default"}
               startContent={<Icon size={20} />}
+              endContent={
+                item.badge && item.badge > 0 ? (
+                  <span className="ml-auto bg-danger text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5">
+                    {item.badge > 99 ? "99+" : item.badge}
+                  </span>
+                ) : null
+              }
               variant={isActive ? "flat" : "light"}
               onPress={() => router.push(item.path)}
             >

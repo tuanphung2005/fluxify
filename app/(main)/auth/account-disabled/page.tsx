@@ -2,11 +2,12 @@
 
 import { Card, CardBody, CardHeader, Button } from "@heroui/react";
 import { Ban } from "lucide-react";
-import { signOut } from "next-auth/react";
+
+import { signOutWithBroadcast } from "@/hooks/useLogoutSync";
 
 export default function AccountDisabledPage() {
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: "/" });
+    await signOutWithBroadcast("/");
   };
 
   return (
@@ -18,8 +19,8 @@ export default function AccountDisabledPage() {
         </CardHeader>
         <CardBody className="text-center space-y-4">
           <p className="text-default-500">
-              Tài khoản của bạn đã bị vô hiệu hóa. Nếu bạn tin rằng đây là một sai sót,
-              vui lòng liên hệ với bộ phận hỗ trợ của chúng tôi để được giúp đỡ.
+            Tài khoản của bạn đã bị vô hiệu hóa. Nếu bạn tin rằng đây là một sai sót,
+            vui lòng liên hệ với bộ phận hỗ trợ của chúng tôi để được giúp đỡ.
           </p>
           <div className="flex gap-2 justify-center">
             <Button color="primary" onPress={handleSignOut}>

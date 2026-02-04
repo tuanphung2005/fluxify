@@ -10,7 +10,7 @@ export default async function VendorAnalyticsPage() {
     !session?.user ||
     (session.user.role !== "VENDOR" && session.user.role !== "ADMIN")
   ) {
-    redirect("/auth/login");
+    redirect("/?modal=login");
   }
 
   return <AnalyticsDashboard />;
