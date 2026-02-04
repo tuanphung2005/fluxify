@@ -16,7 +16,7 @@ interface OrdersSectionProps {
   orders: Order[];
   cancellingOrderId: string | null;
   onCancelClick: (order: Order) => void;
-  onReviewSuccess?: () => void;
+  onReviewSuccess?: (orderId: string) => void;
 }
 
 interface ReviewableOrder {
@@ -191,7 +191,7 @@ export default function OrdersSection({
           isOpen={!!reviewOrder}
           order={reviewOrder}
           onClose={() => setReviewOrder(null)}
-          onSuccess={onReviewSuccess}
+          onSuccess={() => onReviewSuccess?.(reviewOrder.id)}
         />
       )}
     </section>

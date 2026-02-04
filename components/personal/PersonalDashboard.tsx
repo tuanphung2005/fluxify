@@ -246,6 +246,15 @@ export default function PersonalDashboard() {
             cancellingOrderId={cancellingOrderId}
             orders={data.orders}
             onCancelClick={handleCancelClick}
+            onReviewSuccess={(orderId: string) => {
+              // Update only the specific order's hasReview state locally
+              setData(prev => prev ? {
+                ...prev,
+                orders: prev.orders.map(order =>
+                  order.id === orderId ? { ...order, hasReview: true } : order
+                )
+              } : null);
+            }}
           />
         </div>
 

@@ -70,30 +70,11 @@ export async function POST(req: NextRequest) {
         // Get unique product IDs from order items (avoid duplicates)
         const uniqueProductIds = Array.from(new Set(order.items.map((item) => item.productId)));
 
-        // Check which products user has already reviewed
-        const existingReviews = await prisma.review.findMany({
-            where: {
-                userId: user.id,
-                productId: { in: uniqueProductIds },
-            },
-            select: { productId: true },
-        });
-        const alreadyReviewedProductIds = new Set(existingReviews.map((r) => r.productId));
-
-        // Filter to only products not yet reviewed
-        const productsToReview = uniqueProductIds.filter(
-            (productId) => !alreadyReviewedProductIds.has(productId)
-        );
-
-        if (productsToReview.length === 0) {
-            return errorResponse("Tất cả sản phẩm trong đơn hàng đã được đánh giá trước đó", 400);
-        }
-
-        // Create reviews for new products only
+        // Create reviews for all products in the order
         const createdReviews = await prisma.$transaction(async (tx) => {
             const reviews = [];
 
-            for (const productId of productsToReview) {
+            for (const productId of uniqueProductIds) {
                 // Find the order item for this product
                 const orderItem = order.items.find((item) => item.productId === productId);
 
@@ -116,7 +97,7 @@ export async function POST(req: NextRequest) {
         });
 
         // Update product ratings for all reviewed products
-        for (const productId of productsToReview) {
+        for (const productId of uniqueProductIds) {
             await updateProductRating(productId);
         }
 
