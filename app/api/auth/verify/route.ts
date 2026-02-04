@@ -68,7 +68,7 @@ export async function PUT(req: NextRequest) {
   // Strict rate limit for resend
   const rateLimit = checkRateLimit(
     `resend:${getClientIdentifier(req)}`,
-    { windowMs: 60 * 60 * 1000, maxRequests: 3 }, // 3 per hour
+    { windowMs: 60 * 60 * 1000, maxRequests: 10 }, // 10 per hour (cooldown check in token creation provides additional protection)
   );
 
   if (!rateLimit.allowed) {

@@ -17,6 +17,7 @@ export interface AuthResult {
     email: string;
     name: string | null;
     role: string;
+    emailVerified: boolean;
   };
 }
 
@@ -61,11 +62,17 @@ export async function getAuthenticatedVendor(): Promise<
           email: user.email,
           name: user.name,
           role: user.role,
+          emailVerified: !!user.emailVerified,
         },
       };
     }
 
     return { error: "Vendor profile not found", status: 404 };
+  }
+
+  // Check email verification for non-admin vendors
+  if (user.role !== "ADMIN" && !user.emailVerified) {
+    return { error: "Vui lòng xác thực email để sử dụng tính năng này", status: 403 };
   }
 
   return {
@@ -75,6 +82,7 @@ export async function getAuthenticatedVendor(): Promise<
       email: user.email,
       name: user.name,
       role: user.role,
+      emailVerified: !!user.emailVerified,
     },
   };
 }

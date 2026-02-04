@@ -42,6 +42,8 @@ export function useShopBuilder() {
   const [vendorProfile, setVendorProfile] = useState<VendorProfile | null>(
     null,
   );
+  const [error, setError] = useState<string | null>(null);
+  const [needsEmailVerification, setNeedsEmailVerification] = useState(false);
 
   useEffect(() => {
     loadTemplate();
@@ -101,8 +103,15 @@ export function useShopBuilder() {
       } else {
         await createNewTemplate();
       }
-    } catch (error) {
-      console.error("Error loading template:", error);
+    } catch (err: any) {
+      // Check for email verification error (403)
+      if (err?.status === 403) {
+        setNeedsEmailVerification(true);
+        setError(err?.message || "Email verification required");
+      } else {
+        console.error("Error loading template:", err);
+        setError("Failed to load shop template");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -298,6 +307,8 @@ export function useShopBuilder() {
     hasUnsavedChanges,
     products,
     vendorProfile,
+    error,
+    needsEmailVerification,
     setSelectedComponentId,
     addComponent,
     updateComponentConfig,
