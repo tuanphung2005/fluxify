@@ -13,6 +13,7 @@ import {
 
 import { DashboardLayout } from "@/components/dashboard";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
+import { useNewOrders } from "@/hooks/useNewOrders";
 
 const BASE_MENU_ITEMS: Omit<SidebarMenuItem, "badge">[] = [
   {
@@ -54,12 +55,18 @@ export default function VendorLayout({
   children: React.ReactNode;
 }) {
   const { unreadCount } = useUnreadMessages({ role: "vendor" });
+  const { newOrdersCount } = useNewOrders();
 
-  // Add badge to chat menu item
-  const menuItems: SidebarMenuItem[] = BASE_MENU_ITEMS.map((item) => ({
-    ...item,
-    badge: item.key === "chat" ? unreadCount : undefined,
-  }));
+  // Add badge to chat and orders menu items
+  const menuItems: SidebarMenuItem[] = BASE_MENU_ITEMS.map((item) => {
+    if (item.key === "chat") {
+      return { ...item, badge: unreadCount };
+    }
+    if (item.key === "orders") {
+      return { ...item, badge: newOrdersCount };
+    }
+    return item;
+  });
 
   return (
     <DashboardLayout
