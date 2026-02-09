@@ -65,8 +65,8 @@ export default function AdminUsers() {
       setUsers(data.users);
       setTotalPages(data.totalPages);
     } catch (error) {
-      console.error("Failed to fetch users", error);
-      toast.error("Failed to fetch users");
+      // console.error("Failed to fetch users", error);
+      toast.error(`Failed to fetch users ${error}`);
     } finally {
       setIsLoading(false);
     }
@@ -92,8 +92,8 @@ export default function AdminUsers() {
         `User ${!currentStatus ? "activated" : "deactivated"} successfully`,
       );
     } catch (error) {
-      console.error("Failed to update status", error);
-      toast.error("Failed to update status");
+      // console.error("Failed to update status", error);
+      toast.error(`Failed to update status ${error}`);
       // Revert on failure using functional update to get latest state
       setUsers((prevUsers) =>
         prevUsers.map((u) =>
@@ -105,7 +105,7 @@ export default function AdminUsers() {
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
-    setPage(1); // Reset to first page on search
+    setPage(1);
   };
 
   return (

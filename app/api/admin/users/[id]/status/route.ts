@@ -2,7 +2,11 @@ import { NextRequest } from "next/server";
 
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/api/auth-helpers";
-import { errorResponse, successResponse, isErrorResult } from "@/lib/api/responses";
+import {
+  errorResponse,
+  successResponse,
+  isErrorResult,
+} from "@/lib/api/responses";
 
 export async function PATCH(
   request: NextRequest,

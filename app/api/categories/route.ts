@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     const { name, description, image, parentId } = validation.data;
 
     // Generate slug if not provided
-    // a slug transforms a string into a readable format 
+    // a slug transforms a string into a readable format
     // why? seo, readability, performance
     const slug = validation.data.slug || (await generateUniqueSlug(name));
 

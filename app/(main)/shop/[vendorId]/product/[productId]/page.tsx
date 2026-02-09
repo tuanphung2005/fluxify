@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import AddToCartButton from "@/components/shop/AddToCartButton";
 import CartDrawer from "@/components/shop/CartDrawer";
 import CartButton from "@/components/shop/CartButton";
+import { toast } from "@/lib/toast";
 
 interface ProductPageProps {
   params: Promise<{
@@ -55,8 +56,9 @@ export default async function ProductPage(props: ProductPageProps) {
         }));
       }
     }
-  } catch (e) {
-    console.error("Error parsing variants", e);
+  } catch (e: any) {
+    toast.error(`Error parsing variants: ${e.message}`);
+    // console.error("Error parsing variants", e);
   }
 
   return (

@@ -81,7 +81,6 @@ export default function Home() {
     <div className="flex flex-col">
       {/* Hero */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
 
         {/* Animated Grid */}
@@ -95,7 +94,6 @@ export default function Home() {
           />
         </div>
 
-
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" />
         <div
           className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse"
@@ -103,7 +101,6 @@ export default function Home() {
         />
 
         <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
-
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8">
             <Sparkles className="w-4 h-4 text-primary" />
             <span className="text-sm font-medium text-primary">
@@ -124,7 +121,8 @@ export default function Home() {
 
           {/* Subtitle */}
           <p className="text-xl md:text-2xl text-default-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Nền tảng giúp bạn xây dựng, phát triển và mở rộng cửa hàng trực tuyến của mình trong vài phút, không phải vài tháng/năm.
+            Nền tảng giúp bạn xây dựng, phát triển và mở rộng cửa hàng trực
+            tuyến của mình trong vài phút, không phải vài tháng/năm.
           </p>
 
           {/* CTAs */}

@@ -68,7 +68,7 @@ export async function PUT(req: NextRequest) {
   // Strict rate limit for resend
   const rateLimit = checkRateLimit(
     `resend:${getClientIdentifier(req)}`,
-    { windowMs: 60 * 60 * 1000, maxRequests: 10 }, // 10 per hour (cooldown check in token creation provides additional protection)
+    { windowMs: 60 * 60 * 1000, maxRequests: 10 }, // 10 per hour
   );
 
   if (!rateLimit.allowed) {
@@ -105,10 +105,10 @@ export async function PUT(req: NextRequest) {
     // Create and send new token (with cooldown check)
     const tokenResult = await createVerificationToken(email);
 
-    if ('cooldownRemaining' in tokenResult) {
+    if ("cooldownRemaining" in tokenResult) {
       return errorResponse(
         `Vui lòng đợi ${tokenResult.cooldownRemaining} giây trước khi gửi lại`,
-        429
+        429,
       );
     }
 

@@ -69,8 +69,8 @@ export default function AdminShops() {
       setShops(data.shops);
       setTotalPages(data.totalPages);
     } catch (error) {
-      console.error("Failed to fetch shops", error);
-      toast.error("Failed to fetch shops");
+      // console.error("Failed to fetch shops", error);
+      toast.error(`Failed to fetch shops: ${error}`);
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +82,7 @@ export default function AdminShops() {
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
-    setPage(1); // Reset to first page on search
+    setPage(1);
   };
 
   return (
@@ -117,7 +117,7 @@ export default function AdminShops() {
               <TableColumn>ACTIONS</TableColumn>
             </TableHeader>
             <TableBody emptyContent="No shops found." items={shops}>
-              {(shop) => (
+              {(shop: ShopData) => (
                 <TableRow key={shop.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">

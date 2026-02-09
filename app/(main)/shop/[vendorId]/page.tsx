@@ -46,7 +46,7 @@ export default async function ShopPage(props: ShopPageProps) {
   // parse component
   const components = (template.publishedComponents as any[]) || [];
   const vendorName = template.vendor.storeName;
-  const products = template.vendor.products.map((p) => ({
+  const products = template.vendor.products.map((p: any) => ({
     id: p.id,
     name: p.name,
     price: Number(p.price),

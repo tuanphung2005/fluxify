@@ -7,7 +7,7 @@ describe('Edge Cases - Variant Stock Management', () => {
                 'Size:M,màu:xanh': 0,
                 'Size:L,màu:xanh': 0,
                 'Size:M,màu:đỏ': 0,
-                'Size:L,màu:đỏ': 0
+                'Size:L,màu:đỏ': 0,
             };
 
             const totalStock = Object.values(variantStock).reduce((sum, stock) => sum + stock, 0);
