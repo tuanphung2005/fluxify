@@ -209,7 +209,6 @@ export async function getReviewSummary(productId: string) {
     distribution,
   };
 }
-// TODO:
 export async function createReview(data: ReviewCreateInput) {
   const existing = await prisma.review.findFirst({
     where: {
@@ -223,13 +222,17 @@ export async function createReview(data: ReviewCreateInput) {
   }
 
   // Check if user has purchased this product
-  const hasPurchased = await prisma.orderItem.findFirst({
+  const purchase = await prisma.orderItem.findFirst({
     where: {
       productId: data.productId,
       order: {
         userId: data.userId,
         status: { in: ["DELIVERED", "SHIPPED"] },
       },
+    },
+    select: {
+      id: true,
+      orderId: true,
     },
   });
 
@@ -240,7 +243,9 @@ export async function createReview(data: ReviewCreateInput) {
       rating: data.rating,
       title: data.title,
       comment: data.comment,
-      isVerified: !!hasPurchased,
+      isVerified: !!purchase,
+      orderId: purchase?.orderId,
+      orderItemId: purchase?.id,
     },
     include: {
       user: {
