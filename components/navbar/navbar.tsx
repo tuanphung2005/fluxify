@@ -12,7 +12,7 @@ import { NavbarUserMenu } from "./user-menu";
 import { AuthButtons } from "./auth-buttons";
 
 import { siteConfig } from "@/config/site";
-import { ThemeSwitch } from "@/components/theme-switch";
+
 import { auth } from "@/lib/auth";
 
 export const Navbar = async () => {
@@ -45,7 +45,7 @@ export const Navbar = async () => {
             </NavbarContent>
 
             <NavbarContent className="" justify="end">
-                <ThemeSwitch />
+
                 {session ? (
                     <NavbarUserMenu user={session.user} />
                 ) : (
