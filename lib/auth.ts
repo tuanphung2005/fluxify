@@ -7,6 +7,10 @@ class AccountDeactivatedError extends CredentialsSignin {
   code = "account_deactivated";
 }
 
+class EmailNotVerifiedError extends CredentialsSignin {
+  code = "email_not_verified";
+}
+
 type UserRole = "CUSTOMER" | "VENDOR" | "ADMIN";
 
 // Cache duration for checking user active status (in milliseconds)
@@ -71,6 +75,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (user.isActive === false) {
           throw new AccountDeactivatedError();
+        }
+
+        if (!user.emailVerified) {
+          throw new EmailNotVerifiedError();
         }
 
         return {

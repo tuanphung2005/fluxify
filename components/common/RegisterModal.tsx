@@ -69,6 +69,16 @@ export function RegisterModal() {
                 return;
             }
 
+            if (data.requiresVerification) {
+                setIsLoading(false);
+                // Switch to login view but show success message
+                const params = new URLSearchParams(searchParams.toString());
+                params.set("modal", "login");
+                params.set("verified", "pending"); // signal to login modal to show message
+                router.push(`?${params.toString()}`, { scroll: false });
+                return;
+            }
+
             const result = await signIn("credentials", {
                 email,
                 password,

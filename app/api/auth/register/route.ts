@@ -71,7 +71,6 @@ export async function POST(req: NextRequest) {
         name: validatedData.name,
         role: validatedData.role,
         // emailVerified is null - requires verification
-        // TODO IMPLEMENT EMAIL VERIFY
       },
       select: {
         id: true,

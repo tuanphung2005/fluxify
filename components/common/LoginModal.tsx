@@ -27,6 +27,13 @@ export function LoginModal() {
     const [resetSent, setResetSent] = useState(false);
 
     const isOpen = searchParams.get("modal") === "login";
+    const isVerificationPending = searchParams.get("verified") === "pending";
+
+    // Show message if just registered
+    if (isVerificationPending && !error && isOpen) {
+        // We use a timeout to avoid react rendering warnings if we set state directly in render
+        setTimeout(() => setError("Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản."), 0);
+    }
 
     const closeModal = () => {
         const params = new URLSearchParams(searchParams.toString());
@@ -69,6 +76,8 @@ export function LoginModal() {
                     setError(
                         "Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ hỗ trợ.",
                     );
+                } else if (result.code === "email_not_verified") {
+                    setError("Vui lòng xác thực email trước khi đăng nhập.");
                 } else {
                     setError("Email hoặc mật khẩu không chính xác");
                 }

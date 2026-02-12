@@ -7,6 +7,18 @@ import { CheckCircle, XCircle, Lock, KeyRound } from "lucide-react";
 import Link from "next/link";
 
 import { api } from "@/lib/api/api";
+import { Check, X } from "lucide-react";
+
+function PasswordRequirement({ met, text }: { met: boolean; text: string }) {
+  return (
+    <div className={`flex items-center gap-2 text-xs transition-colors ${met ? "text-success" : "text-default-400"}`}>
+      <div className={`w-4 h-4 rounded-full flex items-center justify-center border ${met ? "border-success bg-success/10" : "border-default-300"}`}>
+        {met && <Check size={10} />}
+      </div>
+      <span>{text}</span>
+    </div>
+  );
+}
 
 function ResetPasswordContent() {
   const searchParams = useSearchParams();
@@ -138,14 +150,26 @@ function ResetPasswordContent() {
                   }
                 />
 
-                <div className="text-xs text-default-400 space-y-1">
-                  <p>Mật khẩu phải:</p>
-                  <ul className="list-disc list-inside ml-2">
-                    <li>Có ít nhất 8 ký tự</li>
-                    <li>Có ít nhất 1 chữ hoa</li>
-                    <li>Có ít nhất 1 chữ thường</li>
-                    <li>Có ít nhất 1 số</li>
-                  </ul>
+                <div className="space-y-2 mt-2">
+                  <p className="text-xs font-semibold text-default-500">Mật khẩu phải:</p>
+                  <div className="grid grid-cols-1 gap-2">
+                    <PasswordRequirement
+                      met={formData.newPassword.length >= 8}
+                      text="Có ít nhất 8 ký tự"
+                    />
+                    <PasswordRequirement
+                      met={/[A-Z]/.test(formData.newPassword)}
+                      text="Có ít nhất 1 chữ hoa"
+                    />
+                    <PasswordRequirement
+                      met={/[a-z]/.test(formData.newPassword)}
+                      text="Có ít nhất 1 chữ thường"
+                    />
+                    <PasswordRequirement
+                      met={/\d/.test(formData.newPassword)}
+                      text="Có ít nhất 1 số"
+                    />
+                  </div>
                 </div>
 
                 <Button
