@@ -315,8 +315,11 @@ export async function getOrCreateWishlist(userId: string) {
 
 export async function addToWishlist(userId: string, productId: string) {
   // Verify product exists before adding
-  const product = await prisma.product.findUnique({
-    where: { id: productId },
+  const product = await prisma.product.findFirst({
+    where: {
+      id: productId,
+      deletedAt: null
+    },
     select: { id: true },
   });
 

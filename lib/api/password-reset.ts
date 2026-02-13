@@ -60,6 +60,12 @@ export async function createPasswordResetToken(
 
     if (!user) {
         // Don't reveal if user exists or not for security
+        // Simulate cost of generating token to prevent timing attacks
+        generatePasswordResetToken();
+
+        // Add random delay to mask DB query time differences
+        await new Promise((resolve) => setTimeout(resolve, 100 + Math.random() * 50));
+
         return { token: "fake" }; // Return fake success
     }
 

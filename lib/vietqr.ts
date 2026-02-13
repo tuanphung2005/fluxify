@@ -32,7 +32,7 @@ interface VietQRBanksResponse {
   data: VietQRBank[];
 }
 
-let cachedBanks: VietQRBank[] | null = null;
+
 
 /**
  * Generate a VietQR image URL for bank transfer
@@ -228,8 +228,17 @@ export function removeVietnameseDiacritics(str: string): string {
  * Fetch all banks from VietQR API
  * Results are cached in memory for performance
  */
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+let cachedBanks: VietQRBank[] | null = null;
+let lastCacheTime = 0;
+
+/**
+ * Fetch all banks from VietQR API
+ * Results are cached in memory for performance
+ */
 export async function fetchVietQRBanks(): Promise<VietQRBank[]> {
-  if (cachedBanks) {
+  const now = Date.now();
+  if (cachedBanks && (now - lastCacheTime < ONE_DAY_MS)) {
     return cachedBanks;
   }
 
@@ -246,10 +255,16 @@ export async function fetchVietQRBanks(): Promise<VietQRBank[]> {
 
     // Filter to only banks that support transfers
     cachedBanks = data.data.filter((bank) => bank.transferSupported === 1);
+    lastCacheTime = Date.now();
 
     return cachedBanks;
   } catch (error) {
     console.error("Failed to fetch VietQR banks:", error);
+
+    // Return stale cache if available and fetch failed
+    if (cachedBanks) {
+      return cachedBanks;
+    }
 
     return [];
   }
