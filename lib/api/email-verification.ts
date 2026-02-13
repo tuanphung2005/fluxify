@@ -6,13 +6,22 @@ import { prisma } from "@/lib/prisma";
 const VERIFICATION_TOKEN_EXPIRY_HOURS = 24;
 const RESEND_COOLDOWN_SECONDS = 60;
 
+// Validate Resend API key at startup
+if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === "re_test") {
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("Missing required environment variable: RESEND_API_KEY");
+  } else {
+    console.warn("[Email] RESEND_API_KEY is not set or is a test key. Emails will be logged to console.");
+  }
+}
+
 // Lazy-initialize Resend to avoid build-time errors
 let resend: Resend | null = null;
 function getResend(): Resend {
-    if (!resend) {
-        resend = new Resend(process.env.RESEND_API_KEY);
-    }
-    return resend;
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
 }
 
 /**

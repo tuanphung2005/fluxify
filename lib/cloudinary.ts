@@ -1,5 +1,25 @@
 import { v2 as cloudinary } from "cloudinary";
 
+// Validate required Cloudinary environment variables
+const CLOUDINARY_REQUIRED_VARS = [
+  "CLOUDINARY_CLOUD_NAME",
+  "CLOUDINARY_API_KEY",
+  "CLOUDINARY_API_SECRET",
+] as const;
+
+const missingCloudinaryVars = CLOUDINARY_REQUIRED_VARS.filter(
+  (v) => !process.env[v]
+);
+
+if (missingCloudinaryVars.length > 0) {
+  const message = `Missing required Cloudinary environment variables: ${missingCloudinaryVars.join(", ")}`;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(message);
+  } else {
+    console.warn(`[Cloudinary] ${message}`);
+  }
+}
+
 // Configure Cloudinary using environment variables
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
