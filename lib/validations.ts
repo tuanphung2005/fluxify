@@ -1,4 +1,4 @@
-import { z } from "zod";
+import z from "zod";
 
 export const MAX_QUANTITY_PER_ITEM = 999;
 

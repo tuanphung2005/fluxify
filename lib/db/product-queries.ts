@@ -158,10 +158,10 @@ export async function updateVariantStock(
   selectedVariant?: string,
 ) {
   if (selectedVariant) {
-    
+
     if (operation === "increment") {
       await tx.$executeRaw`
-        UPDATE "Product"
+        UPDATE "products"
         SET "variantStock" = jsonb_set(
             COALESCE("variantStock", '{}'::jsonb),
             ${[selectedVariant]}::text[],
@@ -171,8 +171,8 @@ export async function updateVariantStock(
         )
         WHERE id = ${productId}`;
     } else {
-      await tx.$executeRaw`
-        UPDATE "Product"
+      const result = await tx.$executeRaw`
+        UPDATE "products"
         SET "variantStock" = jsonb_set(
             COALESCE("variantStock", '{}'::jsonb),
             ${[selectedVariant]}::text[],
@@ -180,7 +180,12 @@ export async function updateVariantStock(
                 COALESCE(("variantStock"->${selectedVariant})::int, 0) - ${quantity}
             )
         )
-        WHERE id = ${productId}`;
+        WHERE id = ${productId}
+        AND COALESCE(("variantStock"->${selectedVariant})::int, 0) >= ${quantity}`;
+
+      if (result === 0) {
+        throw new Error(`Insufficient stock for variant: ${selectedVariant}`);
+      }
     }
   } else {
     // General stock uses Prisma's atomic operations
