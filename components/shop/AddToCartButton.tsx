@@ -13,15 +13,23 @@ interface AddToCartButtonProps {
     images: string[];
   };
   disabled?: boolean;
+  vendorId?: string;
+  vendorName?: string;
 }
 
 export default function AddToCartButton({
   product,
   disabled,
+  vendorId,
+  vendorName,
 }: AddToCartButtonProps) {
-  const { addItem, setIsOpen } = useCartStore();
+  const { addItem, setIsOpen, currentVendorId, setCurrentVendor } =
+    useCartStore();
 
   const handleAddToCart = () => {
+    if (vendorId && vendorId !== currentVendorId) {
+      setCurrentVendor(vendorId, vendorName || null);
+    }
     addItem({
       id: product.id,
       name: product.name,
