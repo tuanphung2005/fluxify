@@ -37,6 +37,46 @@ interface AnalyticsData {
   topProducts: TopProductData[];
 }
 
+const formatCurrencyUSD = (value: number) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(value);
+};
+
+const formatNumber = (value: number) => {
+  return new Intl.NumberFormat("en-US").format(value);
+};
+
+function SimpleBarChart({
+  data: chartData,
+  chartType,
+}: {
+  data: ChartDataPoint[];
+  chartType: "revenue" | "orders";
+}) {
+  const maxValue = Math.max(...chartData.map((d) => d.value), 1);
+
+  return (
+    <div className="flex items-end gap-1 h-48">
+      {chartData.map((point) => (
+        <div key={point.date} className="flex-1 group relative">
+          <div
+            className="bg-primary rounded-t transition-all duration-300 hover:bg-primary-600"
+            style={{ height: `${(point.value / maxValue) * 100}%` }}
+          />
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-background text-xs px-2 py-1 rounded whitespace-nowrap">
+            {point.date}:{" "}
+            {chartType === "revenue"
+              ? formatCurrencyUSD(point.value)
+              : point.value}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function AnalyticsDashboard() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,40 +102,7 @@ export default function AnalyticsDashboard() {
     }
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(value);
-  };
 
-  const formatNumber = (value: number) => {
-    return new Intl.NumberFormat("en-US").format(value);
-  };
-
-  // Simple bar chart component
-  const SimpleBarChart = ({ data: chartData }: { data: ChartDataPoint[] }) => {
-    const maxValue = Math.max(...chartData.map((d) => d.value), 1);
-
-    return (
-      <div className="flex items-end gap-1 h-48">
-        {chartData.map((point, index) => (
-          <div key={index} className="flex-1 group relative">
-            <div
-              className="bg-primary rounded-t transition-all duration-300 hover:bg-primary-600"
-              style={{ height: `${(point.value / maxValue) * 100}%` }}
-            />
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-background text-xs px-2 py-1 rounded whitespace-nowrap">
-              {point.date}:{" "}
-              {chartType === "revenue"
-                ? formatCurrency(point.value)
-                : point.value}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
 
   if (isLoading) {
     return (
@@ -149,7 +156,7 @@ export default function AnalyticsDashboard() {
             </div>
           }
           title="Total Revenue"
-          value={formatCurrency(data.totalRevenue)}
+          value={formatCurrencyUSD(data.totalRevenue)}
         />
         <StatsCard
           color="primary"
@@ -168,7 +175,7 @@ export default function AnalyticsDashboard() {
         <StatsCard
           color="warning"
           icon={Percent}
-          subtext={`Trung bình: ${formatCurrency(data.averageOrderValue)}`}
+          subtext={`Trung bình: ${formatCurrencyUSD(data.averageOrderValue)}`}
           title="Tỷ lệ chuyển đổi"
           value={`${data.conversionRate}%`}
         />
@@ -190,6 +197,7 @@ export default function AnalyticsDashboard() {
           </CardHeader>
           <CardBody>
             <SimpleBarChart
+              chartType={chartType}
               data={
                 chartType === "revenue" ? data.revenueByDate : data.ordersByDate
               }
@@ -237,7 +245,7 @@ export default function AnalyticsDashboard() {
                     <p className="font-medium truncate">{item.product.name}</p>
                     <p className="text-xs text-default-400">
                       {item.totalSold} đã bán ·{" "}
-                      {formatCurrency(item.totalRevenue)}
+                      {formatCurrencyUSD(item.totalRevenue)}
                     </p>
                   </div>
                 </div>

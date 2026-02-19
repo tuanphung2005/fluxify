@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
+
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Đơn hàng của tôi",
+  description: "Xem và quản lý đơn hàng của bạn",
+};
 
 import { auth } from "@/lib/auth";
 import { Navbar } from "@/components/navbar/navbar";

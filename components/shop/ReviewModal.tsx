@@ -138,9 +138,9 @@ export default function ReviewModal({
 
                     {/* Product rating */}
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">
+                        <span className="text-sm font-medium">
                             Đánh giá sản phẩm <span className="text-danger">*</span>
-                        </label>
+                        </span>
                         <div className="flex items-center gap-3">
                             <StarRating
                                 interactive
@@ -156,9 +156,9 @@ export default function ReviewModal({
 
                     {/* Shipping rating */}
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">
+                        <span className="text-sm font-medium">
                             Đánh giá vận chuyển <span className="text-danger">*</span>
-                        </label>
+                        </span>
                         <div className="flex items-center gap-3">
                             <StarRating
                                 interactive
@@ -174,9 +174,9 @@ export default function ReviewModal({
 
                     {/* Comment */}
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">
+                        <span className="text-sm font-medium">
                             Bình luận <span className="text-default-400">(Không bắt buộc)</span>
-                        </label>
+                        </span>
                         <Textarea
                             maxLength={2000}
                             placeholder="Chia sẻ cảm nghĩ của bạn về đơn hàng..."

@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
+
 import { redirect } from "next/navigation";
 
 import VendorDashboard from "@/components/vendor/VendorDashboard";
 import VendorLayout from "@/components/vendor/VendorLayout";
 import { getAuthenticatedVendor } from "@/lib/api/auth-helpers";
 import { prisma } from "@/lib/prisma";
+
+export const metadata: Metadata = {
+  title: "Bảng điều khiển người bán",
+  description: "Quản lý cửa hàng và xem thống kê bán hàng",
+};
 
 export default async function VendorPage() {
   const auth = await getAuthenticatedVendor();

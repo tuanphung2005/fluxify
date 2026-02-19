@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
@@ -95,11 +96,13 @@ export default async function ShopPage(props: ShopPageProps) {
           <ShopReviewsSection vendorId={vendorId} />
         </div>
 
-        <ShopProductModalManager
-          products={products}
-          vendorId={vendorId}
-          vendorName={vendorName}
-        />
+        <Suspense fallback={null}>
+          <ShopProductModalManager
+            products={products}
+            vendorId={vendorId}
+            vendorName={vendorName}
+          />
+        </Suspense>
 
         {/* Chat, Favorite, Cart */}
         <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">

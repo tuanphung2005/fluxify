@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useCallback } from "react";
 import { ComponentType } from "@prisma/client";
 import { Spinner } from "@heroui/spinner";
 
@@ -22,33 +22,27 @@ export default function ConfigurationPanel({
   config,
   onUpdateConfig,
 }: ConfigurationPanelProps) {
-  const [localConfig, setLocalConfig] = useState<ComponentConfig | null>(
-    config,
+  const updateField = useCallback(
+    (
+      field: string | number | symbol | Partial<ComponentConfig>,
+      value?: unknown,
+    ) => {
+      let newConfig: ComponentConfig;
+
+      if (typeof field === "object" && field !== null) {
+        // Handle partial update
+        newConfig = { ...config, ...field } as ComponentConfig;
+      } else {
+        // Handle single field update
+        newConfig = { ...config, [field as string]: value } as ComponentConfig;
+      }
+
+      onUpdateConfig(newConfig);
+    },
+    [config, onUpdateConfig],
   );
 
-  useEffect(() => {
-    setLocalConfig(config);
-  }, [config, componentType]);
-
-  const updateField = (
-    field: string | number | symbol | Partial<ComponentConfig>,
-    value?: unknown,
-  ) => {
-    let newConfig: ComponentConfig;
-
-    if (typeof field === "object" && field !== null) {
-      // Handle partial update
-      newConfig = { ...localConfig, ...field } as ComponentConfig;
-    } else {
-      // Handle single field update
-      newConfig = { ...localConfig, [field as string]: value } as ComponentConfig;
-    }
-
-    setLocalConfig(newConfig);
-    onUpdateConfig(newConfig);
-  };
-
-  if (!componentType || !localConfig) {
+  if (!componentType || !config) {
     return (
       <div className="w-80 bg-content1 border-l border-divider p-4">
         <h3 className="text-lg font-bold mb-4">cấu hình</h3>
@@ -86,7 +80,7 @@ export default function ConfigurationPanel({
             </div>
           }
         >
-          <ConfigPanel config={localConfig} onUpdate={updateField} />
+          <ConfigPanel config={config} onUpdate={updateField} />
         </Suspense>
       </div>
     </div>

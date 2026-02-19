@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
+
 import VendorLayout from "@/components/vendor/VendorLayout";
 import ProductManagerContent from "@/components/vendor/ProductManagerContent";
+
+export const metadata: Metadata = {
+  title: "Quản lý sản phẩm",
+  description: "Quản lý sản phẩm của bạn trên cửa hàng",
+};
 
 export default function ProductsPage() {
   return (

@@ -2,10 +2,15 @@
 
 import { Package, ShoppingCart, DollarSign, TrendingUp } from "lucide-react";
 import { useDisclosure } from "@heroui/react";
+import dynamic from "next/dynamic";
 
 import { BentoDashboard, DashboardWidget } from "@/components/dashboard";
-import SalesChart from "@/components/vendor/SalesChart";
 import ProductManager from "@/components/vendor/ProductManager";
+
+const SalesChart = dynamic(
+  () => import("@/components/vendor/SalesChart"),
+  { ssr: false },
+);
 
 interface DashboardData {
   totalSales: number;

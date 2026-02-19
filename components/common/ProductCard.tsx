@@ -34,6 +34,8 @@ interface ProductCardProps {
   variantStock?: any;
 }
 
+const EMPTY_IMAGES: string[] = [];
+
 /**
  * Unified ProductCard component with modern styling
  * Supports navigation to product page and optional Add to Cart button
@@ -42,7 +44,7 @@ export default function ProductCard({
   id,
   name,
   price,
-  images = [],
+  images = EMPTY_IMAGES,
   vendorId,
   isSale = false,
   stockStatus = "in_stock",

@@ -31,6 +31,30 @@ interface RichTextEditorProps {
     placeholder?: string;
 }
 
+function ToolbarButton({
+    onClick,
+    isActive,
+    children,
+    title,
+}: {
+    onClick: () => void;
+    isActive?: boolean;
+    children: React.ReactNode;
+    title: string;
+}) {
+    return (
+        <Button
+            isIconOnly
+            size="sm"
+            title={title}
+            variant={isActive ? "flat" : "light"}
+            onPress={onClick}
+        >
+            {children}
+        </Button>
+    );
+}
+
 export default function RichTextEditor({
     content,
     onChange,
@@ -97,28 +121,6 @@ export default function RichTextEditor({
             </div>
         );
     }
-
-    const ToolbarButton = ({
-        onClick,
-        isActive,
-        children,
-        title,
-    }: {
-        onClick: () => void;
-        isActive?: boolean;
-        children: React.ReactNode;
-        title: string;
-    }) => (
-        <Button
-            isIconOnly
-            size="sm"
-            title={title}
-            variant={isActive ? "flat" : "light"}
-            onPress={onClick}
-        >
-            {children}
-        </Button>
-    );
 
     return (
         <div className="border border-default-200 rounded-lg overflow-hidden">

@@ -16,6 +16,24 @@ interface TimeLeft {
   seconds: number;
 }
 
+function TimeBlock({ value, label }: { value: number; label: string }) {
+  return (
+    <div className="flex flex-col items-center">
+      <m.div
+        key={value}
+        animate={{ scale: 1, opacity: 1 }}
+        className="w-20 h-20 md:w-24 md:h-24 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center"
+        initial={{ scale: 1.2, opacity: 0 }}
+      >
+        <span className="text-3xl md:text-4xl font-bold">
+          {value.toString().padStart(2, "0")}
+        </span>
+      </m.div>
+      <span className="text-sm md:text-base mt-2 opacity-80">{label}</span>
+    </div>
+  );
+}
+
 export default function CountdownTimerComponent({
   config,
 }: CountdownTimerComponentProps) {
@@ -61,22 +79,6 @@ export default function CountdownTimerComponent({
 
     return () => clearInterval(timer);
   }, [targetDate]);
-
-  const TimeBlock = ({ value, label }: { value: number; label: string }) => (
-    <div className="flex flex-col items-center">
-      <m.div
-        key={value}
-        animate={{ scale: 1, opacity: 1 }}
-        className="w-20 h-20 md:w-24 md:h-24 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center"
-        initial={{ scale: 1.2, opacity: 0 }}
-      >
-        <span className="text-3xl md:text-4xl font-bold">
-          {value.toString().padStart(2, "0")}
-        </span>
-      </m.div>
-      <span className="text-sm md:text-base mt-2 opacity-80">{label}</span>
-    </div>
-  );
 
   return (
     <LazyMotion features={domAnimation}>

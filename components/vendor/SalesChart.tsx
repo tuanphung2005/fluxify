@@ -20,29 +20,29 @@ interface SalesChartProps {
   data: SalesData[];
 }
 
-export default function SalesChart({ data }: SalesChartProps) {
-  // Format currency for axis and tooltip
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  }).format(value);
+};
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-content1 p-3 rounded-lg shadow-lg border border-divider">
-          <p className="text-sm font-semibold mb-1">{label}</p>
-          <p className="text-primary font-bold">
-            {formatCurrency(payload[0].value)}
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
+function CustomTooltip({ active, payload, label }: any) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-content1 p-3 rounded-lg shadow-lg border border-divider">
+        <p className="text-sm font-semibold mb-1">{label}</p>
+        <p className="text-primary font-bold">
+          {formatCurrency(payload[0].value)}
+        </p>
+      </div>
+    );
+  }
+  return null;
+}
+
+export default function SalesChart({ data }: SalesChartProps) {
 
   return (
     <Card className="w-full border-none shadow-md h-full">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useRef } from "react";
 
 import { useCartStore } from "@/store/cart-store";
 
@@ -21,13 +21,16 @@ export default function VendorCartProvider({
   children,
 }: VendorCartProviderProps) {
   const setCurrentVendor = useCartStore((state) => state.setCurrentVendor);
+  const prevRef = useRef({ vendorId: "", vendorName: "" });
 
-  useEffect(() => {
+  // Sync vendor context during render instead of useEffect (avoids derived-state-effect)
+  if (
+    prevRef.current.vendorId !== vendorId ||
+    prevRef.current.vendorName !== vendorName
+  ) {
+    prevRef.current = { vendorId, vendorName };
     setCurrentVendor(vendorId, vendorName);
-
-    // Clear vendor context on unmount (optional, keeps context for navigation)
-    // return () => setCurrentVendor(null, null);
-  }, [vendorId, vendorName, setCurrentVendor]);
+  }
 
   return <>{children}</>;
 }

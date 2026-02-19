@@ -179,7 +179,7 @@ export default function ImageGallery({
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium">Images</label>
+          <span className="text-sm font-medium">Images</span>
           <Button
             size="sm"
             startContent={<Plus className="w-4 h-4" />}
