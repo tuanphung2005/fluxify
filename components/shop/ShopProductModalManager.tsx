@@ -31,24 +31,12 @@ export default function ShopProductModalManager({
   const pathname = usePathname();
   const productId = searchParams.get("productId");
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
-  useEffect(() => {
-    if (productId) {
-      const product = products.find((p) => p.id === productId);
-
-      if (product) {
-        setSelectedProduct(product);
-        setIsOpen(true);
-      }
-    } else {
-      setIsOpen(false);
-    }
-  }, [productId, products]);
+  const selectedProduct = productId
+    ? products.find((p) => p.id === productId) || null
+    : null;
+  const isOpen = !!selectedProduct;
 
   const handleClose = () => {
-    setIsOpen(false);
     // Remove query param
     const params = new URLSearchParams(searchParams.toString());
 

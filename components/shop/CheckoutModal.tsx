@@ -12,6 +12,7 @@ import {
   Input,
   Link,
 } from "@heroui/react";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { CheckCircle, QrCode, AlertCircle, Maximize2, ShieldAlert } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -395,10 +396,12 @@ export default function CheckoutModal({
                           className="relative group cursor-pointer"
                           onClick={() => setIsZoomOpen(true)}
                         >
-                          <img
+                          <Image
                             alt="VietQR Payment Code"
                             className="w-64 h-auto"
+                            height={256}
                             src={qrUrl}
+                            width={256}
                           />
                           <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
                             <Button
@@ -509,11 +512,14 @@ export default function CheckoutModal({
           {(onClose) => (
             <ModalBody className="flex items-center justify-center p-4 bg-default-100">
               {qrUrl && (
-                <img
-                  alt="VietQR Full Size"
-                  className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl"
-                  src={qrUrl}
-                />
+                <div className="relative w-full h-full min-h-[50vh] flex items-center justify-center">
+                  <Image
+                    alt="VietQR Full Size"
+                    className="object-contain rounded-xl shadow-2xl"
+                    fill
+                    src={qrUrl}
+                  />
+                </div>
               )}
             </ModalBody>
           )}

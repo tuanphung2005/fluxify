@@ -2,6 +2,7 @@
 
 import { TextBlockConfig } from "@/types/shop";
 import { cn } from "@/lib/utils";
+import DOMPurify from "dompurify";
 
 interface TextBlockProps {
   config: TextBlockConfig;
@@ -22,6 +23,8 @@ export default function TextBlock({ config }: TextBlockProps) {
     large: "py-16 px-8",
   };
 
+  const sanitizedContent = DOMPurify.sanitize(content);
+
   return (
     <div
       className={cn("w-full transition-colors", paddingClasses[padding])}
@@ -37,7 +40,7 @@ export default function TextBlock({ config }: TextBlockProps) {
             "text-center mx-auto": alignment === "center",
             "text-right ml-auto": alignment === "right",
           })}
-          dangerouslySetInnerHTML={{ __html: content }}
+          dangerouslySetInnerHTML={{ __html: sanitizedContent }}
           style={{ color: textColor }}
         />
       </div>

@@ -3,6 +3,7 @@
 import type { ChartDataPoint, TopProductData } from "@/types/api";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Tabs, Tab } from "@heroui/tabs";
 import { Select, SelectItem } from "@heroui/select";
@@ -220,10 +221,12 @@ export default function AnalyticsDashboard() {
                     {index + 1}
                   </span>
                   {item.product.images?.[0] ? (
-                    <img
+                    <Image
                       alt={item.product.name}
-                      className="w-10 h-10 object-cover rounded"
+                      className="object-cover rounded"
+                      height={40}
                       src={item.product.images[0]}
+                      width={40}
                     />
                   ) : (
                     <div className="w-10 h-10 bg-default-100 rounded flex items-center justify-center">

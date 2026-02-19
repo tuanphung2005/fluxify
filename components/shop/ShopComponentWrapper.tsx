@@ -64,7 +64,18 @@ export default function ShopComponentWrapper({
     : "";
 
   return (
-    <div className={wrapperClasses} onClick={handleClick}>
+    <div
+      className={wrapperClasses}
+      role={isBuilder ? "button" : undefined}
+      tabIndex={isBuilder ? 0 : undefined}
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (isBuilder && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+    >
       {isBuilder && (
         <div
           className={`absolute top-0 right-0 px-2 py-0.5 text-[10px] font-bold lowercase tracking-wider z-10 ${colors.badge}`}

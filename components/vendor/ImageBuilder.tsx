@@ -122,15 +122,22 @@ export default function ImageBuilder({ value, onChange }: ImageBuilderProps) {
         <>
           {/* Drop Zone */}
           <div
-            className={`relative border-2 border-dashed rounded-lg p-6 transition-all cursor-pointer ${
-              isDragging
+            className={`relative border-2 border-dashed rounded-lg p-6 transition-all cursor-pointer ${isDragging
                 ? "border-primary bg-primary/10"
                 : "border-default-300 hover:border-primary/50 hover:bg-default-50"
-            } ${isUploading ? "pointer-events-none opacity-60" : ""}`}
+              } ${isUploading ? "pointer-events-none opacity-60" : ""}`}
+            role="button"
+            tabIndex={0}
             onClick={() => fileInputRef.current?.click()}
             onDragLeave={handleDragLeave}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                fileInputRef.current?.click();
+              }
+            }}
           >
             <input
               ref={fileInputRef}

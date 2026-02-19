@@ -3,7 +3,7 @@
 import { useRef, useEffect } from "react";
 import { Button } from "@heroui/button";
 import { Trash2, ChevronUp, ChevronDown } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, LazyMotion, domAnimation, AnimatePresence } from "framer-motion";
 
 import ShopComponentWrapper from "@/components/shop/ShopComponentWrapper";
 import { ShopComponentData } from "@/types/shop";
@@ -36,7 +36,7 @@ function CanvasComponent({
   isLast: boolean;
 }) {
   return (
-    <motion.div
+    <m.div
       layout
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
@@ -83,7 +83,7 @@ function CanvasComponent({
         type={component.type}
         onSelect={onSelect}
       />
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -161,21 +161,23 @@ export default function BuilderCanvas({
       className="flex-1 bg-background p-8 overflow-y-auto"
     >
       <div className="max-w-6xl mx-auto space-y-4">
-        <AnimatePresence mode="popLayout">
-          {components.map((component, index) => (
-            <CanvasComponent
-              key={component.id}
-              component={component}
-              isFirst={index === 0}
-              isLast={index === components.length - 1}
-              isSelected={selectedComponentId === component.id}
-              onDelete={() => onDeleteComponent(component.id)}
-              onMoveDown={() => handleMoveDown(index)}
-              onMoveUp={() => handleMoveUp(index)}
-              onSelect={() => onSelectComponent(component.id)}
-            />
-          ))}
-        </AnimatePresence>
+        <LazyMotion features={domAnimation}>
+          <AnimatePresence mode="popLayout">
+            {components.map((component, index) => (
+              <CanvasComponent
+                key={component.id}
+                component={component}
+                isFirst={index === 0}
+                isLast={index === components.length - 1}
+                isSelected={selectedComponentId === component.id}
+                onDelete={() => onDeleteComponent(component.id)}
+                onMoveDown={() => handleMoveDown(index)}
+                onMoveUp={() => handleMoveUp(index)}
+                onSelect={() => onSelectComponent(component.id)}
+              />
+            ))}
+          </AnimatePresence>
+        </LazyMotion>
       </div>
     </div>
   );

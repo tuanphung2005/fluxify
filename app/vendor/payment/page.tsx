@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
@@ -106,14 +107,14 @@ export default function PaymentSettingsPage() {
   // Generate preview QR URL
   const previewQrUrl = hasValidSettings
     ? generateVietQRUrl({
-        bankId: formData.bankId,
-        accountNo: formData.bankAccount,
-        accountName: removeVietnameseDiacritics(
-          formData.bankAccountName,
-        ).toUpperCase(),
-        amount: 100000,
-        description: "PREVIEW",
-      })
+      bankId: formData.bankId,
+      accountNo: formData.bankAccount,
+      accountName: removeVietnameseDiacritics(
+        formData.bankAccountName,
+      ).toUpperCase(),
+      amount: 100000,
+      description: "PREVIEW",
+    })
     : null;
 
   const selectedBank = banks.find((b) => b.code === formData.bankId);
@@ -236,10 +237,12 @@ export default function PaymentSettingsPage() {
               {hasValidSettings ? (
                 <>
                   <div className="bg-white p-4 rounded-xl shadow-lg">
-                    <img
+                    <Image
                       alt="VietQR Preview"
                       className="w-60 h-auto"
+                      height={240}
                       src={previewQrUrl!}
+                      width={240}
                     />
                   </div>
                 </>

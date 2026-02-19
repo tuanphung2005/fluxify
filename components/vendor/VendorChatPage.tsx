@@ -93,16 +93,7 @@ export default function VendorChatPage() {
   }, [fetchConversations]);
 
   // Load messages when conversation is selected
-  useEffect(() => {
-    if (selectedConversation) {
-      setIsLoadingMessages(true);
-      fetchMessages().finally(() => {
-        setIsLoadingMessages(false);
-        // Messages fetched -> marked as read on server -> broadcast update
-        broadcastChatUpdate();
-      });
-    }
-  }, [selectedConversation, fetchMessages]);
+  // Refactored to manual call in handleSelectConversation
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -133,6 +124,27 @@ export default function VendorChatPage() {
         conv.id === convId ? { ...conv, unreadCount: 0 } : conv,
       ),
     );
+
+    // Fetch messages immediately
+    setIsLoadingMessages(true);
+    // We need to pass convId because selectedConversation state might not be updated yet in closure
+    // But fetchMessages uses selectedConversation from state.
+    // So we should modify fetchMessages to accept an optional ID or use a different approach.
+    // Or just define inline here.
+
+    api.get<{ messages: Message[] }>(
+      `/api/chat/conversations/${convId}/messages`,
+    )
+      .then((data) => {
+        setMessages(data.messages);
+        broadcastChatUpdate();
+      })
+      .catch((error) => {
+        console.error("Failed to fetch messages:", error);
+      })
+      .finally(() => {
+        setIsLoadingMessages(false);
+      });
   };
 
   const handleSendMessage = async () => {

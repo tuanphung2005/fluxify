@@ -63,22 +63,26 @@ const ORDER_STATUSES = [
   { value: "CANCELLED", label: "Đã hủy", color: "danger" },
 ] as const;
 
-export default function OrderDetailsModal({
+export default function OrderDetailsModal(props: OrderDetailsModalProps) {
+  if (!props.order) return null;
+
+  return (
+    <Modal isOpen={props.isOpen} size="2xl" onClose={props.onClose}>
+      <ModalContent>
+        {() => <OrderDetailsContent {...props} order={props.order!} />}
+      </ModalContent>
+    </Modal>
+  );
+}
+
+function OrderDetailsContent({
   order,
   isOpen,
   onClose,
   onStatusUpdate,
-}: OrderDetailsModalProps) {
+}: OrderDetailsModalProps & { order: Order }) {
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<string>("");
-
-  useEffect(() => {
-    if (order) {
-      setSelectedStatus(order.status);
-    }
-  }, [order]);
-
-  if (!order) return null;
+  const [selectedStatus, setSelectedStatus] = useState<string>(order.status);
 
   const handleUpdateStatus = async () => {
     if (!selectedStatus || selectedStatus === order.status) return;
@@ -101,140 +105,138 @@ export default function OrderDetailsModal({
   };
 
   return (
-    <Modal isOpen={isOpen} size="2xl" onClose={onClose}>
-      <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">
-          Chi tiết đơn hàng #{order.id.slice(-6)}
-          <span className="text-sm font-normal text-default-500">
-            Đặt ngày {new Date(order.createdAt).toLocaleString()}
-          </span>
-        </ModalHeader>
-        <ModalBody>
-          <div className="space-y-6">
-            {/* Status Management */}
-            <div className="p-4 bg-default-50 rounded-lg space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold">Trạng thái hiện tại</span>
-                <Chip
-                  color={
-                    order.status === "PENDING"
-                      ? "warning"
-                      : order.status === "PROCESSING"
-                        ? "primary"
-                        : order.status === "SHIPPED"
-                          ? "secondary"
-                          : order.status === "DELIVERED"
-                            ? "success"
-                            : order.status === "CANCELLED"
-                              ? "danger"
-                              : "default"
-                  }
-                  variant="flat"
-                >
-                  {order.status}
-                </Chip>
-              </div>
-              <Select
-                className="max-w-full"
-                label="Cập nhật trạng thái"
-                placeholder="Chọn trạng thái mới"
-                selectedKeys={selectedStatus ? [selectedStatus] : []}
-                size="sm"
-                onSelectionChange={(keys) => {
-                  const selected = Array.from(keys)[0] as string;
-
-                  setSelectedStatus(selected);
-                }}
+    <>
+      <ModalHeader className="flex flex-col gap-1">
+        Chi tiết đơn hàng #{order.id.slice(-6)}
+        <span className="text-sm font-normal text-default-500">
+          Đặt ngày {new Date(order.createdAt).toLocaleString()}
+        </span>
+      </ModalHeader>
+      <ModalBody>
+        <div className="space-y-6">
+          {/* Status Management */}
+          <div className="p-4 bg-default-50 rounded-lg space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold">Trạng thái hiện tại</span>
+              <Chip
+                color={
+                  order.status === "PENDING"
+                    ? "warning"
+                    : order.status === "PROCESSING"
+                      ? "primary"
+                      : order.status === "SHIPPED"
+                        ? "secondary"
+                        : order.status === "DELIVERED"
+                          ? "success"
+                          : order.status === "CANCELLED"
+                            ? "danger"
+                            : "default"
+                }
+                variant="flat"
               >
-                {ORDER_STATUSES.map((status) => (
-                  <SelectItem key={status.value}>{status.label}</SelectItem>
-                ))}
-              </Select>
+                {order.status}
+              </Chip>
             </div>
+            <Select
+              className="max-w-full"
+              label="Cập nhật trạng thái"
+              placeholder="Chọn trạng thái mới"
+              selectedKeys={selectedStatus ? [selectedStatus] : []}
+              size="sm"
+              onSelectionChange={(keys) => {
+                const selected = Array.from(keys)[0] as string;
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <h4 className="text-sm font-semibold text-default-500 mb-2">
-                  Khách hàng
-                </h4>
-                <p>{order.fullName || order.user.name || "Khách"}</p>
-                <p className="text-sm text-default-400">
-                  {order.phoneNumber || order.user.email}
-                </p>
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-default-500 mb-2">
-                  Địa chỉ giao hàng
-                </h4>
-                <p>{order.address.street}</p>
-                <p>
-                  {order.address.city}, {order.address.state}{" "}
-                  {order.address.zipCode}
-                </p>
-                <p>{order.address.country}</p>
-              </div>
-            </div>
+                setSelectedStatus(selected);
+              }}
+            >
+              {ORDER_STATUSES.map((status) => (
+                <SelectItem key={status.value}>{status.label}</SelectItem>
+              ))}
+            </Select>
+          </div>
 
-            {/* Order Items */}
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <h4 className="text-sm font-semibold text-default-500 mb-2">
-                Sản phẩm
+                Khách hàng
               </h4>
-              <div className="border rounded-lg divide-y">
-                {order.items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="p-3 flex justify-between items-center"
-                  >
-                    <div>
-                      <p className="font-medium">{item.product.name}</p>
-                      {item.selectedVariant && (
-                        <p className="text-xs text-default-500">
-                          {item.selectedVariant
-                            .split(",")
-                            .map((part) => {
-                              const [name, value] = part.split(":");
+              <p>{order.fullName || order.user.name || "Khách"}</p>
+              <p className="text-sm text-default-400">
+                {order.phoneNumber || order.user.email}
+              </p>
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-default-500 mb-2">
+                Địa chỉ giao hàng
+              </h4>
+              <p>{order.address.street}</p>
+              <p>
+                {order.address.city}, {order.address.state}{" "}
+                {order.address.zipCode}
+              </p>
+              <p>{order.address.country}</p>
+            </div>
+          </div>
 
-                              return `${name}: ${value}`;
-                            })
-                            .join(", ")}
-                        </p>
-                      )}
-                      <p className="text-sm text-default-400">
-                        SL: {item.quantity} x{" "}
-                        {Number(item.price).toLocaleString("vi-VN")}₫
+          {/* Order Items */}
+          <div>
+            <h4 className="text-sm font-semibold text-default-500 mb-2">
+              Sản phẩm
+            </h4>
+            <div className="border rounded-lg divide-y">
+              {order.items.map((item) => (
+                <div
+                  key={item.id}
+                  className="p-3 flex justify-between items-center"
+                >
+                  <div>
+                    <p className="font-medium">{item.product.name}</p>
+                    {item.selectedVariant && (
+                      <p className="text-xs text-default-500">
+                        {item.selectedVariant
+                          .split(",")
+                          .map((part) => {
+                            const [name, value] = part.split(":");
+
+                            return `${name}: ${value}`;
+                          })
+                          .join(", ")}
                       </p>
-                    </div>
-                    <p className="font-semibold">
-                      {(Number(item.price) * item.quantity).toLocaleString(
-                        "vi-VN",
-                      )}
-                      ₫
+                    )}
+                    <p className="text-sm text-default-400">
+                      SL: {item.quantity} x{" "}
+                      {Number(item.price).toLocaleString("vi-VN")}₫
                     </p>
                   </div>
-                ))}
-                <div className="p-3 bg-default-50 flex justify-between items-center font-bold">
-                  <span>Tổng cộng</span>
-                  <span>{Number(order.total).toLocaleString("vi-VN")}₫</span>
+                  <p className="font-semibold">
+                    {(Number(item.price) * item.quantity).toLocaleString(
+                      "vi-VN",
+                    )}
+                    ₫
+                  </p>
                 </div>
+              ))}
+              <div className="p-3 bg-default-50 flex justify-between items-center font-bold">
+                <span>Tổng cộng</span>
+                <span>{Number(order.total).toLocaleString("vi-VN")}₫</span>
               </div>
             </div>
           </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button variant="light" onPress={onClose}>
-            Đóng
-          </Button>
-          <Button
-            color="primary"
-            isDisabled={!selectedStatus || selectedStatus === order.status}
-            isLoading={isLoading}
-            onPress={handleUpdateStatus}
-          >
-            Cập nhật
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <Button variant="light" onPress={onClose}>
+          Đóng
+        </Button>
+        <Button
+          color="primary"
+          isDisabled={!selectedStatus || selectedStatus === order.status}
+          isLoading={isLoading}
+          onPress={handleUpdateStatus}
+        >
+          Cập nhật
+        </Button>
+      </ModalFooter>
+    </>
   );
 }

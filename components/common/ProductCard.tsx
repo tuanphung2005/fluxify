@@ -85,7 +85,15 @@ export default function ProductCard({
       {/* Image Section */}
       <div
         className={`relative aspect-square overflow-hidden ${hasButton ? "cursor-pointer" : ""}`}
+        role={hasButton ? "button" : undefined}
+        tabIndex={hasButton ? 0 : undefined}
         onClick={hasButton ? handleCardClick : undefined}
+        onKeyDown={(e) => {
+          if (hasButton && (e.key === "Enter" || e.key === " ")) {
+            e.preventDefault();
+            handleCardClick();
+          }
+        }}
       >
         <Image
           removeWrapper
@@ -128,7 +136,15 @@ export default function ProductCard({
       {/* Content Section */}
       <CardBody
         className={`p-4 ${hasButton ? "cursor-pointer" : ""}`}
+        role={hasButton ? "button" : undefined}
+        tabIndex={hasButton ? 0 : undefined}
         onClick={hasButton ? handleCardClick : undefined}
+        onKeyDown={(e) => {
+          if (hasButton && (e.key === "Enter" || e.key === " ")) {
+            e.preventDefault();
+            handleCardClick();
+          }
+        }}
       >
         <h3 className="font-semibold line-clamp-1">{name}</h3>
         <p className="text-lg font-bold text-primary">{formatVND(price)}</p>
