@@ -28,7 +28,7 @@ function reportError(error: Error & { digest?: string }): void {
   // Log structured error for debugging
   console.error("[Error Boundary]", errorReport);
 
-  // TODO: Replace with actual error reporting service
+  // TODO: Replace with Sentry or some shit
   // fetch("/api/errors", {
   //     method: "POST",
   //     headers: { "Content-Type": "application/json" },

@@ -12,8 +12,6 @@ interface AddToCartButtonProps {
     price: number;
     images: string[];
   };
-  vendorId?: string; // TODO: REMOVE
-  vendorName?: string; // TODO: REMOVE
   disabled?: boolean;
 }
 
