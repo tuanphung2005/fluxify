@@ -18,12 +18,6 @@ interface Product {
   images: string[];
 }
 
-interface VendorProfile {
-  id: string;
-  storeName: string;
-  description: string | null;
-  favicon: string | null;
-}
 
 export function useShopBuilder() {
   const router = useRouter();
@@ -39,9 +33,7 @@ export function useShopBuilder() {
   const [isOperating, setIsOperating] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  const [vendorProfile, setVendorProfile] = useState<VendorProfile | null>(
-    null,
-  );
+
   const [error, setError] = useState<string | null>(null);
   const [needsEmailVerification, setNeedsEmailVerification] = useState(false);
 
@@ -306,7 +298,6 @@ export function useShopBuilder() {
     isOperating,
     hasUnsavedChanges,
     products,
-    vendorProfile,
     error,
     needsEmailVerification,
     setSelectedComponentId,
