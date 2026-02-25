@@ -51,18 +51,19 @@ export default function ShopOverview({ vendorId }: ShopOverviewProps) {
 
     if (isLoading) {
         return (
-            <Card className="mb-6 border-none shadow-md">
-                <CardBody className="p-6">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        {[...Array(4)].map((_, i) => (
-                            <div key={i} className="space-y-2">
-                                <Skeleton className="h-4 w-20 rounded" />
+            <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+                {[...Array(4)].map((_, i) => (
+                    <Card key={i} className="border-none shadow-md">
+                        <CardBody className="p-4 flex flex-row items-center gap-4">
+                            <Skeleton className="w-12 h-12 rounded-full" />
+                            <div className="space-y-2 flex-1">
+                                <Skeleton className="h-3 w-20 rounded" />
                                 <Skeleton className="h-6 w-16 rounded" />
                             </div>
-                        ))}
-                    </div>
-                </CardBody>
-            </Card>
+                        </CardBody>
+                    </Card>
+                ))}
+            </div>
         );
     }
 
@@ -71,7 +72,7 @@ export default function ShopOverview({ vendorId }: ShopOverviewProps) {
     const stats = [
         {
             icon: Package,
-            label: "Products",
+            label: "Sản phẩm",
             value: data.productCount.toString(),
             color: "text-primary",
         },
@@ -101,33 +102,31 @@ export default function ShopOverview({ vendorId }: ShopOverviewProps) {
     ];
 
     return (
-        <Card className="mb-6 border-none shadow-md bg-gradient-to-r from-default-50 to-default-100">
-            <CardBody className="p-6">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    {stats.map((stat, index) => (
-                        <div key={index} className="flex items-start gap-3">
-                            <div className={`p-2 rounded-lg bg-default-100 ${stat.color}`}>
-                                <stat.icon size={30} />
-                            </div>
-                            <div>
-                                <p className="text-xs text-default-500 uppercase tracking-wide">
-                                    {stat.label}
-                                </p>
-                                <div className="flex items-center gap-2">
-                                    {stat.showStars ? (
-                                        <StarRating rating={stat.rating!} showValue size="sm" />
-                                    ) : (
-                                        <p className="font-semibold text-lg">{stat.value}</p>
-                                    )}
-                                </div>
-                                {stat.subtext && (
-                                    <p className="text-xs text-default-400">{stat.subtext}</p>
+        <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+            {stats.map((stat, index) => (
+                <Card key={index} className="border-none shadow-md bg-gradient-to-br from-default-50 to-default-100 hover:shadow-lg transition-shadow">
+                    <CardBody className="p-4 flex flex-row items-center gap-4">
+                        <div className={`p-3 rounded-full bg-default-200/50 ${stat.color}`}>
+                            <stat.icon size={26} strokeWidth={2.5} />
+                        </div>
+                        <div className="flex flex-col">
+                            <p className="text-xs font-semibold text-default-500 uppercase tracking-wider">
+                                {stat.label}
+                            </p>
+                            <div className="mt-1 flex items-center gap-2">
+                                {stat.showStars ? (
+                                    <StarRating rating={stat.rating!} showValue size="sm" />
+                                ) : (
+                                    <p className="font-bold text-xl leading-none">{stat.value}</p>
                                 )}
                             </div>
+                            {stat.subtext && (
+                                <p className="text-[10px] text-default-400 mt-1 uppercase tracking-wider font-semibold">{stat.subtext}</p>
+                            )}
                         </div>
-                    ))}
-                </div>
-            </CardBody>
-        </Card>
+                    </CardBody>
+                </Card>
+            ))}
+        </div>
     );
 }
