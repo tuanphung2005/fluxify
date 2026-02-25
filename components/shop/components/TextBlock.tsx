@@ -23,7 +23,7 @@ export default function TextBlock({ config }: TextBlockProps) {
     large: "py-16 px-8",
   };
 
-  const sanitizedContent = DOMPurify.sanitize(content);
+  const sanitizedContent = typeof window !== "undefined" ? DOMPurify.sanitize(content) : content;
 
   return (
     <div
