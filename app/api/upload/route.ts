@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { uploadToCloudinary } from "@/lib/cloudinary";
+import { getAuthenticatedUser } from "@/lib/api/auth-helpers";
+import { isErrorResult, errorResponse } from "@/lib/api/responses";
 
 // Maximum file size: 10MB
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -8,16 +10,11 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024;
 // Allowed MIME types
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
-import { getAuthenticatedUser } from "@/lib/api/auth-helpers";
-
 export async function POST(request: NextRequest) {
   const authResult = await getAuthenticatedUser();
 
-  if ("error" in authResult) {
-    return NextResponse.json(
-      { error: "Unauthorized access" },
-      { status: 401 }
-    );
+  if (isErrorResult(authResult)) {
+    return errorResponse(authResult.error, authResult.status);
   }
 
   try {

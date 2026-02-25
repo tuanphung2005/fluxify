@@ -3,9 +3,12 @@ import { z } from "zod";
 import { OrderStatus, Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
-import { errorResponse, successResponse } from "@/lib/api/responses";
+import {
+  errorResponse,
+  successResponse,
+  isErrorResult,
+} from "@/lib/api/responses";
 import { getAuthenticatedVendor } from "@/lib/api/auth-helpers";
-import { isErrorResult } from "@/lib/api/responses";
 import { logOrderStatusChange } from "@/lib/api/audit";
 
 export async function GET(req: NextRequest) {

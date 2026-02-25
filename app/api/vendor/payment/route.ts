@@ -3,7 +3,11 @@ import { z } from "zod";
 
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedVendor } from "@/lib/api/auth-helpers";
-import { errorResponse, successResponse } from "@/lib/api/responses";
+import {
+  errorResponse,
+  successResponse,
+  isErrorResult,
+} from "@/lib/api/responses";
 import { fetchVietQRBanks } from "@/lib/vietqr";
 
 const paymentSettingsSchema = z.object({
@@ -24,7 +28,7 @@ export async function GET() {
   try {
     const auth = await getAuthenticatedVendor();
 
-    if ("error" in auth) {
+    if (isErrorResult(auth)) {
       return errorResponse(auth.error, auth.status);
     }
 
@@ -55,7 +59,7 @@ export async function PUT(req: NextRequest) {
   try {
     const auth = await getAuthenticatedVendor();
 
-    if ("error" in auth) {
+    if (isErrorResult(auth)) {
       return errorResponse(auth.error, auth.status);
     }
 
