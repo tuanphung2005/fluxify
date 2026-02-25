@@ -5,6 +5,8 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
+import { recordProductView } from "@/lib/db/ecommerce-queries";
 import AddToCartButton from "@/components/shop/AddToCartButton";
 import CartDrawer from "@/components/shop/CartDrawer";
 import CartButton from "@/components/shop/CartButton";
@@ -35,6 +37,10 @@ export default async function ProductPage(props: ProductPageProps) {
   if (!product || product.vendorId !== vendorId) {
     notFound();
   }
+
+  // Record product view (fire-and-forget)
+  const session = await auth();
+  recordProductView(productId, session?.user?.id ?? undefined).catch(() => { });
 
   const vendorName = product.vendor.storeName;
 

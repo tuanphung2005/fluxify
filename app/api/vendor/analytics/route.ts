@@ -7,6 +7,7 @@ import {
 } from "@/lib/api/responses";
 import { getAuthenticatedVendor } from "@/lib/api/auth-helpers";
 import { prisma } from "@/lib/prisma";
+import { getProductViewStats } from "@/lib/db/ecommerce-queries";
 
 // GET - Get vendor analytics data
 export async function GET(req: NextRequest) {
@@ -172,6 +173,15 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" },
     });
 
+    // Get per-product view stats for top products (daily breakdown)
+    const productViewStats = await Promise.all(
+      topProducts.slice(0, 5).map(async (item) => ({
+        productId: item.product.id,
+        productName: item.product.name,
+        views: await getProductViewStats(item.product.id, days),
+      })),
+    );
+
     return successResponse({
       totalRevenue: Number(totalRevenue.toFixed(2)),
       totalOrders,
@@ -183,6 +193,7 @@ export async function GET(req: NextRequest) {
       ordersByDate: ordersChartData,
       topProducts,
       recentOrders,
+      productViewStats,
     });
   } catch (error) {
     return errorResponse("Failed to fetch analytics", 500, error);
