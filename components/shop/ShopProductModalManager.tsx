@@ -37,7 +37,7 @@ export default function ShopProductModalManager({
   const isOpen = !!selectedProduct;
 
   const handleClose = () => {
-    // Remove query param
+
     const params = new URLSearchParams(searchParams.toString());
 
     params.delete("productId");

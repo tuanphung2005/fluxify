@@ -57,6 +57,7 @@ export interface Product {
   description?: string;
   variants?: any;
   variantStock?: any;
+  deletedAt?: string | null;
 }
 
 interface ProductFormModalProps {

@@ -37,7 +37,7 @@ export default function ShopComponentWrapper({
   vendorId,
   vendorName,
 }: ShopComponentWrapperProps) {
-  // @ts-ignore - Validated by runtime check or we accept undefined for excluded types
+
   const meta = COMPONENT_REGISTRY[type as keyof typeof COMPONENT_REGISTRY];
 
   if (!meta) {

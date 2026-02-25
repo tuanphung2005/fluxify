@@ -34,10 +34,13 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "10");
     const search = searchParams.get("search") || "";
 
+    const includeDeleted = searchParams.get("includeDeleted") === "true";
+
     const result = await getVendorProducts(auth.vendor.id, {
       page,
       limit,
       search,
+      includeDeleted,
     });
 
     return successResponse(result);

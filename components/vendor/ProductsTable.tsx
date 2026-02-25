@@ -10,22 +10,26 @@ import {
 } from "@heroui/table";
 import { Image as HeroUIImage } from "@heroui/image";
 import { Button } from "@heroui/button";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, RotateCcw } from "lucide-react";
 
 import { Product } from "./ProductFormModal";
 
 interface ProductsTableProps {
   products: Product[];
   isLoading: boolean;
+  showDeleted?: boolean;
   onEdit: (product: Product) => void;
   onDelete: (productId: string) => void;
+  onRestore?: (productId: string) => void;
 }
 
 export default function ProductsTable({
   products,
   isLoading,
+  showDeleted = false,
   onEdit,
   onDelete,
+  onRestore,
 }: ProductsTableProps) {
   return (
     <Table aria-label="Products table">
@@ -89,24 +93,38 @@ export default function ProductsTable({
             <TableCell>{product.stock}</TableCell>
             <TableCell>
               <div className="flex gap-2">
-                <Button
-                  isIconOnly
-                  color="primary"
-                  size="sm"
-                  variant="light"
-                  onPress={() => onEdit(product)}
-                >
-                  <Edit size={16} />
-                </Button>
-                <Button
-                  isIconOnly
-                  color="danger"
-                  size="sm"
-                  variant="light"
-                  onPress={() => onDelete(product.id)}
-                >
-                  <Trash2 size={16} />
-                </Button>
+                {showDeleted ? (
+                  <Button
+                    isIconOnly
+                    color="success"
+                    size="sm"
+                    variant="light"
+                    onPress={() => onRestore?.(product.id)}
+                  >
+                    <RotateCcw size={16} />
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      isIconOnly
+                      color="primary"
+                      size="sm"
+                      variant="light"
+                      onPress={() => onEdit(product)}
+                    >
+                      <Edit size={16} />
+                    </Button>
+                    <Button
+                      isIconOnly
+                      color="danger"
+                      size="sm"
+                      variant="light"
+                      onPress={() => onDelete(product.id)}
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  </>
+                )}
               </div>
             </TableCell>
           </TableRow>

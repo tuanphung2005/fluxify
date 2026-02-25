@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Input, useDisclosure } from "@heroui/react";
+import { Tabs, Tab } from "@heroui/tabs";
 import { Pagination } from "@heroui/pagination";
 import { Plus, Search } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
@@ -34,6 +35,9 @@ export default function ProductManagerContent({
   const [isLoading, setIsLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
+  const [showDeleted, setShowDeleted] = useState(false);
+  const restoreModal = useDisclosure();
+  const [productToRestore, setProductToRestore] = useState<string | null>(null);
 
   // Pagination state
   const [page, setPage] = useState(1);
@@ -48,6 +52,7 @@ export default function ProductManagerContent({
         page: page.toString(),
         limit: "10",
         search: debouncedSearch,
+        ...(showDeleted ? { includeDeleted: "true" } : {}),
       });
       const data = await api.get<ProductResponse>(
         `/api/products?${queryParams}`,
@@ -60,7 +65,7 @@ export default function ProductManagerContent({
     } finally {
       setIsLoading(false);
     }
-  }, [page, debouncedSearch]);
+  }, [page, debouncedSearch, showDeleted]);
 
   useEffect(() => {
     fetchProducts();
@@ -106,8 +111,45 @@ export default function ProductManagerContent({
     setPage(1); // Reset to first page on search
   };
 
+  const handleRestoreProduct = (productId: string) => {
+    setProductToRestore(productId);
+    restoreModal.onOpen();
+  };
+
+  const confirmRestore = async () => {
+    if (!productToRestore) return;
+
+    try {
+      await api.patch(`/api/products/${productToRestore}/restore`, {});
+      fetchProducts();
+      if (onProductsChange) onProductsChange();
+      setProductToRestore(null);
+    } catch (error) {
+      console.error("Failed to restore product", error);
+    }
+  };
+
+  const handleTabChange = (key: React.Key) => {
+    setShowDeleted(key === "deleted");
+    setPage(1);
+  };
+
+  // Filter products based on current tab
+  const displayedProducts = showDeleted
+    ? products.filter((p) => p.deletedAt)
+    : products.filter((p) => !p.deletedAt);
+
   return (
     <>
+      <Tabs
+        className="mb-4"
+        selectedKey={showDeleted ? "deleted" : "active"}
+        onSelectionChange={handleTabChange}
+      >
+        <Tab key="active" title="Sản phẩm" />
+        <Tab key="deleted" title="Đã xóa" />
+      </Tabs>
+
       <div className="flex justify-between items-center mb-4 gap-4">
         <Input
           className="max-w-xs"
@@ -116,20 +158,24 @@ export default function ProductManagerContent({
           value={searchQuery}
           onValueChange={handleSearchChange}
         />
-        <Button
-          color="primary"
-          startContent={<Plus />}
-          onPress={handleAddProduct}
-        >
-          Thêm sản phẩm
-        </Button>
+        {!showDeleted && (
+          <Button
+            color="primary"
+            startContent={<Plus />}
+            onPress={handleAddProduct}
+          >
+            Thêm sản phẩm
+          </Button>
+        )}
       </div>
 
       <ProductsTable
         isLoading={isLoading}
-        products={products}
+        products={displayedProducts}
+        showDeleted={showDeleted}
         onDelete={handleDeleteProduct}
         onEdit={handleEditProduct}
+        onRestore={handleRestoreProduct}
       />
 
       {totalPages > 1 && (
@@ -154,10 +200,21 @@ export default function ProductManagerContent({
         cancelText="Hủy"
         confirmText="Xóa"
         isOpen={deleteModal.isOpen}
-        message="Bạn có chắc chắn muốn xóa sản phẩm này không? Hành động này không thể hoàn tác."
+        message="Bạn có chắc chắn muốn xóa sản phẩm này không?"
         title="Xóa sản phẩm"
         onClose={deleteModal.onClose}
         onConfirm={confirmDelete}
+      />
+
+      <ConfirmationModal
+        cancelText="Hủy"
+        confirmColor="success"
+        confirmText="Khôi phục"
+        isOpen={restoreModal.isOpen}
+        message="Bạn có muốn khôi phục sản phẩm này không?"
+        title="Khôi phục sản phẩm"
+        onClose={restoreModal.onClose}
+        onConfirm={confirmRestore}
       />
     </>
   );
