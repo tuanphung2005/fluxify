@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 
 import { prisma } from "@/lib/prisma";
 import { errorResponse, successResponse } from "@/lib/api/responses";
+import { normalizePagination } from "@/lib/db/product-queries";
 
 interface RouteParams {
     params: Promise<{
@@ -27,9 +28,10 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     try {
         const { vendorId } = await params;
         const { searchParams } = new URL(req.url);
-        const page = parseInt(searchParams.get("page") || "1");
-        const limit = parseInt(searchParams.get("limit") || "10");
-        const skip = (page - 1) * limit;
+        const { page, limit, skip } = normalizePagination({
+            page: parseInt(searchParams.get("page") || "1"),
+            limit: parseInt(searchParams.get("limit") || "10"),
+        });
 
         // Rating filters (1-5)
         const productRatingFilter = searchParams.get("productRating");

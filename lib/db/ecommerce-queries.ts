@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
+import { normalizePagination } from "@/lib/db/product-queries";
 
 // ============================================
 // Category Queries
@@ -150,8 +151,7 @@ export async function getProductReviews(
     limit?: number;
   } = {},
 ) {
-  const { page = 1, limit = 10 } = options;
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = normalizePagination(options);
 
   const [reviews, total] = await Promise.all([
     prisma.review.findMany({

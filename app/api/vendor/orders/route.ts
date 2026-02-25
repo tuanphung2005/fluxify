@@ -10,6 +10,7 @@ import {
 } from "@/lib/api/responses";
 import { getAuthenticatedVendor } from "@/lib/api/auth-helpers";
 import { logOrderStatusChange } from "@/lib/api/audit";
+import { normalizePagination } from "@/lib/db/product-queries";
 
 export async function GET(req: NextRequest) {
   try {
@@ -21,10 +22,11 @@ export async function GET(req: NextRequest) {
 
     // Parse pagination and filter params
     const searchParams = req.nextUrl.searchParams;
-    const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
-    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20")));
+    const { page, limit, skip } = normalizePagination({
+      page: parseInt(searchParams.get("page") || "1"),
+      limit: parseInt(searchParams.get("limit") || "20"),
+    });
     const statusParam = searchParams.get("status");
-    const skip = (page - 1) * limit;
 
     // Validate status is a valid OrderStatus
     const validStatuses = Object.values(OrderStatus);
