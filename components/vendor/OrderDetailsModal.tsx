@@ -15,6 +15,7 @@ import { useState, useEffect } from "react";
 
 import { api } from "@/lib/api/api";
 import { toast } from "@/lib/toast";
+import { formatVND } from "@/lib/format";
 
 interface OrderItem {
   id: string;
@@ -205,20 +206,17 @@ function OrderDetailsContent({
                     )}
                     <p className="text-sm text-default-400">
                       SL: {item.quantity} x{" "}
-                      {Number(item.price).toLocaleString("vi-VN")}₫
+                      {formatVND(item.price)}
                     </p>
                   </div>
                   <p className="font-semibold">
-                    {(Number(item.price) * item.quantity).toLocaleString(
-                      "vi-VN",
-                    )}
-                    ₫
+                    {formatVND(Number(item.price) * item.quantity)}
                   </p>
                 </div>
               ))}
               <div className="p-3 bg-default-50 flex justify-between items-center font-bold">
                 <span>Tổng cộng</span>
-                <span>{Number(order.total).toLocaleString("vi-VN")}₫</span>
+                <span>{formatVND(order.total)}</span>
               </div>
             </div>
           </div>

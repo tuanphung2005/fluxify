@@ -20,6 +20,7 @@ import { useSession } from "next-auth/react";
 import { useCartStore } from "@/store/cart-store";
 import { api } from "@/lib/api/api";
 import { toast } from "@/lib/toast";
+import { formatVND } from "@/lib/format";
 import {
   generateVietQRUrl,
   getBankByCode,
@@ -297,7 +298,7 @@ export default function CheckoutModal({
                     <div className="p-4 bg-default-50 rounded-lg">
                       <div className="flex justify-between font-semibold">
                         <span>Tổng tiền</span>
-                        <span>{total().toLocaleString("vi-VN")}₫</span>
+                        <span>{formatVND(total())}</span>
                       </div>
                       {currentVendorName && (
                         <p className="text-sm text-default-500 mt-1">
@@ -386,7 +387,7 @@ export default function CheckoutModal({
                         Quét mã QR để thanh toán
                       </p>
                       <p className="text-2xl font-bold text-primary">
-                        {total().toLocaleString("vi-VN")}₫
+                        {formatVND(total())}
                       </p>
                     </div>
 

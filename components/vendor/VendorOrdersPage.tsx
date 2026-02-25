@@ -17,6 +17,7 @@ import { Eye, ListOrdered, RefreshCw } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 
 import { api } from "@/lib/api/api";
+import { formatVND } from "@/lib/format";
 import OrderDetailsModal from "@/components/vendor/OrderDetailsModal";
 
 interface PaginationInfo {
@@ -172,7 +173,7 @@ export default function VendorOrdersPage() {
                       </Chip>
                     </TableCell>
                     <TableCell>
-                      {Number(order.total).toLocaleString("vi-VN")}₫
+                      {formatVND(order.total)}
                     </TableCell>
                     <TableCell>
                       <div className="flex justify-end">
