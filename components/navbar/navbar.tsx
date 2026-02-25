@@ -6,8 +6,8 @@ import {
 } from "@heroui/navbar";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
-import clsx from "clsx";
 
+import { cn } from "@/lib/utils";
 import { NavbarUserMenu } from "./user-menu";
 import { AuthButtons } from "./auth-buttons";
 
@@ -30,7 +30,7 @@ export const Navbar = async () => {
                     {siteConfig.navItems.map((item) => (
                         <NavbarItem key={item.href}>
                             <NextLink
-                                className={clsx(
+                                className={cn(
                                     linkStyles({ color: "foreground" }),
                                     "data-[active=true]:text-primary data-[active=true]:font-medium",
                                 )}

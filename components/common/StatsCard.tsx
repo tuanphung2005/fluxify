@@ -2,8 +2,8 @@
 
 import { Card, CardBody } from "@heroui/card";
 import { LucideIcon } from "lucide-react";
-import clsx from "clsx";
 
+import { cn } from "@/lib/utils";
 interface StatsCardProps {
   title: string;
   value: string | number;
@@ -30,7 +30,7 @@ export default function StatsCard({
   };
 
   return (
-    <Card className={clsx("border-none shadow-md", className)}>
+    <Card className={cn("border-none shadow-md", className)}>
       <CardBody className="p-6">
         <div className="flex justify-between items-start">
           <div>
@@ -40,7 +40,7 @@ export default function StatsCard({
             <h3 className="text-4xl font-bold mt-2">{value}</h3>
           </div>
           <div
-            className={clsx(
+            className={cn(
               "p-3 rounded-xl",
               colorStyles[color] || colorStyles.default,
             )}

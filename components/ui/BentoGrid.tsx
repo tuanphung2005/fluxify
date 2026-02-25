@@ -1,8 +1,8 @@
 "use client";
 
 import { ReactNode } from "react";
-import clsx from "clsx";
 
+import { cn } from "@/lib/utils";
 import { GRID_COLUMNS, GAP_SIZES, GridColumns, GapSize } from "@/lib/ui/tokens";
 
 interface BentoGridProps {
@@ -32,7 +32,7 @@ export default function BentoGrid({
 }: BentoGridProps) {
   return (
     <div
-      className={clsx("grid", GRID_COLUMNS[columns], GAP_SIZES[gap], className)}
+      className={cn("grid", GRID_COLUMNS[columns], GAP_SIZES[gap], className)}
     >
       {children}
     </div>

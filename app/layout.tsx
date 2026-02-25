@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
-import clsx from "clsx";
 
+import { cn } from "@/lib/utils";
 import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/site";
@@ -34,7 +34,7 @@ export default function RootLayout({
     <html suppressHydrationWarning lang="vi">
       <head />
       <body
-        className={clsx(
+        className={cn(
           "min-h-screen text-foreground bg-background font-sans antialiased",
           fontSans.variable,
         )}

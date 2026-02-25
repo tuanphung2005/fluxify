@@ -3,8 +3,8 @@
 import { ReactNode } from "react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { LucideIcon } from "lucide-react";
-import clsx from "clsx";
 
+import { cn } from "@/lib/utils";
 import {
   BENTO_SIZES,
   STATS_COLORS,
@@ -54,7 +54,7 @@ export default function BentoCard({
 
   if (variant === "stats") {
     return (
-      <Card className={clsx("border-none shadow-md", sizeClass, className)}>
+      <Card className={cn("border-none shadow-md", sizeClass, className)}>
         <CardBody className="p-6">
           <div className="flex justify-between items-start">
             <div className="flex-1">
@@ -66,7 +66,7 @@ export default function BentoCard({
               <div className="text-4xl font-bold mt-2">{children}</div>
             </div>
             {Icon && (
-              <div className={clsx("p-3 rounded-xl", STATS_COLORS[color])}>
+              <div className={cn("p-3 rounded-xl", STATS_COLORS[color])}>
                 <Icon size={24} />
               </div>
             )}
@@ -82,7 +82,7 @@ export default function BentoCard({
   if (variant === "glass") {
     return (
       <Card
-        className={clsx(
+        className={cn(
           "border-none shadow-lg bg-content1/80 backdrop-blur-md",
           sizeClass,
           className,
@@ -106,12 +106,12 @@ export default function BentoCard({
 
   // Default variant
   return (
-    <Card className={clsx("border-none shadow-md", sizeClass, className)}>
+    <Card className={cn("border-none shadow-md", sizeClass, className)}>
       {(title || headerAction) && (
         <CardHeader className="px-6 py-4 border-b border-divider flex justify-between items-center">
           <div className="flex items-center gap-3">
             {Icon && (
-              <div className={clsx("p-2 rounded-lg", STATS_COLORS[color])}>
+              <div className={cn("p-2 rounded-lg", STATS_COLORS[color])}>
                 <Icon size={20} />
               </div>
             )}

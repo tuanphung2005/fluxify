@@ -14,6 +14,7 @@ import { Image } from "@heroui/image";
 import { Package } from "lucide-react";
 
 import StarRating from "@/components/shop/StarRating";
+import { api } from "@/lib/api/api";
 
 interface OrderProduct {
     name: string;
@@ -57,21 +58,12 @@ export default function ReviewModal({
         setError(null);
 
         try {
-            const response = await fetch("/api/reviews", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    orderId: order.id,
-                    rating: productRating,
-                    shippingRating,
-                    comment: comment.trim() || undefined,
-                }),
+            await api.post("/api/reviews", {
+                orderId: order.id,
+                rating: productRating,
+                shippingRating,
+                comment: comment.trim() || undefined,
             });
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.error || "Không thể gửi đánh giá");
-            }
 
             onSuccess?.();
             handleClose();

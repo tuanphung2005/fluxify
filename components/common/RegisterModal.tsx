@@ -15,6 +15,8 @@ import {
     Radio,
 } from "@heroui/react";
 
+import { api } from "@/lib/api/api";
+
 export function RegisterModal() {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -48,26 +50,12 @@ export function RegisterModal() {
         const name = formData.get("name") as string;
 
         try {
-            const response = await fetch("/api/auth/register", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email,
-                    password,
-                    name,
-                    role,
-                }),
+            const data = await api.post<{ requiresVerification?: boolean }>("/api/auth/register", {
+                email,
+                password,
+                name,
+                role,
             });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                setError(data.error || "Đã xảy ra lỗi");
-                setIsLoading(false);
-                return;
-            }
 
             if (data.requiresVerification) {
                 setIsLoading(false);
