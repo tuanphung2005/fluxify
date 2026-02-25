@@ -87,7 +87,7 @@ export const COMPONENT_REGISTRY: Record<ComponentType, ComponentMeta> = {
     icon: COMPONENT_ICONS.VIDEO_EMBED,
     colors: COMPONENT_COLORS.VIDEO_EMBED,
     defaultConfig: DEFAULT_CONFIGS.VIDEO_EMBED,
-    Component: lazy(() => import("@/components/shop/components/VideoEmbedt")),
+    Component: lazy(() => import("@/components/shop/components/VideoEmbed")),
     ConfigPanel: lazy(() => import("@/components/builder/config/VideoEmbed")),
   },
   TEXT_BLOCK: {
