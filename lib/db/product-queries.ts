@@ -200,5 +200,4 @@ export async function updateVariantStock(
   }
 }
 
-// Export utilities for reuse
-export { MAX_PAGE_SIZE, DEFAULT_PAGE_SIZE };
+

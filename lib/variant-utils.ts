@@ -218,34 +218,6 @@ export function hasVariants(product: { variants?: any }): boolean {
   return false;
 }
 
-/**
- * Get total stock across all variants
- */
-export function getTotalVariantStock(product: {
-  variantStock?: any;
-  stock: number;
-}): number {
-  if (!product.variantStock || typeof product.variantStock !== "object") {
-    return product.stock;
-  }
-
-  const stocks = Object.values(product.variantStock) as unknown[];
-
-  return stocks.reduce<number>(
-    (sum, stock) => sum + (typeof stock === "number" ? stock : 0),
-    0,
-  );
-}
-
-/**
- * Check if a specific variant is in stock
- */
-export function isVariantInStock(
-  product: { stock: number; variantStock?: any; variants?: any },
-  variantKey?: string,
-): boolean {
-  return getVariantStock(product, variantKey) > 0;
-}
 
 /**
  * Get stock status for a variant
