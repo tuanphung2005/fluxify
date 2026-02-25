@@ -1,19 +1,10 @@
 import crypto from "crypto";
-import { Resend } from "resend";
 
 import { prisma } from "@/lib/prisma";
+import { getResend } from "@/lib/resend";
 
 const PASSWORD_RESET_TOKEN_EXPIRY_HOURS = 1; // 1 hour for security
 const RESEND_COOLDOWN_SECONDS = 60;
-
-// Lazy-initialize Resend to avoid build-time errors
-let resend: Resend | null = null;
-function getResend(): Resend {
-    if (!resend) {
-        resend = new Resend(process.env.RESEND_API_KEY);
-    }
-    return resend;
-}
 
 /**
  * Generate a secure password reset token
