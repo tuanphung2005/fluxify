@@ -39,10 +39,6 @@ export interface TextBlockConfig {
   padding?: "small" | "medium" | "large";
 }
 
-export interface SpacerConfig {
-  height: number; // in pixels
-}
-
 // New component configs for Phase 4
 
 
@@ -105,11 +101,8 @@ export type ComponentConfig =
   | ImageGalleryConfig
   | VideoEmbedConfig
   | TextBlockConfig
-  | SpacerConfig
-
   | FeaturedCollectionConfig
   | CountdownTimerConfig
-
   | FaqAccordionConfig
   | BannerCarouselConfig
   | MapLocationConfig;
@@ -140,26 +133,3 @@ export interface ShopTemplateData {
   };
 }
 
-// Builder state management
-export interface BuilderState {
-  template: ShopTemplateData | null;
-  selectedComponentId: string | null;
-  isDirty: boolean;
-  isSaving: boolean;
-}
-
-// Component palette item
-export interface ComponentPaletteItem {
-  type: ComponentType;
-  label: string;
-  icon: string;
-  description: string;
-  defaultConfig: ComponentConfig;
-}
-
-// Drag and drop types
-export interface DragItem {
-  type: "NEW_COMPONENT" | "EXISTING_COMPONENT";
-  componentType?: ComponentType;
-  componentId?: string;
-}

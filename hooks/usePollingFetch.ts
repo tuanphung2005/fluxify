@@ -24,34 +24,48 @@ export function usePollingFetch<T>({
 }: UsePollingFetchOptions<T>) {
     const [data, setData] = useState<T | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
     const fetcherRef = useRef(fetcher);
+    const isFetchingRef = useRef(false);
     fetcherRef.current = fetcher;
 
     const fetchData = useCallback(async () => {
-        if (!enabled) return;
+        if (!enabled || isFetchingRef.current) return;
 
+        isFetchingRef.current = true;
         try {
             const result = await fetcherRef.current();
             setData(result);
-        } catch (error) {
-            console.error("Polling fetch error:", error);
+            setError(null);
+        } catch (err) {
+            console.error("Polling fetch error:", err);
+            setError(err instanceof Error ? err : new Error("Fetch failed"));
         } finally {
             setIsLoading(false);
+            isFetchingRef.current = false;
         }
     }, [enabled]);
 
     useEffect(() => {
-        fetchData();
+        let cancelled = false;
+
+        const safeFetch = async () => {
+            if (cancelled) return;
+            await fetchData();
+        };
+
+        safeFetch();
 
         let timer: NodeJS.Timeout;
         if (enabled) {
-            timer = setInterval(fetchData, interval);
+            timer = setInterval(safeFetch, interval);
         }
 
         return () => {
+            cancelled = true;
             if (timer) clearInterval(timer);
         };
     }, [fetchData, enabled, interval]);
 
-    return { data, isLoading, refetch: fetchData };
+    return { data, isLoading, error, refetch: fetchData };
 }

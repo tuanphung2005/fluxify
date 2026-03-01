@@ -1,4 +1,4 @@
-import { addToast } from "@heroui/toast";
+import { addToast, closeToast } from "@heroui/toast";
 
 export const toast = {
   success: (message: string) => {
@@ -36,12 +36,14 @@ export const toast = {
       radius: "none",
     });
 
-    // Handle success/error
+    // Handle success/error and dismiss loading toast
     promise
       .then(() => {
+        if (toastId) closeToast(toastId);
         toast.success(messages.success);
       })
       .catch(() => {
+        if (toastId) closeToast(toastId);
         toast.error(messages.error);
       });
 

@@ -5,10 +5,8 @@ import {
   ImageGalleryConfig,
   VideoEmbedConfig,
   TextBlockConfig,
-  SpacerConfig,
   FeaturedCollectionConfig,
   CountdownTimerConfig,
-
   FaqAccordionConfig,
   BannerCarouselConfig,
   MapLocationConfig,
@@ -136,9 +134,4 @@ export const DEFAULT_CONFIGS: Record<ComponentType, ComponentConfig> = {
   } as MapLocationConfig,
 };
 
-/**
- * Get the default configuration for a component type
- */
-export function getDefaultConfig(type: ComponentType): ComponentConfig {
-  return DEFAULT_CONFIGS[type];
-}
+

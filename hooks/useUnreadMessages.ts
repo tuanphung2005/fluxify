@@ -37,14 +37,18 @@ export function useUnreadMessages({ role, enabled = true }: UseUnreadMessagesOpt
 
     // Listen for updates from other tabs
     useEffect(() => {
-        const channel = new BroadcastChannel("fluxify_chat_channel");
-        channel.onmessage = (event) => {
-            if (event.data?.type === "chat_update") {
-                refetch();
-            }
-        };
+        try {
+            const channel = new BroadcastChannel("fluxify_chat_channel");
+            channel.onmessage = (event) => {
+                if (event.data?.type === "chat_update") {
+                    refetch();
+                }
+            };
 
-        return () => channel.close();
+            return () => channel.close();
+        } catch {
+            // BroadcastChannel not supported in this browser
+        }
     }, [refetch]);
 
     return {

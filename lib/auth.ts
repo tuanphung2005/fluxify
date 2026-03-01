@@ -93,7 +93,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user, trigger }) {
+    async jwt({ token, user }) {
       // On initial sign in, set up the token
       if (user) {
         token.id = user.id!;

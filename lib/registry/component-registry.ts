@@ -180,41 +180,8 @@ export const COMPONENT_REGISTRY: Record<ComponentType, ComponentMeta> = {
 // =============================================================================
 
 /**
- * Get component metadata by type
- */
-export function getComponentMeta(
-  type: ComponentType,
-): ComponentMeta | undefined {
-  return COMPONENT_REGISTRY[type];
-}
-
-/**
- * Get default config for a component type
- */
-export function getDefaultConfig(type: ComponentType): ComponentConfig {
-  return DEFAULT_CONFIGS[type];
-}
-
-/**
  * Get all component types as an array for iteration
  */
 export function getAllComponentTypes(): ComponentType[] {
   return Object.keys(COMPONENT_REGISTRY) as ComponentType[];
-}
-
-/**
- * Get component palette items for the builder
- */
-export function getComponentPaletteItems() {
-  return getAllComponentTypes().map((type) => {
-    const meta = COMPONENT_REGISTRY[type];
-
-    return {
-      type,
-      label: meta.label,
-      icon: meta.icon,
-      description: meta.description,
-      defaultConfig: meta.defaultConfig,
-    };
-  });
 }

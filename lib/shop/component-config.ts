@@ -23,16 +23,6 @@ export const heroConfigSchema = z.object({
   height: z.enum(["small", "medium", "large", "full"]).optional(),
 });
 
-// Product grid config
-export const productGridConfigSchema = z.object({
-  title: z.string().max(200).optional(),
-  columns: z.number().int().min(1).max(6).optional(),
-  limit: z.number().int().min(1).max(50).optional(),
-  categoryId: z.string().optional(),
-  showPrice: z.boolean().optional(),
-  showRating: z.boolean().optional(),
-});
-
 // Image gallery config
 export const imageGalleryConfigSchema = z.object({
   images: z
@@ -67,39 +57,11 @@ export const featuredCollectionConfigSchema = z.object({
 });
 
 
-// Testimonials config
-export const testimonialsConfigSchema = z.object({
-  testimonials: z
-    .array(
-      z.object({
-        name: z.string().max(100),
-        role: z.string().max(100).optional(),
-        content: z.string().max(1000),
-        avatar: z.string().url().optional(),
-        rating: z.number().int().min(1).max(5).optional(),
-      }),
-    )
-    .max(10)
-    .optional(),
-  layout: z.enum(["grid", "carousel"]).optional(),
-});
-
 // Countdown timer config
 export const countdownTimerConfigSchema = z.object({
   title: z.string().max(200).optional(),
   endDate: z.string().datetime().optional(),
   expiredMessage: z.string().max(200).optional(),
-});
-
-// Newsletter signup config
-export const newsletterSignupConfigSchema = z.object({
-  title: z.string().max(200).optional(),
-  description: z.string().max(500).optional(),
-  buttonText: z.string().max(50).optional(),
-  backgroundColor: z
-    .string()
-    .regex(/^#[0-9A-Fa-f]{6}$/)
-    .optional(),
 });
 
 // FAQ accordion config
@@ -141,19 +103,26 @@ export const videoEmbedConfigSchema = z.object({
   aspectRatio: z.enum(["16:9", "4:3", "1:1"]).optional(),
 });
 
+// Map location config
+export const mapLocationConfigSchema = z.object({
+  title: z.string().max(200).optional(),
+  address: z.string().max(500).optional(),
+  embedUrl: z.string().max(1000).optional(),
+  height: z.number().int().min(100).max(1000).optional(),
+  showDirections: z.boolean().optional(),
+});
+
 // Map component type to its schema
 export const componentConfigSchemas: Record<string, z.ZodType> = {
   HERO: heroConfigSchema,
-  PRODUCT_GRID: productGridConfigSchema,
   IMAGE_GALLERY: imageGalleryConfigSchema,
   TEXT_BLOCK: textBlockConfigSchema,
   FEATURED_COLLECTION: featuredCollectionConfigSchema,
-  TESTIMONIALS: testimonialsConfigSchema,
   COUNTDOWN_TIMER: countdownTimerConfigSchema,
-  NEWSLETTER_SIGNUP: newsletterSignupConfigSchema,
   FAQ_ACCORDION: faqAccordionConfigSchema,
   BANNER_CAROUSEL: bannerCarouselConfigSchema,
   VIDEO_EMBED: videoEmbedConfigSchema,
+  MAP_LOCATION: mapLocationConfigSchema,
 };
 
 /**

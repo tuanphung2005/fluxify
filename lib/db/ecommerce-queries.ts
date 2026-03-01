@@ -180,12 +180,20 @@ export async function getProductReviews(
 }
 
 export async function getReviewSummary(productId: string) {
-  const reviews = await prisma.review.findMany({
-    where: { productId },
-    select: { rating: true },
-  });
+  const [aggregate, distribution] = await Promise.all([
+    prisma.review.aggregate({
+      where: { productId },
+      _avg: { rating: true },
+      _count: true,
+    }),
+    prisma.review.groupBy({
+      by: ["rating"],
+      where: { productId },
+      _count: true,
+    }),
+  ]);
 
-  if (reviews.length === 0) {
+  if (aggregate._count === 0) {
     return {
       avgRating: 0,
       totalReviews: 0,
@@ -193,20 +201,17 @@ export async function getReviewSummary(productId: string) {
     };
   }
 
-  const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-  let sum = 0;
-
-  for (const review of reviews) {
-    sum += review.rating;
-    if (review.rating >= 1 && review.rating <= 5) {
-      distribution[review.rating as 1 | 2 | 3 | 4 | 5]++;
+  const dist: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  for (const group of distribution) {
+    if (group.rating >= 1 && group.rating <= 5) {
+      dist[group.rating] = group._count;
     }
   }
 
   return {
-    avgRating: Number((sum / reviews.length).toFixed(1)),
-    totalReviews: reviews.length,
-    distribution,
+    avgRating: Number((aggregate._avg.rating ?? 0).toFixed(1)),
+    totalReviews: aggregate._count,
+    distribution: dist,
   };
 }
 export async function createReview(data: ReviewCreateInput) {

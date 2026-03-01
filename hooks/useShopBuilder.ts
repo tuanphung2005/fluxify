@@ -109,7 +109,7 @@ export function useShopBuilder() {
     }
   };
 
-  // console.log("Template isPublished:", template?.isPublished);
+
 
   const addComponent = async (
     type: ComponentType,
@@ -130,7 +130,7 @@ export function useShopBuilder() {
       updatedAt: new Date(),
     };
 
-    setComponents([...components, newComponent]);
+    setComponents((prev) => [...prev, newComponent]);
     setSelectedComponentId(tempId);
     setHasUnsavedChanges(true);
   };
@@ -139,8 +139,8 @@ export function useShopBuilder() {
     if (!selectedComponentId) return;
 
     // update local
-    setComponents(
-      components.map((comp) =>
+    setComponents((prev) =>
+      prev.map((comp) =>
         comp.id === selectedComponentId ? { ...comp, config: newConfig } : comp,
       ),
     );
@@ -150,7 +150,7 @@ export function useShopBuilder() {
   };
 
   const deleteComponent = async (id: string) => {
-    setComponents(components.filter((comp) => comp.id !== id));
+    setComponents((prev) => prev.filter((comp) => comp.id !== id));
     if (selectedComponentId === id) {
       setSelectedComponentId(null);
     }

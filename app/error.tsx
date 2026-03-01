@@ -4,9 +4,8 @@ import { useEffect } from "react";
 
 interface ErrorProps {
   error: Error & { digest?: string };
-  reset: () => void;
+  reset: () => void | Promise<void>;
   minimal?: boolean;
-  className?: string;
 }
 
 /**
@@ -54,30 +53,20 @@ function AlertIcon({ className }: { className?: string }) {
   );
 }
 
-export default function Error(props: ErrorProps) {
-  const { error, reset } = props;
-  const errorProps = props; // Alias for closure access if needed
-
+export default function Error({ error, reset, minimal }: ErrorProps) {
   useEffect(() => {
     reportError(error);
   }, [error]);
 
-  const isMinimal = errorProps.minimal;
-
-  if (isMinimal) {
+  if (minimal) {
     return (
-      <div className={`text-center py-8 ${errorProps.className || ''}`}>
-        <div className="text-danger mb-4">
-          <AlertIcon className="w-12 h-12 mx-auto" />
+      <div className="flex flex-col items-center gap-3 py-4 text-center">
+        <div className="text-red-500">
+          <AlertIcon className="w-8 h-8" />
         </div>
-        <h3 className="text-lg font-semibold text-default-900 mb-2">
-          Hỏng rồi...
-        </h3>
-        <p className="text-default-500 mb-4 text-sm">
-          {error.message || "Đã xảy ra lỗi khi tải dữ liệu."}
-        </p>
+        <p className="text-sm text-gray-600">{error.message}</p>
         <button
-          className="text-sm bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary-600 transition-colors"
+          className="text-sm bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 px-3 rounded-lg transition-colors"
           onClick={reset}
         >
           Thử lại

@@ -312,6 +312,8 @@ model OrderItem {
   product Product @relation(fields: [productId], references: [id])
   review  Review? // One review per order item
 
+  @@index([orderId])
+  @@index([productId])
   @@map("order_items")
 }
 
@@ -328,6 +330,7 @@ model Address {
   user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   orders Order[]
 
+  @@index([userId])
   @@map("addresses")
 }
 
@@ -405,6 +408,7 @@ model Coupon {
   vendor VendorProfile @relation(fields: [vendorId], references: [id], onDelete: Cascade)
   orders Order[]
 
+  @@index([vendorId])
   @@map("coupons")
 }
 

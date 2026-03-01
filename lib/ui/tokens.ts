@@ -2,15 +2,11 @@ import { ComponentType } from "@prisma/client";
 import {
   LucideIcon,
   Image,
-  Grid3X3,
   ImageIcon,
   Video,
   FileText,
-  Minus,
-  MessageSquareQuote,
   Star,
   Timer,
-  Mail,
   HelpCircle,
   Images,
   MapPin,
@@ -175,24 +171,4 @@ export const STATS_COLORS: Record<StatsColor, string> = {
   default: "text-default-500 bg-default-100",
 };
 
-// =============================================================================
-// HELPER FUNCTIONS
-// =============================================================================
 
-export function getComponentColors(type: ComponentType): ComponentColors {
-  return (
-    COMPONENT_COLORS[type] ?? {
-      border: "border-default-300",
-      bg: "bg-default-50/10",
-      badge: "bg-default-500 text-white",
-    }
-  );
-}
-
-export function getComponentLabel(type: ComponentType): string {
-  return COMPONENT_LABELS[type] ?? "component";
-}
-
-export function getComponentIcon(type: ComponentType): LucideIcon {
-  return COMPONENT_ICONS[type] ?? FileText;
-}

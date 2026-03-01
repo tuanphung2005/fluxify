@@ -52,7 +52,6 @@ export async function POST(req: NextRequest) {
         where: { templateId },
         select: { id: true },
       });
-      const existingIds = new Set(existingComponents.map((c) => c.id));
 
       const payloadIds = new Set(
         components.filter((c) => !c.id.startsWith("temp_")).map((c) => c.id),
