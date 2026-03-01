@@ -16,7 +16,14 @@ const config = {
     },
   },
   darkMode: "class",
-  plugins: [heroui()],
+  plugins: [heroui({
+    themes: {
+      light: {},
+      dark: {
+        colors: {} // Remove dark mode colors to save CSS size
+      }
+    }
+  })],
 }
 
 module.exports = config;
