@@ -40,7 +40,8 @@ export default async function ProductPage(props: ProductPageProps) {
 
   // Record product view (fire-and-forget)
   const session = await auth();
-  recordProductView(productId, session?.user?.id ?? undefined).catch(() => { });
+
+  recordProductView(productId, session?.user?.id ?? undefined).catch(() => {});
 
   const vendorName = product.vendor.storeName;
 

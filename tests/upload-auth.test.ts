@@ -16,7 +16,7 @@ import { POST } from '@/app/api/upload/route';
 
 describe('Upload Endpoint Authentication', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        vi.restoreAllMocks();
     });
 
     it('should return 401 if user is not authenticated', async () => {
@@ -31,7 +31,7 @@ describe('Upload Endpoint Authentication', () => {
         const data = await response.json();
 
         expect(response.status).toBe(401);
-        expect(data.error).toBe('Unauthorized access');
+        expect(data.error).toBe('Unauthorized');
         expect(uploadToCloudinary).not.toHaveBeenCalled();
     });
 
@@ -52,6 +52,7 @@ describe('Upload Endpoint Authentication', () => {
         // Create form data
         const formData = new FormData();
         const file = new File(['dummy content'], 'test.png', { type: 'image/png' });
+        (file as any).arrayBuffer = async () => new Uint8Array([1, 2, 3]).buffer;
         formData.append('file', file);
 
         const req = {

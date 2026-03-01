@@ -72,7 +72,10 @@ export async function getAuthenticatedVendor(): Promise<
 
   // Check email verification for non-admin vendors
   if (user.role !== "ADMIN" && !user.emailVerified) {
-    return { error: "Vui lòng xác thực email để sử dụng tính năng này", status: 403 };
+    return {
+      error: "Vui lòng xác thực email để sử dụng tính năng này",
+      status: 403,
+    };
   }
 
   return {

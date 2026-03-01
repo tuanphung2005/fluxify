@@ -24,8 +24,6 @@ export const DEFAULT_CONFIGS: Record<ComponentType, ComponentConfig> = {
     textColor: "#FFFFFF",
   } as HeroConfig,
 
-
-
   IMAGE_GALLERY: {
     images: [
       {
@@ -55,8 +53,6 @@ export const DEFAULT_CONFIGS: Record<ComponentType, ComponentConfig> = {
     padding: "medium",
   } as TextBlockConfig,
 
-
-
   FEATURED_COLLECTION: {
     title: "Bộ sưu tập nổi bật",
     description: "Sản phẩm rành riêng cho bạn",
@@ -76,8 +72,6 @@ export const DEFAULT_CONFIGS: Record<ComponentType, ComponentConfig> = {
     backgroundColor: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
     textColor: "#ffffff",
   } as CountdownTimerConfig,
-
-
 
   FAQ_ACCORDION: {
     title: "Frequently Asked Questions",
@@ -133,5 +127,3 @@ export const DEFAULT_CONFIGS: Record<ComponentType, ComponentConfig> = {
     showDirections: true,
   } as MapLocationConfig,
 };
-
-

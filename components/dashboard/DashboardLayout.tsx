@@ -6,8 +6,8 @@ import { useEffect, ReactNode } from "react";
 import { Spinner } from "@heroui/spinner";
 import { Button } from "@heroui/button";
 import { Settings, LogOut } from "lucide-react";
-import { signOutWithBroadcast } from "@/hooks/useLogoutSync";
 
+import { signOutWithBroadcast } from "@/hooks/useLogoutSync";
 import DashboardSidebar, {
   SidebarMenuItem,
 } from "@/components/common/DashboardSidebar";

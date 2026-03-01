@@ -158,7 +158,6 @@ export async function updateVariantStock(
   selectedVariant?: string,
 ) {
   if (selectedVariant) {
-
     if (operation === "increment") {
       await tx.$executeRaw`
         UPDATE "products"
@@ -199,5 +198,3 @@ export async function updateVariantStock(
     });
   }
 }
-
-

@@ -11,7 +11,9 @@ if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === "re_test") {
   if (process.env.NODE_ENV === "production") {
     throw new Error("Missing required environment variable: RESEND_API_KEY");
   } else {
-    console.warn("[Email] RESEND_API_KEY is not set or is a test key. Emails will be logged to console.");
+    console.warn(
+      "[Email] RESEND_API_KEY is not set or is a test key. Emails will be logged to console.",
+    );
   }
 }
 
@@ -36,10 +38,13 @@ export async function getResendCooldown(email: string): Promise<number> {
 
   // Calculate when the token was created based on expiry
   const tokenCreatedAt = new Date(existingToken.expires);
-  tokenCreatedAt.setHours(tokenCreatedAt.getHours() - VERIFICATION_TOKEN_EXPIRY_HOURS);
+
+  tokenCreatedAt.setHours(
+    tokenCreatedAt.getHours() - VERIFICATION_TOKEN_EXPIRY_HOURS,
+  );
 
   const secondsSinceCreation = Math.floor(
-    (Date.now() - tokenCreatedAt.getTime()) / 1000
+    (Date.now() - tokenCreatedAt.getTime()) / 1000,
   );
 
   if (secondsSinceCreation < RESEND_COOLDOWN_SECONDS) {
@@ -55,11 +60,12 @@ export async function getResendCooldown(email: string): Promise<number> {
  */
 export async function createVerificationToken(
   email: string,
-  bypassCooldown = false
+  bypassCooldown = false,
 ): Promise<{ token: string } | { cooldownRemaining: number }> {
   // Check cooldown unless bypassed (e.g., during registration)
   if (!bypassCooldown) {
     const cooldown = await getResendCooldown(email);
+
     if (cooldown > 0) {
       return { cooldownRemaining: cooldown };
     }
@@ -67,6 +73,7 @@ export async function createVerificationToken(
 
   const token = generateVerificationToken();
   const expires = new Date();
+
   expires.setHours(expires.getHours() + VERIFICATION_TOKEN_EXPIRY_HOURS);
 
   // Delete any existing tokens for this email
@@ -91,7 +98,7 @@ export async function createVerificationToken(
  */
 export async function verifyEmailToken(
   email: string,
-  token: string
+  token: string,
 ): Promise<{ success: boolean; error?: string }> {
   const verificationToken = await prisma.verificationToken.findFirst({
     where: {
@@ -163,7 +170,7 @@ export function getVerificationUrl(email: string, token: string): string {
  */
 export async function sendVerificationEmail(
   email: string,
-  token: string
+  token: string,
 ): Promise<void> {
   const verificationUrl = getVerificationUrl(email, token);
 
@@ -174,7 +181,8 @@ export async function sendVerificationEmail(
 
   try {
     await getResend().emails.send({
-      from: process.env.RESEND_FROM_EMAIL || "Fluxify <onboarding@phungtuan.io.vn>",
+      from:
+        process.env.RESEND_FROM_EMAIL || "Fluxify <onboarding@phungtuan.io.vn>",
       to: email,
       subject: "Xác thực email của bạn - Fluxify",
       html: `

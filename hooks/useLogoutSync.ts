@@ -10,19 +10,20 @@ const LOGOUT_CHANNEL_NAME = "fluxify_logout_channel";
  * Call this before or after signOut to notify other tabs
  */
 export function broadcastLogout() {
+  try {
+    const channel = new BroadcastChannel(LOGOUT_CHANNEL_NAME);
+
+    channel.postMessage({ type: "logout", timestamp: Date.now() });
+    channel.close();
+  } catch {
+    // BroadcastChannel not supported, try localStorage fallback
     try {
-        const channel = new BroadcastChannel(LOGOUT_CHANNEL_NAME);
-        channel.postMessage({ type: "logout", timestamp: Date.now() });
-        channel.close();
+      localStorage.setItem("logout_event", Date.now().toString());
+      localStorage.removeItem("logout_event");
     } catch {
-        // BroadcastChannel not supported, try localStorage fallback
-        try {
-            localStorage.setItem("logout_event", Date.now().toString());
-            localStorage.removeItem("logout_event");
-        } catch {
-            // localStorage also not available, ignore
-        }
+      // localStorage also not available, ignore
     }
+  }
 }
 
 /**
@@ -30,13 +31,13 @@ export function broadcastLogout() {
  * Use this instead of signOut directly to ensure cross-tab logout
  */
 export async function signOutWithBroadcast(callbackUrl = "/") {
-    // Set flag to prevent this tab from reloading when it receives its own broadcast
-    if (typeof window !== "undefined") {
-        sessionStorage.setItem("is_logging_out", "true");
-    }
+  // Set flag to prevent this tab from reloading when it receives its own broadcast
+  if (typeof window !== "undefined") {
+    sessionStorage.setItem("is_logging_out", "true");
+  }
 
-    broadcastLogout();
-    await signOut({ callbackUrl });
+  broadcastLogout();
+  await signOut({ callbackUrl });
 }
 
 /**
@@ -44,45 +45,47 @@ export async function signOutWithBroadcast(callbackUrl = "/") {
  * When a logout is detected, it refreshes the current page
  */
 export function useLogoutListener() {
-    useEffect(() => {
-        let channel: BroadcastChannel | null = null;
+  useEffect(() => {
+    let channel: BroadcastChannel | null = null;
 
-        const handleLogout = () => {
-            // Check if this tab is the one performing logout
-            if (sessionStorage.getItem("is_logging_out") === "true") {
-                // Clear the flag and ignore (signOut will handle redirect)
-                sessionStorage.removeItem("is_logging_out");
-                return;
-            }
+    const handleLogout = () => {
+      // Check if this tab is the one performing logout
+      if (sessionStorage.getItem("is_logging_out") === "true") {
+        // Clear the flag and ignore (signOut will handle redirect)
+        sessionStorage.removeItem("is_logging_out");
 
-            // Refresh the page to update auth state
-            window.location.reload();
-        };
+        return;
+      }
 
-        try {
-            // Primary method: BroadcastChannel
-            channel = new BroadcastChannel(LOGOUT_CHANNEL_NAME);
-            channel.onmessage = (event) => {
-                if (event.data?.type === "logout") {
-                    handleLogout();
-                }
-            };
-        } catch {
-            // Fallback: localStorage event (for older browsers)
-            const handleStorageChange = (event: StorageEvent) => {
-                if (event.key === "logout_event" && event.newValue) {
-                    handleLogout();
-                }
-            };
-            window.addEventListener("storage", handleStorageChange);
+      // Refresh the page to update auth state
+      window.location.reload();
+    };
 
-            return () => {
-                window.removeEventListener("storage", handleStorageChange);
-            };
+    try {
+      // Primary method: BroadcastChannel
+      channel = new BroadcastChannel(LOGOUT_CHANNEL_NAME);
+      channel.onmessage = (event) => {
+        if (event.data?.type === "logout") {
+          handleLogout();
         }
+      };
+    } catch {
+      // Fallback: localStorage event (for older browsers)
+      const handleStorageChange = (event: StorageEvent) => {
+        if (event.key === "logout_event" && event.newValue) {
+          handleLogout();
+        }
+      };
 
-        return () => {
-            channel?.close();
-        };
-    }, []);
+      window.addEventListener("storage", handleStorageChange);
+
+      return () => {
+        window.removeEventListener("storage", handleStorageChange);
+      };
+    }
+
+    return () => {
+      channel?.close();
+    };
+  }, []);
 }

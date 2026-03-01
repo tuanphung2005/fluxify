@@ -10,7 +10,7 @@ const RESEND_COOLDOWN_SECONDS = 60;
  * Generate a secure password reset token
  */
 export function generatePasswordResetToken(): string {
-    return crypto.randomBytes(32).toString("hex");
+  return crypto.randomBytes(32).toString("hex");
 }
 
 /**
@@ -18,22 +18,22 @@ export function generatePasswordResetToken(): string {
  * Returns seconds remaining if on cooldown, 0 if can resend
  */
 export async function getPasswordResetCooldown(email: string): Promise<number> {
-    const existingToken = await prisma.passwordResetToken.findFirst({
-        where: { identifier: email },
-        select: { expires: true, createdAt: true },
-    });
+  const existingToken = await prisma.passwordResetToken.findFirst({
+    where: { identifier: email },
+    select: { expires: true, createdAt: true },
+  });
 
-    if (!existingToken) return 0;
+  if (!existingToken) return 0;
 
-    const secondsSinceCreation = Math.floor(
-        (Date.now() - existingToken.createdAt.getTime()) / 1000
-    );
+  const secondsSinceCreation = Math.floor(
+    (Date.now() - existingToken.createdAt.getTime()) / 1000,
+  );
 
-    if (secondsSinceCreation < RESEND_COOLDOWN_SECONDS) {
-        return RESEND_COOLDOWN_SECONDS - secondsSinceCreation;
-    }
+  if (secondsSinceCreation < RESEND_COOLDOWN_SECONDS) {
+    return RESEND_COOLDOWN_SECONDS - secondsSinceCreation;
+  }
 
-    return 0;
+  return 0;
 }
 
 /**
@@ -41,159 +41,169 @@ export async function getPasswordResetCooldown(email: string): Promise<number> {
  * Returns null if on cooldown
  */
 export async function createPasswordResetToken(
-    email: string
-): Promise<{ token: string } | { cooldownRemaining: number } | { error: string }> {
-    // Check if user exists
-    const user = await prisma.user.findUnique({
-        where: { email },
-        select: { id: true },
-    });
+  email: string,
+): Promise<
+  { token: string } | { cooldownRemaining: number } | { error: string }
+> {
+  // Check if user exists
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
 
-    if (!user) {
-        // Don't reveal if user exists or not for security
-        // Simulate cost of generating token to prevent timing attacks
-        generatePasswordResetToken();
+  if (!user) {
+    // Don't reveal if user exists or not for security
+    // Simulate cost of generating token to prevent timing attacks
+    generatePasswordResetToken();
 
-        // Add random delay to mask DB query time differences
-        await new Promise((resolve) => setTimeout(resolve, 100 + Math.random() * 50));
+    // Add random delay to mask DB query time differences
+    await new Promise((resolve) =>
+      setTimeout(resolve, 100 + Math.random() * 50),
+    );
 
-        return { token: "fake" }; // Return fake success
-    }
+    return { token: "fake" }; // Return fake success
+  }
 
-    // Check cooldown
-    const cooldown = await getPasswordResetCooldown(email);
-    if (cooldown > 0) {
-        return { cooldownRemaining: cooldown };
-    }
+  // Check cooldown
+  const cooldown = await getPasswordResetCooldown(email);
 
-    const token = generatePasswordResetToken();
-    const expires = new Date();
-    expires.setHours(expires.getHours() + PASSWORD_RESET_TOKEN_EXPIRY_HOURS);
+  if (cooldown > 0) {
+    return { cooldownRemaining: cooldown };
+  }
 
-    // Delete any existing tokens for this email
-    await prisma.passwordResetToken.deleteMany({
-        where: { identifier: email },
-    });
+  const token = generatePasswordResetToken();
+  const expires = new Date();
 
-    // Create new token
-    await prisma.passwordResetToken.create({
-        data: {
-            identifier: email,
-            token,
-            expires,
-        },
-    });
+  expires.setHours(expires.getHours() + PASSWORD_RESET_TOKEN_EXPIRY_HOURS);
 
-    return { token };
+  // Delete any existing tokens for this email
+  await prisma.passwordResetToken.deleteMany({
+    where: { identifier: email },
+  });
+
+  // Create new token
+  await prisma.passwordResetToken.create({
+    data: {
+      identifier: email,
+      token,
+      expires,
+    },
+  });
+
+  return { token };
 }
 
 /**
  * Verify a password reset token and reset the password
  */
 export async function verifyPasswordResetToken(
-    email: string,
-    token: string
+  email: string,
+  token: string,
 ): Promise<{ success: boolean; error?: string }> {
-    const resetToken = await prisma.passwordResetToken.findFirst({
-        where: {
-            identifier: email,
-            token,
+  const resetToken = await prisma.passwordResetToken.findFirst({
+    where: {
+      identifier: email,
+      token,
+    },
+  });
+
+  if (!resetToken) {
+    return { success: false, error: "Link đặt lại mật khẩu không hợp lệ" };
+  }
+
+  if (new Date() > resetToken.expires) {
+    // Clean up expired token
+    await prisma.passwordResetToken.delete({
+      where: {
+        identifier_token: {
+          identifier: email,
+          token,
         },
+      },
     });
 
-    if (!resetToken) {
-        return { success: false, error: "Link đặt lại mật khẩu không hợp lệ" };
-    }
+    return { success: false, error: "Link đặt lại mật khẩu đã hết hạn" };
+  }
 
-    if (new Date() > resetToken.expires) {
-        // Clean up expired token
-        await prisma.passwordResetToken.delete({
-            where: {
-                identifier_token: {
-                    identifier: email,
-                    token,
-                },
-            },
-        });
-
-        return { success: false, error: "Link đặt lại mật khẩu đã hết hạn" };
-    }
-
-    return { success: true };
+  return { success: true };
 }
 
 /**
  * Complete the password reset process
  */
 export async function resetPassword(
-    email: string,
-    token: string,
-    newPassword: string
+  email: string,
+  token: string,
+  newPassword: string,
 ): Promise<{ success: boolean; error?: string }> {
-    // Verify token first
-    const verification = await verifyPasswordResetToken(email, token);
-    if (!verification.success) {
-        return verification;
-    }
+  // Verify token first
+  const verification = await verifyPasswordResetToken(email, token);
 
-    // Import bcrypt here to avoid issues
-    const bcrypt = await import("bcryptjs");
-    const hashedPassword = await bcrypt.hash(newPassword, 12);
+  if (!verification.success) {
+    return verification;
+  }
 
-    // Update password and get user ID
-    const user = await prisma.user.update({
-        where: { email },
-        data: { password: hashedPassword },
-        select: { id: true },
-    });
+  // Import bcrypt here to avoid issues
+  const bcrypt = await import("bcryptjs");
+  const hashedPassword = await bcrypt.hash(newPassword, 12);
 
-    // Invalidate all existing sessions for security
-    await prisma.session.deleteMany({
-        where: { userId: user.id },
-    });
+  // Update password and get user ID
+  const user = await prisma.user.update({
+    where: { email },
+    data: { password: hashedPassword },
+    select: { id: true },
+  });
 
-    // Delete the used token
-    await prisma.passwordResetToken.delete({
-        where: {
-            identifier_token: {
-                identifier: email,
-                token,
-            },
-        },
-    });
+  // Invalidate all existing sessions for security
+  await prisma.session.deleteMany({
+    where: { userId: user.id },
+  });
 
-    return { success: true };
+  // Delete the used token
+  await prisma.passwordResetToken.delete({
+    where: {
+      identifier_token: {
+        identifier: email,
+        token,
+      },
+    },
+  });
+
+  return { success: true };
 }
 
 /**
  * Get password reset URL for email
  */
 export function getPasswordResetUrl(email: string, token: string): string {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    return `${baseUrl}/auth/reset-password?email=${encodeURIComponent(email)}&token=${token}`;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+  return `${baseUrl}/auth/reset-password?email=${encodeURIComponent(email)}&token=${token}`;
 }
 
 /**
  * Send password reset email using Resend
  */
 export async function sendPasswordResetEmail(
-    email: string,
-    token: string
+  email: string,
+  token: string,
 ): Promise<void> {
-    const resetUrl = getPasswordResetUrl(email, token);
+  const resetUrl = getPasswordResetUrl(email, token);
 
-    // In development without API key, just log
-    if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === "re_test") {
-        console.log(`[DEV] Password reset link for ${email}: ${resetUrl}`);
-        return;
-    }
+  // In development without API key, just log
+  if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === "re_test") {
+    console.log(`[DEV] Password reset link for ${email}: ${resetUrl}`);
 
-    try {
-        await getResend().emails.send({
-            from: process.env.RESEND_FROM_EMAIL || "Fluxify <onboarding@phungtuan.io.vn>",
-            to: email,
-            subject: "Đặt lại mật khẩu - Fluxify",
-            html: `
+    return;
+  }
+
+  try {
+    await getResend().emails.send({
+      from:
+        process.env.RESEND_FROM_EMAIL || "Fluxify <onboarding@phungtuan.io.vn>",
+      to: email,
+      subject: "Đặt lại mật khẩu - Fluxify",
+      html: `
         <!DOCTYPE html>
         <html>
         <head>
@@ -216,9 +226,9 @@ export async function sendPasswordResetEmail(
         </body>
         </html>
       `,
-        });
-    } catch (error) {
-        console.error("Failed to send password reset email:", error);
-        throw error;
-    }
+    });
+  } catch (error) {
+    console.error("Failed to send password reset email:", error);
+    throw error;
+  }
 }

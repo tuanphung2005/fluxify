@@ -2,25 +2,20 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 
 // Mock dependencies
-const mockTx = {
-    user: {
-        findUnique: vi.fn(),
-        create: vi.fn(),
-    },
-    address: {
-        create: vi.fn(),
-    },
-    product: {
-        findMany: vi.fn(),
-    },
-    order: {
-        create: vi.fn(),
-    },
-};
-
-const mockPrisma = {
-    $transaction: vi.fn((callback) => callback(mockTx)),
-};
+const { mockTx, mockPrisma } = vi.hoisted(() => {
+    const tx = {
+        user: { findUnique: vi.fn(), create: vi.fn() },
+        address: { create: vi.fn() },
+        product: { findMany: vi.fn() },
+        order: { create: vi.fn() },
+    };
+    return {
+        mockTx: tx,
+        mockPrisma: {
+            $transaction: vi.fn((callback) => callback(tx)),
+        }
+    };
+});
 
 vi.mock('@/lib/prisma', () => ({
     prisma: mockPrisma,

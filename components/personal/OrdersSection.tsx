@@ -5,7 +5,14 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Image } from "@heroui/image";
-import { Package, ShoppingBag, X, ChevronRight, Star, CheckCircle } from "lucide-react";
+import {
+  Package,
+  ShoppingBag,
+  X,
+  ChevronRight,
+  Star,
+  CheckCircle,
+} from "lucide-react";
 
 import { Order, formatDate, canCancelOrder } from "./types";
 
@@ -80,8 +87,8 @@ export default function OrdersSection({
                   <OrderStatusBadge size="sm" status={order.status} />
 
                   {/* Review button - per order */}
-                  {canReviewOrder(order) && (
-                    order.hasReview ? (
+                  {canReviewOrder(order) &&
+                    (order.hasReview ? (
                       <span className="flex items-center gap-1 text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full">
                         <CheckCircle size={12} />
                         Đã đánh giá
@@ -95,8 +102,7 @@ export default function OrdersSection({
                       >
                         Đánh giá
                       </Button>
-                    )
-                  )}
+                    ))}
 
                   {canCancelOrder(order.status) && (
                     <Button

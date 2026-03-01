@@ -190,6 +190,7 @@ describe("CheckoutModal", () => {
     });
 
     it("should show error on API failure", async () => {
+        vi.spyOn(console, 'error').mockImplementation(() => { });
         vi.mocked(api.post).mockRejectedValueOnce(new Error("Stock error"));
 
         render(<CheckoutModal isOpen={true} onOpenChange={vi.fn()} />);
@@ -216,6 +217,7 @@ describe("CheckoutModal", () => {
         await waitFor(() => {
             expect(toast.error).toHaveBeenCalled();
         });
+        vi.restoreAllMocks();
     });
 
     it("should open zoom modal when clicking QR code", async () => {

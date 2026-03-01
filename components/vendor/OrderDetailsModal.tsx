@@ -11,7 +11,7 @@ import {
   Select,
   SelectItem,
 } from "@heroui/react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import { api } from "@/lib/api/api";
 import { toast } from "@/lib/toast";
@@ -205,8 +205,7 @@ function OrderDetailsContent({
                       </p>
                     )}
                     <p className="text-sm text-default-400">
-                      SL: {item.quantity} x{" "}
-                      {formatVND(item.price)}
+                      SL: {item.quantity} x {formatVND(item.price)}
                     </p>
                   </div>
                   <p className="font-semibold">

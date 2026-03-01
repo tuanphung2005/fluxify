@@ -24,7 +24,12 @@ export async function GET() {
       // Get full user data
       prisma.user.findUnique({
         where: { id: auth.user.id },
-        select: { name: true, email: true, createdAt: true, emailVerified: true },
+        select: {
+          name: true,
+          email: true,
+          createdAt: true,
+          emailVerified: true,
+        },
       }),
 
       // Orders with items and address

@@ -82,8 +82,6 @@ export default function PersonalDashboard() {
     }
   };
 
-
-
   const renderContent = () => {
     // Loading state
     if (isLoading) {
@@ -145,12 +143,18 @@ export default function PersonalDashboard() {
             onCancelClick={handleCancelClick}
             onReviewSuccess={(orderId: string) => {
               // Update only the specific order's hasReview state locally
-              setData(prev => prev ? {
-                ...prev,
-                orders: prev.orders.map(order =>
-                  order.id === orderId ? { ...order, hasReview: true } : order
-                )
-              } : null);
+              setData((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      orders: prev.orders.map((order) =>
+                        order.id === orderId
+                          ? { ...order, hasReview: true }
+                          : order,
+                      ),
+                    }
+                  : null,
+              );
             }}
           />
         </div>
@@ -203,4 +207,3 @@ export default function PersonalDashboard() {
     </div>
   );
 }
-

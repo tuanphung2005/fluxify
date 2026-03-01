@@ -7,10 +7,9 @@ import dynamic from "next/dynamic";
 import { BentoDashboard, DashboardWidget } from "@/components/dashboard";
 import ProductManager from "@/components/vendor/ProductManager";
 
-const SalesChart = dynamic(
-  () => import("@/components/vendor/SalesChart"),
-  { ssr: false },
-);
+const SalesChart = dynamic(() => import("@/components/vendor/SalesChart"), {
+  ssr: false,
+});
 
 interface DashboardData {
   totalSales: number;

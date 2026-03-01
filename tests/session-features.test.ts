@@ -1,22 +1,22 @@
-import { describe, it, expect } from 'bun:test';
+import { describe, it, expect } from 'vitest';
 
 describe('Variant Stock Management - Complete Flow', () => {
     describe('Variant Key Generation', () => {
         it('should generate consistent variant keys', () => {
             const selection1 = { 'màu': 'xanh', 'Size': 'M' };
             const selection2 = { 'Size': 'M', 'màu': 'xanh' };
-            
+
             // Keys should be sorted alphabetically by name
             const key1 = Object.entries(selection1)
                 .sort(([a], [b]) => a.localeCompare(b))
                 .map(([name, value]) => `${name}:${value}`)
                 .join(',');
-            
+
             const key2 = Object.entries(selection2)
                 .sort(([a], [b]) => a.localeCompare(b))
                 .map(([name, value]) => `${name}:${value}`)
                 .join(',');
-            
+
             expect(key1).toBe(key2);
             expect(key1).toBe('màu:xanh,Size:M'); // Sorted: 'm' > 'S' in ASCII
         });
@@ -161,14 +161,14 @@ describe('VietQR Amount Handling', () => {
     it('should not multiply amount by 1000', () => {
         const cartTotal = 50000; // Already in VND
         const qrAmount = Math.max(1000, Math.round(cartTotal));
-        
+
         expect(qrAmount).toBe(50000);
         expect(qrAmount).not.toBe(50000000); // Should NOT be multiplied
     });
 
     it('should enforce minimum 1000 VND', () => {
         const smallAmounts = [0, 100, 500, 999];
-        
+
         smallAmounts.forEach(amount => {
             const qrAmount = Math.max(1000, Math.round(amount));
             expect(qrAmount).toBe(1000);
@@ -178,7 +178,7 @@ describe('VietQR Amount Handling', () => {
     it('should handle large amounts without overflow', () => {
         const largeAmount = 50000000; // 50 million VND
         const qrAmount = Math.max(1000, Math.round(largeAmount));
-        
+
         expect(qrAmount).toBe(50000000);
         expect(qrAmount).toBeLessThan(2147483647); // Max int32
     });
@@ -187,23 +187,23 @@ describe('VietQR Amount Handling', () => {
 describe('Variant Display in Orders', () => {
     it('should parse and format variant keys for display', () => {
         const variantKey = 'Size:M,màu:xanh';
-        
+
         const formatted = variantKey.split(',').map(part => {
             const [name, value] = part.split(':');
             return `${name}: ${value}`;
         }).join(', ');
-        
+
         expect(formatted).toBe('Size: M, màu: xanh');
     });
 
     it('should handle multiple variant attributes', () => {
         const variantKey = 'Kích thước:Lớn,Kiểu dáng:Slim,màu:đen';
-        
+
         const formatted = variantKey.split(',').map(part => {
             const [name, value] = part.split(':');
             return `${name}: ${value}`;
         }).join(', ');
-        
+
         expect(formatted).toBe('Kích thước: Lớn, Kiểu dáng: Slim, màu: đen');
     });
 });
@@ -217,9 +217,9 @@ describe('Cart Item Variant Handling', () => {
 
         // Items should be distinct
         expect(cart.length).toBe(2);
-        
+
         // Should be able to find specific variant
-        const item = cart.find(i => 
+        const item = cart.find(i =>
             i.id === 'product-1' && i.selectedVariant === 'Size:M,màu:xanh'
         );
         expect(item?.quantity).toBe(2);

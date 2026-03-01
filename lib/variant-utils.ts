@@ -218,7 +218,6 @@ export function hasVariants(product: { variants?: any }): boolean {
   return false;
 }
 
-
 /**
  * Get stock status for a variant
  */

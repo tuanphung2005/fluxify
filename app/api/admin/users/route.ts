@@ -11,6 +11,7 @@ import { normalizePagination } from "@/lib/db/product-queries";
 
 export async function GET(req: NextRequest) {
   const auth = await requireAdmin();
+
   if (isErrorResult(auth)) {
     return errorResponse(auth.error, auth.status);
   }

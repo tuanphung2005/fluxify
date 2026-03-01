@@ -20,7 +20,9 @@ export default function ImageGallery({
     aspectRatio = "landscape",
   } = config as ImageGalleryConfig;
 
-  const [selectedImage, setSelectedImage] = useState<ImageGalleryConfig["images"][0] | null>(null);
+  const [selectedImage, setSelectedImage] = useState<
+    ImageGalleryConfig["images"][0] | null
+  >(null);
 
   const gridCols =
     {
@@ -49,9 +51,9 @@ export default function ImageGallery({
                 alt={image.alt}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover/image:scale-110"
                 height="100%"
+                isZoomed={false} // Disable default zoom to handle it with modal
                 src={image.url || "https://placehold.co/600x400/EEE/31343C"}
                 width="100%"
-                isZoomed={false} // Disable default zoom to handle it with modal
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors z-10" />
               {image.caption && (
@@ -65,14 +67,13 @@ export default function ImageGallery({
       </div>
 
       <Modal
-        isOpen={!!selectedImage}
-        onClose={() => setSelectedImage(null)}
-        size="5xl"
         backdrop="blur"
         classNames={{
           base: "bg-transparent shadow-none",
-          closeButton: "z-50 top-4 right-4 bg-black/20 hover:bg-black/40 text-white"
+          closeButton:
+            "z-50 top-4 right-4 bg-black/20 hover:bg-black/40 text-white",
         }}
+        isOpen={!!selectedImage}
         motionProps={{
           variants: {
             enter: {
@@ -91,8 +92,10 @@ export default function ImageGallery({
                 ease: "easeIn",
               },
             },
-          }
+          },
         }}
+        size="5xl"
+        onClose={() => setSelectedImage(null)}
       >
         <ModalContent>
           {(onClose) => (
@@ -101,12 +104,17 @@ export default function ImageGallery({
                 <div className="relative w-full h-full flex flex-col items-center justify-center">
                   <Image
                     alt={selectedImage.alt}
-                    src={selectedImage.url || "https://placehold.co/600x400/EEE/31343C"}
                     className="w-full h-auto max-h-[85vh] object-contain"
+                    src={
+                      selectedImage.url ||
+                      "https://placehold.co/600x400/EEE/31343C"
+                    }
                   />
                   {selectedImage.caption && (
                     <div className="mt-4 bg-black/50 text-white px-6 py-2 rounded-full backdrop-blur-md">
-                      <p className="text-base font-medium">{selectedImage.caption}</p>
+                      <p className="text-base font-medium">
+                        {selectedImage.caption}
+                      </p>
                     </div>
                   )}
                 </div>

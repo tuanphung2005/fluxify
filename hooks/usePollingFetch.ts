@@ -5,12 +5,12 @@ import { useState, useEffect, useCallback, useRef } from "react";
 const DEFAULT_POLL_INTERVAL = 30000; // 30 seconds
 
 interface UsePollingFetchOptions<T> {
-    /** Async function that fetches and returns data */
-    fetcher: () => Promise<T>;
-    /** Whether to enable polling (default: true) */
-    enabled?: boolean;
-    /** Polling interval in ms (default: 30000) */
-    interval?: number;
+  /** Async function that fetches and returns data */
+  fetcher: () => Promise<T>;
+  /** Whether to enable polling (default: true) */
+  enabled?: boolean;
+  /** Polling interval in ms (default: 30000) */
+  interval?: number;
 }
 
 /**
@@ -18,54 +18,57 @@ interface UsePollingFetchOptions<T> {
  * Handles loading state, cleanup, and provides a manual refetch function.
  */
 export function usePollingFetch<T>({
-    fetcher,
-    enabled = true,
-    interval = DEFAULT_POLL_INTERVAL,
+  fetcher,
+  enabled = true,
+  interval = DEFAULT_POLL_INTERVAL,
 }: UsePollingFetchOptions<T>) {
-    const [data, setData] = useState<T | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<Error | null>(null);
-    const fetcherRef = useRef(fetcher);
-    const isFetchingRef = useRef(false);
-    fetcherRef.current = fetcher;
+  const [data, setData] = useState<T | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const fetcherRef = useRef(fetcher);
+  const isFetchingRef = useRef(false);
 
-    const fetchData = useCallback(async () => {
-        if (!enabled || isFetchingRef.current) return;
+  fetcherRef.current = fetcher;
 
-        isFetchingRef.current = true;
-        try {
-            const result = await fetcherRef.current();
-            setData(result);
-            setError(null);
-        } catch (err) {
-            console.error("Polling fetch error:", err);
-            setError(err instanceof Error ? err : new Error("Fetch failed"));
-        } finally {
-            setIsLoading(false);
-            isFetchingRef.current = false;
-        }
-    }, [enabled]);
+  const fetchData = useCallback(async () => {
+    if (!enabled || isFetchingRef.current) return;
 
-    useEffect(() => {
-        let cancelled = false;
+    isFetchingRef.current = true;
+    try {
+      const result = await fetcherRef.current();
 
-        const safeFetch = async () => {
-            if (cancelled) return;
-            await fetchData();
-        };
+      setData(result);
+      setError(null);
+    } catch (err) {
+      console.error("Polling fetch error:", err);
+      setError(err instanceof Error ? err : new Error("Fetch failed"));
+    } finally {
+      setIsLoading(false);
+      isFetchingRef.current = false;
+    }
+  }, [enabled]);
 
-        safeFetch();
+  useEffect(() => {
+    let cancelled = false;
 
-        let timer: NodeJS.Timeout;
-        if (enabled) {
-            timer = setInterval(safeFetch, interval);
-        }
+    const safeFetch = async () => {
+      if (cancelled) return;
+      await fetchData();
+    };
 
-        return () => {
-            cancelled = true;
-            if (timer) clearInterval(timer);
-        };
-    }, [fetchData, enabled, interval]);
+    safeFetch();
 
-    return { data, isLoading, error, refetch: fetchData };
+    let timer: NodeJS.Timeout;
+
+    if (enabled) {
+      timer = setInterval(safeFetch, interval);
+    }
+
+    return () => {
+      cancelled = true;
+      if (timer) clearInterval(timer);
+    };
+  }, [fetchData, enabled, interval]);
+
+  return { data, isLoading, error, refetch: fetchData };
 }

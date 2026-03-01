@@ -137,8 +137,9 @@ export default function BannerCarouselComponent({
                 <button
                   key={index}
                   aria-label={`Go to slide ${index + 1}`}
-                  className={`w-3 h-3 rounded-full transition-all ${index === currentIndex ? "bg-white w-8" : "bg-white/50"
-                    }`}
+                  className={`w-3 h-3 rounded-full transition-all ${
+                    index === currentIndex ? "bg-white w-8" : "bg-white/50"
+                  }`}
                   onClick={() => setCurrentIndex(index)}
                 />
               ))}

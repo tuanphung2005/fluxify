@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'bun:test';
+import { describe, it, expect } from 'vitest';
 
 describe('Edge Cases - Variant Stock Management', () => {
     describe('Zero Stock Scenarios', () => {
@@ -31,7 +31,7 @@ describe('Edge Cases - Variant Stock Management', () => {
         it('should handle negative stock gracefully', () => {
             const variantStock = { 'Size:M,màu:xanh': -5 };
             const stock = Math.max(0, variantStock['Size:M,màu:xanh']);
-            
+
             expect(stock).toBe(0); // Should clamp to 0
         });
     });
@@ -51,14 +51,14 @@ describe('Edge Cases - Variant Stock Management', () => {
         it('should handle empty variantStock object', () => {
             const variantStock = {};
             const stock = variantStock['Size:M,màu:xanh'] || 0;
-            
+
             expect(stock).toBe(0);
         });
 
         it('should handle malformed variant keys', () => {
             const variantKey = 'InvalidKey';
             const parts = variantKey.split(',');
-            
+
             // Should not crash
             expect(parts.length).toBe(1);
             expect(parts[0]).toBe('InvalidKey');
@@ -70,7 +70,7 @@ describe('Edge Cases - Variant Stock Management', () => {
                 const [name, value] = part.split(':');
                 return value ? `${name}: ${value}` : part;
             }).join(', ');
-            
+
             expect(formatted).toBe('SizeM, màuxanh');
         });
     });
@@ -88,9 +88,9 @@ describe('Edge Cases - Variant Stock Management', () => {
         it('should handle stock deduction without overflow', () => {
             let stock = 1000000;
             const orderQuantity = 500;
-            
+
             stock -= orderQuantity;
-            
+
             expect(stock).toBe(999500);
             expect(stock).toBeGreaterThan(0);
         });
@@ -112,7 +112,7 @@ describe('Edge Cases - Variant Stock Management', () => {
                 const [name, value] = part.split(':');
                 return `${name}: ${value}`;
             }).join(', ');
-            
+
             expect(formatted).toBe('Size: Extra Large, Color: Light Blue');
         });
     });
@@ -123,28 +123,28 @@ describe('Edge Cases - Order and Buyer Information', () => {
         it('should reject phone numbers that are too short', () => {
             const phoneRegex = /^0\d{9}$/;
             const shortPhone = '098765432'; // 9 digits
-            
+
             expect(phoneRegex.test(shortPhone)).toBe(false);
         });
 
         it('should reject phone numbers that are too long', () => {
             const phoneRegex = /^0\d{9}$/;
             const longPhone = '09876543210'; // 11 digits
-            
+
             expect(phoneRegex.test(longPhone)).toBe(false);
         });
 
         it('should reject phone numbers not starting with 0', () => {
             const phoneRegex = /^0\d{9}$/;
             const invalidPhone = '1987654321';
-            
+
             expect(phoneRegex.test(invalidPhone)).toBe(false);
         });
 
         it('should reject phone numbers with letters', () => {
             const phoneRegex = /^0\d{9}$/;
             const invalidPhone = '098765432a';
-            
+
             expect(phoneRegex.test(invalidPhone)).toBe(false);
         });
     });
@@ -158,7 +158,7 @@ describe('Edge Cases - Order and Buyer Information', () => {
         it('should handle single character names', () => {
             const shortName = 'A';
             const isValid = shortName.length >= 2;
-            
+
             expect(isValid).toBe(false); // Should require at least 2 chars
         });
 
@@ -230,28 +230,28 @@ describe('Edge Cases - Currency and Pricing', () => {
         it('should handle 0 amount', () => {
             const amount = 0;
             const qrAmount = Math.max(1000, Math.round(amount));
-            
+
             expect(qrAmount).toBe(1000); // Minimum enforced
         });
 
         it('should handle negative amounts', () => {
             const amount = -500;
             const qrAmount = Math.max(1000, Math.round(amount));
-            
+
             expect(qrAmount).toBe(1000); // Minimum enforced
         });
 
         it('should handle decimal amounts', () => {
             const amount = 5000.75;
             const qrAmount = Math.max(1000, Math.round(amount));
-            
+
             expect(qrAmount).toBe(5001); // Rounded up
         });
 
         it('should handle exactly 1000 VND', () => {
             const amount = 1000;
             const qrAmount = Math.max(1000, Math.round(amount));
-            
+
             expect(qrAmount).toBe(1000);
         });
     });
@@ -262,21 +262,21 @@ describe('Edge Cases - Cart Operations', () => {
         it('should handle quantity of 0', () => {
             const quantity = 0;
             const isValid = quantity >= 1;
-            
+
             expect(isValid).toBe(false);
         });
 
         it('should handle very large quantities', () => {
             const quantity = 999;
             const maxQuantity = 999;
-            
+
             expect(quantity).toBeLessThanOrEqual(maxQuantity);
         });
 
         it('should handle quantity exceeding stock', () => {
             const stock = 5;
             const requestedQuantity = 10;
-            
+
             const canFulfill = requestedQuantity <= stock;
             expect(canFulfill).toBe(false);
         });
@@ -303,7 +303,7 @@ describe('Edge Cases - Cart Operations', () => {
                 { id: 'p1', variant: 'Size:L,màu:xanh', qty: 1 }
             ];
 
-            const found = cart.find(item => 
+            const found = cart.find(item =>
                 item.id === 'p1' && item.variant === 'Size:M,màu:xanh'
             );
 

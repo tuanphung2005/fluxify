@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'bun:test';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('Order Display with Buyer Information', () => {
     it('should display fullName when available', () => {

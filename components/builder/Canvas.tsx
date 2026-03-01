@@ -39,10 +39,10 @@ function CanvasComponent({
     <m.div
       layout
       animate={{ opacity: 1, y: 0 }}
+      className="relative group"
       exit={{ opacity: 0, y: -20 }}
       initial={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.2 }}
-      className="relative group"
     >
       {/* Component Controls */}
       <div className="absolute left-full top-0 opacity-0 group-hover:opacity-100 transition-opacity z-20 flex flex-col gap-1 ml-0.5">
@@ -113,6 +113,7 @@ export default function BuilderCanvas({
   const handleMoveUp = (index: number) => {
     if (index === 0) return;
     const newComponents = [...components];
+
     [newComponents[index - 1], newComponents[index]] = [
       newComponents[index],
       newComponents[index - 1],
@@ -121,12 +122,14 @@ export default function BuilderCanvas({
       ...comp,
       order: i,
     }));
+
     onReorderComponents(reordered);
   };
 
   const handleMoveDown = (index: number) => {
     if (index === components.length - 1) return;
     const newComponents = [...components];
+
     [newComponents[index], newComponents[index + 1]] = [
       newComponents[index + 1],
       newComponents[index],
@@ -135,6 +138,7 @@ export default function BuilderCanvas({
       ...comp,
       order: i,
     }));
+
     onReorderComponents(reordered);
   };
 

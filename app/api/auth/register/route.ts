@@ -37,7 +37,7 @@ const registerSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  // auth rate limit 
+  // auth rate limit
   const rateLimit = checkRateLimit(
     getClientIdentifier(req),
     rateLimitPresets.auth,
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
     // Send verification email (bypass cooldown for new registration)
     const tokenResult = await createVerificationToken(user.email, true);
 
-    if ('token' in tokenResult) {
+    if ("token" in tokenResult) {
       await sendVerificationEmail(user.email, tokenResult.token);
     }
 

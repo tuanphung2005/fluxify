@@ -11,8 +11,6 @@ export interface HeroConfig {
   textColor?: string;
 }
 
-
-
 export interface ImageGalleryConfig {
   images: Array<{
     url: string;
@@ -41,7 +39,6 @@ export interface TextBlockConfig {
 
 // New component configs for Phase 4
 
-
 export interface FeaturedCollectionConfig {
   title: string;
   description?: string;
@@ -61,8 +58,6 @@ export interface CountdownTimerConfig {
   backgroundColor?: string;
   textColor?: string;
 }
-
-
 
 export interface FaqAccordionConfig {
   title?: string;
@@ -132,4 +127,3 @@ export interface ShopTemplateData {
     favicon: string | null;
   };
 }
-

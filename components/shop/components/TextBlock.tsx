@@ -1,8 +1,9 @@
 "use client";
 
+import DOMPurify from "dompurify";
+
 import { TextBlockConfig } from "@/types/shop";
 import { cn } from "@/lib/utils";
-import DOMPurify from "dompurify";
 
 interface TextBlockProps {
   config: TextBlockConfig;
@@ -23,7 +24,8 @@ export default function TextBlock({ config }: TextBlockProps) {
     large: "py-16 px-8",
   };
 
-  const sanitizedContent = typeof window !== "undefined" ? DOMPurify.sanitize(content) : content;
+  const sanitizedContent =
+    typeof window !== "undefined" ? DOMPurify.sanitize(content) : content;
 
   return (
     <div
@@ -35,16 +37,15 @@ export default function TextBlock({ config }: TextBlockProps) {
     >
       <div className="max-w-4xl mx-auto">
         <div
+          dangerouslySetInnerHTML={{ __html: sanitizedContent }}
           className={cn("prose dark:prose-invert", {
             "text-left": alignment === "left",
             "text-center mx-auto": alignment === "center",
             "text-right ml-auto": alignment === "right",
           })}
-          dangerouslySetInnerHTML={{ __html: sanitizedContent }}
           style={{ color: textColor }}
         />
       </div>
     </div>
   );
 }
-

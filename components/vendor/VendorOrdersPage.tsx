@@ -69,7 +69,9 @@ export default function VendorOrdersPage() {
         params.set("status", statusFilter);
       }
 
-      const data = await api.get<OrdersResponse>(`/api/vendor/orders?${params}`);
+      const data = await api.get<OrdersResponse>(
+        `/api/vendor/orders?${params}`,
+      );
 
       setOrders(data.orders);
       setPagination(data.pagination);
@@ -106,6 +108,7 @@ export default function VendorOrdersPage() {
             size="sm"
             onSelectionChange={(keys) => {
               const selected = Array.from(keys)[0] as string;
+
               handleStatusFilterChange(selected || "");
             }}
           >
@@ -172,9 +175,7 @@ export default function VendorOrdersPage() {
                         {order.status}
                       </Chip>
                     </TableCell>
-                    <TableCell>
-                      {formatVND(order.total)}
-                    </TableCell>
+                    <TableCell>{formatVND(order.total)}</TableCell>
                     <TableCell>
                       <div className="flex justify-end">
                         <Button

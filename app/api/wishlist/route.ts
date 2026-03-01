@@ -1,6 +1,10 @@
 import { NextRequest } from "next/server";
 
-import { successResponse, errorResponse, isErrorResult } from "@/lib/api/responses";
+import {
+  successResponse,
+  errorResponse,
+  isErrorResult,
+} from "@/lib/api/responses";
 import { getAuthenticatedUser } from "@/lib/api/auth-helpers";
 import {
   getOrCreateWishlist,
@@ -11,6 +15,7 @@ import {
 // GET - Get user's wishlist
 export async function GET(req: NextRequest) {
   const auth = await getAuthenticatedUser();
+
   if (isErrorResult(auth)) {
     return errorResponse(auth.error, auth.status);
   }
@@ -27,6 +32,7 @@ export async function GET(req: NextRequest) {
 // POST - Add item to wishlist
 export async function POST(req: NextRequest) {
   const auth = await getAuthenticatedUser();
+
   if (isErrorResult(auth)) {
     return errorResponse(auth.error, auth.status);
   }
@@ -53,6 +59,7 @@ export async function POST(req: NextRequest) {
 // DELETE - Remove item from wishlist
 export async function DELETE(req: NextRequest) {
   const auth = await getAuthenticatedUser();
+
   if (isErrorResult(auth)) {
     return errorResponse(auth.error, auth.status);
   }

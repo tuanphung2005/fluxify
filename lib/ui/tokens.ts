@@ -170,5 +170,3 @@ export const STATS_COLORS: Record<StatsColor, string> = {
   danger: "text-danger bg-danger/10",
   default: "text-default-500 bg-default-100",
 };
-
-

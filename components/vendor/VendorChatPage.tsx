@@ -132,9 +132,10 @@ export default function VendorChatPage() {
     // So we should modify fetchMessages to accept an optional ID or use a different approach.
     // Or just define inline here.
 
-    api.get<{ messages: Message[] }>(
-      `/api/chat/conversations/${convId}/messages`,
-    )
+    api
+      .get<{ messages: Message[] }>(
+        `/api/chat/conversations/${convId}/messages`,
+      )
       .then((data) => {
         setMessages(data.messages);
         broadcastChatUpdate();
@@ -168,10 +169,10 @@ export default function VendorChatPage() {
         prev.map((conv) =>
           conv.id === selectedConversation
             ? {
-              ...conv,
-              lastMessage: data.message,
-              updatedAt: data.message.createdAt,
-            }
+                ...conv,
+                lastMessage: data.message,
+                updatedAt: data.message.createdAt,
+              }
             : conv,
         ),
       );
@@ -296,10 +297,11 @@ export default function VendorChatPage() {
                   {conversations.map((conv) => (
                     <button
                       key={conv.id}
-                      className={`w-full p-4 text-left hover:bg-default-100 transition-colors ${selectedConversation === conv.id
-                        ? "bg-primary-50 border-l-4 border-primary"
-                        : ""
-                        }`}
+                      className={`w-full p-4 text-left hover:bg-default-100 transition-colors ${
+                        selectedConversation === conv.id
+                          ? "bg-primary-50 border-l-4 border-primary"
+                          : ""
+                      }`}
                       onClick={() => handleSelectConversation(conv.id)}
                     >
                       <div className="flex items-start gap-3">
@@ -411,25 +413,28 @@ export default function VendorChatPage() {
                           {msgs.map((message) => (
                             <div
                               key={message.id}
-                              className={`flex ${message.senderType === "VENDOR"
-                                ? "justify-end"
-                                : "justify-start"
-                                }`}
+                              className={`flex ${
+                                message.senderType === "VENDOR"
+                                  ? "justify-end"
+                                  : "justify-start"
+                              }`}
                             >
                               <div
-                                className={`max-w-[75%] rounded-2xl px-4 py-2 ${message.senderType === "VENDOR"
-                                  ? "bg-primary text-primary-foreground"
-                                  : "bg-default-100"
-                                  }`}
+                                className={`max-w-[75%] rounded-2xl px-4 py-2 ${
+                                  message.senderType === "VENDOR"
+                                    ? "bg-primary text-primary-foreground"
+                                    : "bg-default-100"
+                                }`}
                               >
                                 <p className="text-sm whitespace-pre-wrap break-words">
                                   {message.content}
                                 </p>
                                 <p
-                                  className={`text-xs mt-1 ${message.senderType === "VENDOR"
-                                    ? "text-primary-foreground/70"
-                                    : "text-default-400"
-                                    }`}
+                                  className={`text-xs mt-1 ${
+                                    message.senderType === "VENDOR"
+                                      ? "text-primary-foreground/70"
+                                      : "text-default-400"
+                                  }`}
                                 >
                                   {formatTime(message.createdAt)}
                                 </p>

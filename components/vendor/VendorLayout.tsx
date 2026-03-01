@@ -65,6 +65,7 @@ export default function VendorLayout({
     if (item.key === "orders") {
       return { ...item, badge: newOrdersCount };
     }
+
     return item;
   });
 

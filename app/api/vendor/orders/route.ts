@@ -30,9 +30,10 @@ export async function GET(req: NextRequest) {
 
     // Validate status is a valid OrderStatus
     const validStatuses = Object.values(OrderStatus);
-    const status = statusParam && validStatuses.includes(statusParam as OrderStatus)
-      ? (statusParam as OrderStatus)
-      : undefined;
+    const status =
+      statusParam && validStatuses.includes(statusParam as OrderStatus)
+        ? (statusParam as OrderStatus)
+        : undefined;
 
     // Build where clause
     const whereClause: Prisma.OrderWhereInput = {

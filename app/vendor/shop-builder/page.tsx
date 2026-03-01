@@ -51,15 +51,19 @@ export default function ShopBuilderPage() {
             <div className="mx-auto w-16 h-16 bg-warning-100 dark:bg-warning-900/30 rounded-full flex items-center justify-center">
               <Mail className="w-8 h-8 text-warning-600" />
             </div>
-            <h2 className="text-xl font-semibold">Xác thực email để tiếp tục</h2>
+            <h2 className="text-xl font-semibold">
+              Xác thực email để tiếp tục
+            </h2>
             <p className="text-default-500">
-              Bạn cần xác thực email trước khi sử dụng Shop Builder. Vui lòng kiểm tra hộp thư của bạn hoặc đi đến trang tài khoản để gửi lại email xác thực.
+              Bạn cần xác thực email trước khi sử dụng Shop Builder. Vui lòng
+              kiểm tra hộp thư của bạn hoặc đi đến trang tài khoản để gửi lại
+              email xác thực.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
               <Button
                 as={Link}
-                href="/personal"
                 color="primary"
+                href="/personal"
                 startContent={<Mail size={16} />}
               >
                 Đi đến trang tài khoản
@@ -82,10 +86,7 @@ export default function ShopBuilderPage() {
             </div>
             <h2 className="text-xl font-semibold">Đã xảy ra lỗi</h2>
             <p className="text-default-500">{error}</p>
-            <Button
-              color="primary"
-              onPress={() => window.location.reload()}
-            >
+            <Button color="primary" onPress={() => window.location.reload()}>
               Thử lại
             </Button>
           </CardBody>

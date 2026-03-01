@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Input } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/select";
 import { Button } from "@heroui/button";
-import { X, Plus, Upload, Loader2, Image as ImageIcon } from "lucide-react";
+import { X, Plus, Upload, Image as ImageIcon } from "lucide-react";
 
 import { useCloudinaryUpload } from "@/hooks/use-cloudinary-upload";
 import { BaseComponentConfigProps } from "@/types/shop-components";
@@ -89,9 +89,9 @@ function GalleryImageRow({
         />
         <Button
           isIconOnly
-          isLoading={isUploading}
           className="h-full aspect-square"
           color="primary"
+          isLoading={isUploading}
           title="Upload Image"
           variant="flat"
           onPress={handleUploadClick}

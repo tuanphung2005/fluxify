@@ -29,8 +29,7 @@ export async function POST(request: NextRequest) {
     if (!ALLOWED_TYPES.includes(file.type)) {
       return NextResponse.json(
         {
-          error:
-            "Sai định dạng tệp. Chỉ JPEG, PNG, WebP và GIF được phép.",
+          error: "Sai định dạng tệp. Chỉ JPEG, PNG, WebP và GIF được phép.",
         },
         { status: 400 },
       );
@@ -58,6 +57,8 @@ export async function POST(request: NextRequest) {
       height: result.height,
     });
   } catch (error: any) {
+    console.error("UPLOAD ERROR", error);
+
     return NextResponse.json(
       { error: error.message || "Tải lên thất bại" },
       { status: 500 },

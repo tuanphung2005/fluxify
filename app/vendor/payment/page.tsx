@@ -107,14 +107,14 @@ export default function PaymentSettingsPage() {
   // Generate preview QR URL
   const previewQrUrl = hasValidSettings
     ? generateVietQRUrl({
-      bankId: formData.bankId,
-      accountNo: formData.bankAccount,
-      accountName: removeVietnameseDiacritics(
-        formData.bankAccountName,
-      ).toUpperCase(),
-      amount: 100000,
-      description: "PREVIEW",
-    })
+        bankId: formData.bankId,
+        accountNo: formData.bankAccount,
+        accountName: removeVietnameseDiacritics(
+          formData.bankAccountName,
+        ).toUpperCase(),
+        amount: 100000,
+        description: "PREVIEW",
+      })
     : null;
 
   const selectedBank = banks.find((b) => b.code === formData.bankId);

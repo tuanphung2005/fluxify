@@ -18,7 +18,6 @@ interface Product {
   images: string[];
 }
 
-
 export function useShopBuilder() {
   const router = useRouter();
   const [template, setTemplate] = useState<ShopTemplateData | null>(null);
@@ -108,8 +107,6 @@ export function useShopBuilder() {
       setIsLoading(false);
     }
   };
-
-
 
   const addComponent = async (
     type: ComponentType,

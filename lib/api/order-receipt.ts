@@ -42,10 +42,11 @@ function generateItemsHtml(items: OrderItem[]): string {
       <tr>
         <td style="padding: 16px; border-bottom: 1px solid #e4e4e7;">
           <div style="display: flex; align-items: center; gap: 12px;">
-            ${item.image
-          ? `<img src="${item.image}" alt="${item.name}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" />`
-          : ""
-        }
+            ${
+              item.image
+                ? `<img src="${item.image}" alt="${item.name}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" />`
+                : ""
+            }
             <div>
               <p style="margin: 0; font-weight: 600; color: #18181b;">${item.name}</p>
               ${item.variant ? `<p style="margin: 4px 0 0; font-size: 14px; color: #71717a;">${item.variant}</p>` : ""}
@@ -59,7 +60,7 @@ function generateItemsHtml(items: OrderItem[]): string {
           ${formatCurrency(item.price * item.quantity)}
         </td>
       </tr>
-    `
+    `,
     )
     .join("");
 }
@@ -67,12 +68,15 @@ function generateItemsHtml(items: OrderItem[]): string {
 /**
  * Send order receipt email
  */
-export async function sendOrderReceiptEmail(data: OrderReceiptData): Promise<void> {
+export async function sendOrderReceiptEmail(
+  data: OrderReceiptData,
+): Promise<void> {
   const { orderId, email, fullName, items, total, address } = data;
 
   // In development without API key, just log
   if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === "re_test") {
     console.log("[DEV] Would send receipt email to:", email, "Order:", orderId);
+
     return;
   }
 
@@ -80,7 +84,8 @@ export async function sendOrderReceiptEmail(data: OrderReceiptData): Promise<voi
 
   try {
     await getResend().emails.send({
-      from: process.env.RESEND_FROM_EMAIL || "Fluxify <onboarding@phungtuan.io.vn>",
+      from:
+        process.env.RESEND_FROM_EMAIL || "Fluxify <onboarding@phungtuan.io.vn>",
       to: email,
       subject: `Hóa đơn đơn hàng #${orderId.slice(-8).toUpperCase()} - Fluxify`,
       html: `
@@ -125,8 +130,9 @@ export async function sendOrderReceiptEmail(data: OrderReceiptData): Promise<voi
               </div>
             </div>
 
-            ${address
-          ? `
+            ${
+              address
+                ? `
             <!-- Shipping Address -->
             <div style="padding: 16px 32px; background: #fafafa; border-top: 1px solid #e4e4e7;">
               <p style="margin: 0 0 4px; font-size: 12px; color: #71717a; text-transform: uppercase; letter-spacing: 0.05em;">Địa chỉ giao hàng</p>
@@ -135,8 +141,8 @@ export async function sendOrderReceiptEmail(data: OrderReceiptData): Promise<voi
               </p>
             </div>
             `
-          : ""
-        }
+                : ""
+            }
 
             <!-- Footer -->
             <div style="padding: 16px 32px; border-top: 1px solid #e4e4e7; text-align: center;">

@@ -82,8 +82,6 @@ export default function CountdownTimerConfigPanel({
           onChange={(e) => onUpdate("textColor", e.target.value)}
         />
       </div>
-
-
     </div>
   );
 }

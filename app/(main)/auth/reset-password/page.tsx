@@ -5,14 +5,18 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Card, CardBody, Button, Input, Spinner } from "@heroui/react";
 import { CheckCircle, XCircle, Lock, KeyRound } from "lucide-react";
 import Link from "next/link";
+import { Check } from "lucide-react";
 
 import { api } from "@/lib/api/api";
-import { Check, X } from "lucide-react";
 
 function PasswordRequirement({ met, text }: { met: boolean; text: string }) {
   return (
-    <div className={`flex items-center gap-2 text-xs transition-colors ${met ? "text-success" : "text-default-400"}`}>
-      <div className={`w-4 h-4 rounded-full flex items-center justify-center border ${met ? "border-success bg-success/10" : "border-default-300"}`}>
+    <div
+      className={`flex items-center gap-2 text-xs transition-colors ${met ? "text-success" : "text-default-400"}`}
+    >
+      <div
+        className={`w-4 h-4 rounded-full flex items-center justify-center border ${met ? "border-success bg-success/10" : "border-default-300"}`}
+      >
         {met && <Check size={10} />}
       </div>
       <span>{text}</span>
@@ -66,6 +70,7 @@ function ResetPasswordContent() {
     }
 
     setErrors(newErrors);
+
     return Object.keys(newErrors).length === 0;
   };
 
@@ -125,7 +130,7 @@ function ResetPasswordContent() {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form className="space-y-4" onSubmit={handleSubmit}>
                 <Input
                   errorMessage={errors.newPassword}
                   isInvalid={!!errors.newPassword}
@@ -151,7 +156,9 @@ function ResetPasswordContent() {
                 />
 
                 <div className="space-y-2 mt-2">
-                  <p className="text-xs font-semibold text-default-500">Mật khẩu phải:</p>
+                  <p className="text-xs font-semibold text-default-500">
+                    Mật khẩu phải:
+                  </p>
                   <div className="grid grid-cols-1 gap-2">
                     <PasswordRequirement
                       met={formData.newPassword.length >= 8}

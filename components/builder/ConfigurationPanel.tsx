@@ -54,7 +54,8 @@ export default function ConfigurationPanel({
   }
 
   // @ts-ignore - Validated by runtime check or we accept undefined for excluded types
-  const meta = COMPONENT_REGISTRY[componentType as keyof typeof COMPONENT_REGISTRY];
+  const meta =
+    COMPONENT_REGISTRY[componentType as keyof typeof COMPONENT_REGISTRY];
 
   if (!meta) {
     return (

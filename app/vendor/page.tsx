@@ -119,7 +119,10 @@ export default async function VendorPage() {
       status: item.order.status,
       addressId: item.order.addressId,
       couponId: item.order.couponId,
-      discountAmount: item.order.discountAmount != null ? Number(item.order.discountAmount) : null,
+      discountAmount:
+        item.order.discountAmount != null
+          ? Number(item.order.discountAmount)
+          : null,
       shippingMethod: item.order.shippingMethod,
       trackingNumber: item.order.trackingNumber,
       estimatedDelivery: item.order.estimatedDelivery,

@@ -127,7 +127,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         } catch (error: any) {
           // If check fails, keep the previous status
           // Suppress specific edge runtime error that happens in middleware
-          if (error?.message?.includes("The edge runtime does not support Node.js")) {
+          if (
+            error?.message?.includes(
+              "The edge runtime does not support Node.js",
+            )
+          ) {
             return token;
           }
           console.error("Error checking user active status:", error);

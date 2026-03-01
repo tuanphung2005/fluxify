@@ -8,11 +8,12 @@ const CLOUDINARY_REQUIRED_VARS = [
 ] as const;
 
 const missingCloudinaryVars = CLOUDINARY_REQUIRED_VARS.filter(
-  (v) => !process.env[v]
+  (v) => !process.env[v],
 );
 
 if (missingCloudinaryVars.length > 0) {
   const message = `Missing required Cloudinary environment variables: ${missingCloudinaryVars.join(", ")}`;
+
   if (process.env.NODE_ENV === "production") {
     throw new Error(message);
   } else {

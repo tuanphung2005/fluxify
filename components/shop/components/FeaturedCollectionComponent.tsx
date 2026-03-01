@@ -67,6 +67,7 @@ export default function FeaturedCollectionComponent({
 
       setAllProducts(mappedProducts);
       setIsLoading(false);
+
       return;
     }
 
@@ -103,16 +104,19 @@ export default function FeaturedCollectionComponent({
     }
 
     const selected = allProducts.filter((p) => productIds.includes(p.id));
+
     // Sort by the order in productIds
     selected.sort(
       (a, b) => productIds.indexOf(a.id) - productIds.indexOf(b.id),
     );
+
     return selected;
   }, [allProducts, showAllProducts, productIds]);
 
   // Apply search filter locally
   const displayProducts = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
+
     if (!query) {
       return filteredBySelection;
     }

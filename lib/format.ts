@@ -14,4 +14,3 @@ export function formatVND(amount: number | string): string {
   // Format with thousand separators using Vietnamese locale
   return num.toLocaleString("vi-VN") + "₫";
 }
-

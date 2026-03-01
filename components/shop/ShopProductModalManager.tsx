@@ -1,7 +1,6 @@
 "use client";
 
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 
 import ProductModal from "@/components/shop/ProductModal";
 
@@ -37,7 +36,6 @@ export default function ShopProductModalManager({
   const isOpen = !!selectedProduct;
 
   const handleClose = () => {
-
     const params = new URLSearchParams(searchParams.toString());
 
     params.delete("productId");

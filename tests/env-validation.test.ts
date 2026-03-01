@@ -7,10 +7,13 @@ describe('Environment Variable Validation', () => {
     beforeEach(() => {
         vi.resetModules();
         process.env = { ...originalEnv };
+        // Prevent Prisma URL error when loading modules that import it
+        process.env.DATABASE_URL = "postgres://fake:fake@localhost:5432/fake";
     });
 
     afterEach(() => {
         process.env = originalEnv;
+        vi.unstubAllEnvs();
     });
 
     describe('Cloudinary Configuration', () => {

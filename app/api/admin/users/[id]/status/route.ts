@@ -13,6 +13,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await requireAdmin();
+
   if (isErrorResult(auth)) {
     return errorResponse(auth.error, auth.status);
   }

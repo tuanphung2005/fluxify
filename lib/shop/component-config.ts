@@ -56,7 +56,6 @@ export const featuredCollectionConfigSchema = z.object({
   layout: z.enum(["grid", "carousel"]).optional(),
 });
 
-
 // Countdown timer config
 export const countdownTimerConfigSchema = z.object({
   title: z.string().max(200).optional(),

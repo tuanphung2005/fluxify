@@ -102,8 +102,6 @@ export default function AnalyticsDashboard() {
     }
   };
 
-
-
   if (isLoading) {
     return (
       <div className="space-y-8 p-6">

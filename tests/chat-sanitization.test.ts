@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 
 // Mock dependencies
-const mockPrisma = {
+const mockPrisma = vi.hoisted(() => ({
   chatConversation: {
     findUnique: vi.fn(),
     update: vi.fn(),
@@ -15,7 +15,7 @@ const mockPrisma = {
   user: {
     findUnique: vi.fn(),
   },
-};
+}));
 
 vi.mock("@/lib/prisma", () => ({
   prisma: mockPrisma,

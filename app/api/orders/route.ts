@@ -1,7 +1,6 @@
 import crypto from "crypto";
 
 import { NextRequest } from "next/server";
-import { z } from "zod";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "@/lib/prisma";
@@ -14,8 +13,7 @@ import {
 } from "@/lib/api/rate-limit";
 import { getVariantStockForKey } from "@/lib/variant-utils";
 import { updateVariantStock } from "@/lib/db/product-queries";
-
-import { MAX_QUANTITY_PER_ITEM, orderSchema } from "@/lib/validations";
+import { orderSchema } from "@/lib/validations";
 
 export async function POST(req: NextRequest) {
   // Apply rate limiting to order creation
@@ -44,7 +42,6 @@ export async function POST(req: NextRequest) {
       let user = await tx.user.findUnique({ where: { email } });
 
       if (!user) {
-
         // Generate secure random password for guest users
         const randomPassword = crypto.randomBytes(32).toString("hex");
         const hashedPassword = await bcrypt.hash(randomPassword, 12);
@@ -57,7 +54,6 @@ export async function POST(req: NextRequest) {
             // emailVerified is null - user must verify to access account
           },
         });
-        
       }
 
       // 2. Create address
@@ -110,7 +106,6 @@ export async function POST(req: NextRequest) {
           );
         }
 
-        
         total += Number(product.price) * item.quantity;
 
         stockUpdates.push({

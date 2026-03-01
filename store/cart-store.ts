@@ -143,6 +143,7 @@ export const useCartStore = create<CartState>()(
         if (!currentVendorId) return;
 
         const newCarts = { ...carts };
+
         delete newCarts[currentVendorId];
 
         set({ carts: newCarts });

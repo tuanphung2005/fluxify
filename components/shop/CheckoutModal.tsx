@@ -1,7 +1,5 @@
 "use client";
 
-import { z } from "zod";
-
 import {
   Modal,
   ModalContent,
@@ -14,7 +12,13 @@ import {
 } from "@heroui/react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { CheckCircle, QrCode, AlertCircle, Maximize2, ShieldAlert } from "lucide-react";
+import {
+  CheckCircle,
+  QrCode,
+  AlertCircle,
+  Maximize2,
+  ShieldAlert,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 
 import { useCartStore } from "@/store/cart-store";
@@ -105,7 +109,10 @@ export default function CheckoutModal({
 
   const checkEmailVerification = async () => {
     try {
-      const data = await api.get<{ user: { emailVerified: string | null } }>("/api/user/personal");
+      const data = await api.get<{ user: { emailVerified: string | null } }>(
+        "/api/user/personal",
+      );
+
       setIsEmailVerified(!!data.user.emailVerified);
     } catch (error) {
       // If not logged in or error, assume not verified
@@ -140,16 +147,22 @@ export default function CheckoutModal({
     }
 
     // Phone validation (Vietnamese format)
-    const phoneResult = phoneSchema.safeParse(formData.phoneNumber.replace(/\s/g, ""));
+    const phoneResult = phoneSchema.safeParse(
+      formData.phoneNumber.replace(/\s/g, ""),
+    );
+
     if (!phoneResult.success) {
       toast.error("Vui lòng nhập số điện thoại hợp lệ (10 số, bắt đầu bằng 0)");
+
       return;
     }
 
     // Email validation
     const emailResult = emailSchema.safeParse(formData.email);
+
     if (!emailResult.success) {
       toast.error("Vui lòng nhập email hợp lệ");
+
       return;
     }
 
@@ -205,7 +218,7 @@ export default function CheckoutModal({
       console.error("Order creation failed:", error);
       toast.error(
         error.message ||
-        "Không thể tạo đơn hàng. Một số sản phẩm có thể đã hết hàng.",
+          "Không thể tạo đơn hàng. Một số sản phẩm có thể đã hết hàng.",
       );
     } finally {
       setIsLoading(false);
@@ -216,7 +229,7 @@ export default function CheckoutModal({
     // Send receipt email (fire-and-forget)
     if (orderId) {
       fetch(`/api/orders/${orderId}/receipt`, { method: "POST" }).catch((err) =>
-        console.error("Failed to send receipt:", err)
+        console.error("Failed to send receipt:", err),
       );
     }
     clearCart();
@@ -253,12 +266,12 @@ export default function CheckoutModal({
   // Generate VietQR URL
   const qrUrl = hasVendorPayment
     ? generateVietQRUrl({
-      bankId: vendorPayment.bankId!,
-      accountNo: vendorPayment.bankAccount!,
-      accountName: vendorPayment.bankAccountName!,
-      amount: Math.max(1000, Math.round(total())), // Ensure minimum 1000 VND
-      description: `DH${orderId}`,
-    })
+        bankId: vendorPayment.bankId!,
+        accountNo: vendorPayment.bankAccount!,
+        accountName: vendorPayment.bankAccountName!,
+        amount: Math.max(1000, Math.round(total())), // Ensure minimum 1000 VND
+        description: `DH${orderId}`,
+      })
     : null;
 
   return (
@@ -279,14 +292,20 @@ export default function CheckoutModal({
                     {isEmailVerified === false && (
                       <div className="p-4 bg-danger-50 dark:bg-danger-900/20 rounded-lg border border-danger-200 dark:border-danger-800">
                         <div className="flex items-start gap-3">
-                          <ShieldAlert className="text-danger flex-shrink-0 mt-0.5" size={20} />
+                          <ShieldAlert
+                            className="text-danger flex-shrink-0 mt-0.5"
+                            size={20}
+                          />
                           <div className="flex-1">
                             <p className="font-medium text-danger-700 dark:text-danger-400">
                               Email chưa được xác thực
                             </p>
                             <p className="text-sm text-danger-600 dark:text-danger-500 mt-1">
                               Vui lòng xác thực email trước khi mua hàng.{" "}
-                              <Link href="/order" className="underline font-medium">
+                              <Link
+                                className="underline font-medium"
+                                href="/order"
+                              >
                                 Xác thực ngay
                               </Link>
                             </p>
@@ -478,12 +497,16 @@ export default function CheckoutModal({
                     </Button>
                     <Button
                       color="primary"
-                      isDisabled={!hasVendorPayment || isEmailVerified === false}
+                      isDisabled={
+                        !hasVendorPayment || isEmailVerified === false
+                      }
                       isLoading={isLoading}
                       startContent={!isLoading && <QrCode size={18} />}
                       onPress={handleProceedToPayment}
                     >
-                      {isEmailVerified === false ? "Xác thực email để mua" : "Tiếp tục thanh toán"}
+                      {isEmailVerified === false
+                        ? "Xác thực email để mua"
+                        : "Tiếp tục thanh toán"}
                     </Button>
                   </>
                 )}
@@ -515,9 +538,9 @@ export default function CheckoutModal({
               {qrUrl && (
                 <div className="relative w-full h-full min-h-[50vh] flex items-center justify-center">
                   <Image
+                    fill
                     alt="VietQR Full Size"
                     className="object-contain rounded-xl shadow-2xl"
-                    fill
                     src={qrUrl}
                   />
                 </div>

@@ -45,7 +45,6 @@ const COMPONENT_DESCRIPTIONS: Record<ComponentType, string> = {
   FEATURED_COLLECTION: "Nổi bật bộ sưu tập sản phẩm được chọn lọc",
   COUNTDOWN_TIMER: "Tạo sự khẩn cấp với đồng hồ đếm ngược",
 
-
   FAQ_ACCORDION: "Danh mục câu hỏi thường gặp có thể mở rộng",
   BANNER_CAROUSEL: "Banner xoay vòng với chế độ tự động",
   MAP_LOCATION: "Hiển thị bản đồ vị trí cửa hàng với Google Maps",
@@ -100,7 +99,6 @@ export const COMPONENT_REGISTRY: Record<ComponentType, ComponentMeta> = {
     Component: lazy(() => import("@/components/shop/components/TextBlock")),
     ConfigPanel: lazy(() => import("@/components/builder/config/TextBlock")),
   },
-
 
   FEATURED_COLLECTION: {
     type: "FEATURED_COLLECTION",

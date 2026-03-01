@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import {
   Modal,
   ModalContent,
@@ -159,10 +159,11 @@ function ProductSelectorContent({
                   key={product.id}
                   className={`
                                             relative cursor-pointer rounded-lg border-2 p-3 transition-all
-                                            ${isSelected
-                      ? "border-primary bg-primary/5"
-                      : "border-default-200 hover:border-default-400"
-                    }
+                                            ${
+                                              isSelected
+                                                ? "border-primary bg-primary/5"
+                                                : "border-default-200 hover:border-default-400"
+                                            }
                                         `}
                   onClick={() => handleToggleProduct(product.id)}
                 >
@@ -215,4 +216,3 @@ function ProductSelectorContent({
     </>
   );
 }
-

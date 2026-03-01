@@ -36,12 +36,12 @@ export async function getAllCategories(
     include: {
       children: includeChildren
         ? {
-          include: {
-            _count: includeProductCount
-              ? { select: { products: true } }
-              : undefined,
-          },
-        }
+            include: {
+              _count: includeProductCount
+                ? { select: { products: true } }
+                : undefined,
+            },
+          }
         : false,
       _count: includeProductCount ? { select: { products: true } } : undefined,
     },
@@ -202,6 +202,7 @@ export async function getReviewSummary(productId: string) {
   }
 
   const dist: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+
   for (const group of distribution) {
     if (group.rating >= 1 && group.rating <= 5) {
       dist[group.rating] = group._count;
@@ -323,7 +324,7 @@ export async function addToWishlist(userId: string, productId: string) {
   const product = await prisma.product.findFirst({
     where: {
       id: productId,
-      deletedAt: null
+      deletedAt: null,
     },
     select: { id: true },
   });

@@ -39,11 +39,11 @@ function CustomTooltip({ active, payload, label }: any) {
       </div>
     );
   }
+
   return null;
 }
 
 export default function SalesChart({ data }: SalesChartProps) {
-
   return (
     <Card className="w-full border-none shadow-md h-full">
       <CardHeader className="flex flex-col items-start px-6 pt-6 pb-0">
@@ -51,7 +51,7 @@ export default function SalesChart({ data }: SalesChartProps) {
         <p className="text-sm text-default-500">Hiệu suất thu nhập tháng</p>
       </CardHeader>
       <CardBody className="px-2 pb-2 h-[350px]">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer height="100%" width="100%">
           <AreaChart
             data={data}
             margin={{
@@ -62,47 +62,59 @@ export default function SalesChart({ data }: SalesChartProps) {
             }}
           >
             <defs>
-              <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(var(--heroui-primary))" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="hsl(var(--heroui-primary))" stopOpacity={0} />
+              <linearGradient id="colorSales" x1="0" x2="0" y1="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="hsl(var(--heroui-primary))"
+                  stopOpacity={0.3}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="hsl(var(--heroui-primary))"
+                  stopOpacity={0}
+                />
               </linearGradient>
             </defs>
             <CartesianGrid
+              stroke="hsl(var(--heroui-default-200))"
               strokeDasharray="3 3"
               vertical={false}
-              stroke="hsl(var(--heroui-default-200))"
             />
             <XAxis
-              dataKey="month"
               axisLine={false}
-              tickLine={false}
-              tick={{ fill: "hsl(var(--heroui-default-500))", fontSize: 12 }}
+              dataKey="month"
               dy={10}
+              tick={{ fill: "hsl(var(--heroui-default-500))", fontSize: 12 }}
+              tickLine={false}
             />
             <YAxis
               axisLine={false}
-              tickLine={false}
               tick={{ fill: "hsl(var(--heroui-default-500))", fontSize: 12 }}
               tickFormatter={(value) => {
                 if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
                 if (value >= 1000) return `${(value / 1000).toFixed(0)}k`;
+
                 return value;
               }}
+              tickLine={false}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
+            <Tooltip
+              content={<CustomTooltip />}
+              cursor={{ fill: "transparent" }}
+            />
             <Area
-              type="monotone"
-              dataKey="sales"
-              stroke="hsl(var(--heroui-primary))"
-              strokeWidth={3}
-              fillOpacity={1}
-              fill="url(#colorSales)"
               activeDot={{
                 r: 6,
                 fill: "hsl(var(--heroui-background))",
                 stroke: "hsl(var(--heroui-primary))",
                 strokeWidth: 3,
               }}
+              dataKey="sales"
+              fill="url(#colorSales)"
+              fillOpacity={1}
+              stroke="hsl(var(--heroui-primary))"
+              strokeWidth={3}
+              type="monotone"
             />
           </AreaChart>
         </ResponsiveContainer>

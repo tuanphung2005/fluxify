@@ -7,31 +7,36 @@ import {
   ModalBody,
   ModalFooter,
 } from "@heroui/react";
-import { Button, Input, Textarea } from "@heroui/react";
-import { useState, useEffect } from "react";
+import { Button, Textarea } from "@heroui/react";
+import { useState } from "react";
+import { z } from "zod";
 
 import VariantBuilder from "./VariantBuilder";
 import ImageBuilder from "./ImageBuilder";
 
 import { api } from "@/lib/api/api";
-import { z } from "zod";
 import { useFormValidation } from "@/hooks/use-form-validation";
 import { ValidatedInput } from "@/components/ui/validated-input";
 
 const productSchema = z.object({
   name: z.string().min(1, "Tên sản phẩm là bắt buộc"),
   description: z.string().optional(),
-  price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, {
-    message: "Giá phải là số dương",
-  }),
-  stock: z.string().refine((val) => !isNaN(parseInt(val)) && parseInt(val) >= 0, {
-    message: "Tồn kho phải là số nguyên không âm",
-  }),
+  price: z
+    .string()
+    .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, {
+      message: "Giá phải là số dương",
+    }),
+  stock: z
+    .string()
+    .refine((val) => !isNaN(parseInt(val)) && parseInt(val) >= 0, {
+      message: "Tồn kho phải là số nguyên không âm",
+    }),
   images: z.string(),
   variants: z.string().refine((val) => {
     if (!val.trim()) return true;
     try {
       JSON.parse(val);
+
       return true;
     } catch {
       return false;
@@ -41,6 +46,7 @@ const productSchema = z.object({
     if (!val.trim()) return true;
     try {
       JSON.parse(val);
+
       return true;
     } catch {
       return false;
@@ -102,36 +108,30 @@ function ProductFormContent({
   const [isLoading, setIsLoading] = useState(false);
   const [generalError, setGeneralError] = useState("");
 
-  const {
-    values,
-    setValues,
-    errors,
-    handleChange,
-    validate,
-    resetForm,
-  } = useFormValidation({
-    schema: productSchema,
-    initialValues: product
-      ? {
-        name: product.name,
-        description: product.description || "",
-        price: String(product.price),
-        stock: String(product.stock),
-        images: product.images.join("\n"),
-        variants: product.variants
-          ? typeof product.variants === "string"
-            ? product.variants
-            : JSON.stringify(product.variants, null, 2)
-          : "",
-        variantStock: product.variantStock
-          ? typeof product.variantStock === "string"
-            ? product.variantStock
-            : JSON.stringify(product.variantStock, null, 2)
-          : "",
-      }
-      : DEFAULT_PRODUCT_VALUES,
-    onSubmit: async () => { },
-  });
+  const { values, setValues, errors, handleChange, validate, resetForm } =
+    useFormValidation({
+      schema: productSchema,
+      initialValues: product
+        ? {
+            name: product.name,
+            description: product.description || "",
+            price: String(product.price),
+            stock: String(product.stock),
+            images: product.images.join("\n"),
+            variants: product.variants
+              ? typeof product.variants === "string"
+                ? product.variants
+                : JSON.stringify(product.variants, null, 2)
+              : "",
+            variantStock: product.variantStock
+              ? typeof product.variantStock === "string"
+                ? product.variantStock
+                : JSON.stringify(product.variantStock, null, 2)
+              : "",
+          }
+        : DEFAULT_PRODUCT_VALUES,
+      onSubmit: async () => {},
+    });
 
   const processSubmit = async () => {
     if (!validate()) return;
@@ -187,10 +187,10 @@ function ProductFormContent({
         <div className="flex flex-col gap-4">
           <ValidatedInput
             isRequired
+            error={errors.name}
             label="Tên sản phẩm"
             value={values.name}
             onValueChange={(v) => handleChange("name", v)}
-            error={errors.name}
           />
 
           <Textarea
@@ -203,20 +203,20 @@ function ProductFormContent({
             <ValidatedInput
               isRequired
               endContent="₫"
+              error={errors.price}
               label="Giá (₫)"
               type="number"
               value={values.price}
               onValueChange={(v) => handleChange("price", v)}
-              error={errors.price}
             />
             <ValidatedInput
               isRequired
               description="Tồn kho mặc định nếu không có tùy chọn"
+              error={errors.stock}
               label="Tồn kho (chung)"
               type="number"
               value={values.stock}
               onValueChange={(v) => handleChange("stock", v)}
-              error={errors.stock}
             />
           </div>
 
@@ -275,11 +275,7 @@ function ProductFormContent({
         >
           Hủy
         </Button>
-        <Button
-          color="primary"
-          isLoading={isLoading}
-          onPress={processSubmit}
-        >
+        <Button color="primary" isLoading={isLoading} onPress={processSubmit}>
           {product ? "Lưu thay đổi" : "Thêm sản phẩm"}
         </Button>
       </ModalFooter>

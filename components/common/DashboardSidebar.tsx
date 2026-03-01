@@ -48,7 +48,6 @@ export default function DashboardSidebar({
               key={item.key}
               className={`w-full justify-start ${isActive ? "font-semibold" : "text-default-500"}`}
               color={isActive ? "primary" : "default"}
-              startContent={<Icon size={20} />}
               endContent={
                 item.badge && item.badge > 0 ? (
                   <span className="ml-auto bg-danger text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5">
@@ -56,6 +55,7 @@ export default function DashboardSidebar({
                   </span>
                 ) : null
               }
+              startContent={<Icon size={20} />}
               variant={isActive ? "flat" : "light"}
               onPress={() => router.push(item.path)}
             >
