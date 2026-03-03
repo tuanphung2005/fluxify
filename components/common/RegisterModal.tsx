@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import {
   Modal,
   ModalContent,
@@ -23,6 +23,7 @@ export function RegisterModal() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [role, setRole] = useState("CUSTOMER");
+  const { data: session } = useSession();
 
   const isOpen = searchParams.get("modal") === "register";
 
@@ -32,6 +33,13 @@ export function RegisterModal() {
     params.delete("modal");
     router.push(`?${params.toString()}`, { scroll: false });
   };
+
+  // Close modal if already authenticated
+  useEffect(() => {
+    if (session?.user && isOpen) {
+      closeModal();
+    }
+  }, [session, isOpen, router, searchParams]);
 
   const switchToLogin = () => {
     setError("");

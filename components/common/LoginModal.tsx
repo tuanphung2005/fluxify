@@ -1,7 +1,7 @@
 "use client";
 
-import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Modal,
@@ -25,6 +25,7 @@ export function LoginModal() {
   const [view, setView] = useState<"login" | "forgot">("login");
   const [forgotEmail, setForgotEmail] = useState("");
   const [resetSent, setResetSent] = useState(false);
+  const { data: session } = useSession();
 
   const isOpen = searchParams.get("modal") === "login";
   const isVerificationPending = searchParams.get("verified") === "pending";
@@ -40,6 +41,13 @@ export function LoginModal() {
       0,
     );
   }
+
+  // Close modal if already authenticated
+  useEffect(() => {
+    if (session?.user && isOpen) {
+      closeModal();
+    }
+  }, [session, isOpen, router, searchParams]);
 
   const closeModal = () => {
     const params = new URLSearchParams(searchParams.toString());
