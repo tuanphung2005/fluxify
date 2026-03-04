@@ -2,6 +2,68 @@
 
 @config "../tailwind.config.js";
 
+/* ========== Landing Page Animations ========== */
+
+@keyframes float-in-left {
+  0% { opacity: 0; transform: translateX(-60px) scale(0.95); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes float-in-right {
+  0% { opacity: 0; transform: translateX(60px) scale(0.95); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes float-in-up {
+  0% { opacity: 0; transform: translateY(40px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1.05); opacity: 0.3; }
+  100% { transform: scale(0.95); opacity: 0.7; }
+}
+
+@keyframes block-assemble-1 {
+  0% { opacity: 0; transform: translateX(-80px) rotate(-3deg); }
+  60% { opacity: 1; transform: translateX(5px) rotate(0.5deg); }
+  100% { opacity: 1; transform: translateX(0) rotate(0deg); }
+}
+
+@keyframes block-assemble-2 {
+  0% { opacity: 0; transform: translateX(80px) rotate(3deg); }
+  60% { opacity: 1; transform: translateX(-5px) rotate(-0.5deg); }
+  100% { opacity: 1; transform: translateX(0) rotate(0deg); }
+}
+
+@keyframes block-assemble-3 {
+  0% { opacity: 0; transform: translateY(60px) scale(0.9); }
+  60% { opacity: 1; transform: translateY(-3px) scale(1.01); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 /* Accessibility: Respect user's motion preferences (WCAG 2.3.3) */
 @media (prefers-reduced-motion: reduce) {
   *,
