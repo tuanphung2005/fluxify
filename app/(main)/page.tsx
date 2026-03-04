@@ -72,7 +72,7 @@ function BuilderMockup() {
               <div className="text-white/90 text-center">
                 <p className="font-bold text-lg">Cửa hàng của bạn</p>
                 <p className="text-xs text-white/70">
-                  Thiết kế bởi chính bạn ✨
+                  Thiết kế bởi chính bạn
                 </p>
               </div>
               {/* Shimmer overlay */}
