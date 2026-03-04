@@ -129,5 +129,10 @@ export async function generateMetadata(props: ShopPageProps) {
   return {
     title: vendor?.storeName || "Cửa hàng",
     description: vendor?.description || "Duyệt một số sản phẩm",
+    ...(vendor?.favicon && {
+      icons: {
+        icon: vendor.favicon,
+      },
+    }),
   };
 }

@@ -11,6 +11,7 @@ import {
 } from "@heroui/react";
 import { useState } from "react";
 
+import ImageBuilder from "@/components/vendor/ImageBuilder";
 import { api } from "@/lib/api/api";
 
 interface ShopSettingsProps {
@@ -65,12 +66,22 @@ export default function ShopSettings({
                   value={storeName}
                   onValueChange={setStoreName}
                 />
-                <Input
-                  label="Favicon URL"
-                  placeholder="https://example.com/favicon.ico"
-                  value={favicon}
-                  onValueChange={setFavicon}
-                />
+
+                <div className="flex flex-col gap-2">
+                  <span className="text-small font-medium text-foreground">Favicon cửa hàng</span>
+                  <span className="text-tiny text-default-500 mb-1">
+                    Biểu tượng nhỏ hiển thị trên tab trình duyệt (tỷ lệ 1:1)
+                  </span>
+                  <ImageBuilder
+                    value={favicon}
+                    onChange={(val) => {
+                      // ImageBuilder returns newline separated strings, take the first one or empty string
+                      const urls = val.split("\n").filter(Boolean);
+                      setFavicon(urls.length > 0 ? urls[0] : "");
+                    }}
+                  />
+                </div>
+
                 {error && <p className="text-danger text-sm">{error}</p>}
               </div>
             </ModalBody>
