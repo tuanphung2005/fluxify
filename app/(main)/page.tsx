@@ -66,7 +66,7 @@ function BuilderMockup() {
               className="h-24 rounded-xl flex items-center justify-center relative overflow-hidden"
               style={{
                 background:
-                  "linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%)",
+                  "linear-gradient(135deg, #f43f5e 0%, #f97316 50%, #fbbf24 100%)",
               }}
             >
               <div className="text-white/90 text-center">
@@ -170,9 +170,9 @@ function BuilderMockup() {
         }}
       >
         {[
-          { icon: Image, color: "#6366f1" },
-          { icon: Type, color: "#a855f7" },
-          { icon: ShoppingCart, color: "#ec4899" },
+          { icon: Image, color: "#f43f5e" },
+          { icon: Type, color: "#f97316" },
+          { icon: ShoppingCart, color: "#fbbf24" },
         ].map((item, i) => {
           const Icon = item.icon;
 
@@ -289,7 +289,7 @@ function DragDropVisual() {
 function CustomizeVisual() {
   return (
     <div className="flex gap-2">
-      {["#6366f1", "#ec4899", "#f59e0b", "#10b981"].map((color, i) => (
+      {["#f43f5e", "#f97316", "#fbbf24", "#10b981"].map((color, i) => (
         <div
           key={i}
           className="w-10 h-10 rounded-xl border-2 border-white/40 hover:scale-110 transition-transform cursor-pointer"
@@ -406,7 +406,7 @@ export default function Home() {
               className="absolute inset-0"
               style={{
                 background:
-                  "radial-gradient(ellipse at 30% 20%, rgba(99,102,241,0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(168,85,247,0.06) 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, rgba(236,72,153,0.04) 0%, transparent 70%)",
+                  "radial-gradient(ellipse at 30% 20%, rgba(244,63,94,0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(249,115,22,0.06) 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, rgba(251,191,36,0.04) 0%, transparent 70%)",
               }}
             />
             {/* Subtle dot grid */}
@@ -444,7 +444,7 @@ export default function Home() {
                   className="bg-clip-text text-transparent"
                   style={{
                     backgroundImage:
-                      "linear-gradient(135deg, #6366f1, #a855f7, #ec4899)",
+                      "linear-gradient(135deg, #f43f5e, #f97316, #fbbf24)",
                     backgroundSize: "200% 200%",
                     animation: "gradient-shift 4s ease infinite",
                   }}
@@ -565,7 +565,7 @@ export default function Home() {
             <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
               <FeatureShowcase
                 description="Thêm, sắp xếp, xoá các block — từ banner, sản phẩm, đến video. Chỉ cần kéo thả, không cần viết code."
-                gradient="linear-gradient(135deg, #6366f1 0%, #818cf8 100%)"
+                gradient="linear-gradient(135deg, #f43f5e 0%, #fb7185 100%)"
                 icon={Layers}
                 index={0}
                 title="Kéo thả trực quan"
@@ -573,7 +573,7 @@ export default function Home() {
               />
               <FeatureShowcase
                 description="Chọn màu sắc, font chữ, hình ảnh theo phong cách riêng. Mỗi cửa hàng là duy nhất."
-                gradient="linear-gradient(135deg, #ec4899 0%, #f472b6 100%)"
+                gradient="linear-gradient(135deg, #f97316 0%, #fb923c 100%)"
                 icon={Palette}
                 index={1}
                 title="Tuỳ chỉnh mọi thứ"
@@ -706,7 +706,7 @@ export default function Home() {
                 className="relative rounded-3xl overflow-hidden p-12 md:p-16"
                 style={{
                   background:
-                    "linear-gradient(135deg, #6366f1 0%, #a855f7 40%, #ec4899 100%)",
+                    "linear-gradient(135deg, #f43f5e 0%, #f97316 40%, #fbbf24 100%)",
                 }}
               >
                 {/* Decorative elements */}
@@ -775,7 +775,7 @@ export default function Home() {
                 className="w-8 h-8 rounded-lg flex items-center justify-center"
                 style={{
                   background:
-                    "linear-gradient(135deg, #6366f1, #a855f7)",
+                    "linear-gradient(135deg, #f43f5e, #f97316)",
                 }}
               >
                 <span className="text-white font-bold text-sm">F</span>

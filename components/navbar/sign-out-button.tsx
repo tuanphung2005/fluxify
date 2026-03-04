@@ -8,7 +8,7 @@ export function SignOutButton() {
       className="w-full text-left"
       onClick={() => signOutWithBroadcast("/?modal=login")}
     >
-      sign out
+      Đăng xuất
     </button>
   );
 }

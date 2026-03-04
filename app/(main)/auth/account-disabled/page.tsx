@@ -25,7 +25,7 @@ export default function AccountDisabledPage() {
           </p>
           <div className="flex gap-2 justify-center">
             <Button color="primary" onPress={handleSignOut}>
-              Sign Out
+              Đăng xuất
             </Button>
           </div>
         </CardBody>
