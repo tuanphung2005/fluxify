@@ -11,7 +11,6 @@ import {
   Rocket,
   Grip,
   Type,
-  Image,
   ShoppingCart,
   Star,
   CreditCard,
@@ -25,22 +24,55 @@ import {
   domAnimation,
   m,
   useInView,
+  useReducedMotion,
 } from "framer-motion";
 
 // --------------- ANIMATED BUILDER MOCKUP ---------------
 function BuilderMockup() {
+  const reduceMotion = useReducedMotion();
+
+  const cycle = 7;
+  const repeatCfg = reduceMotion
+    ? { duration: 0 }
+    : { duration: cycle, repeat: Infinity, repeatDelay: 1.8 };
+
+  /*  Animation timeline (fraction of cycle):
+   *  0.00-0.12  cursor glides to Hero block
+   *  0.12-0.18  hover pause — block highlights
+   *  0.18-0.42  drag across to canvas (smooth arc)
+   *  0.42-0.50  drop & spring settle
+   *  0.50-0.66  products slide in
+   *  0.66-0.78  text slides in
+   *  0.78-1.00  rest / saved badge
+   */
+
+  // Cursor path — 7 keyframes, 6 segments
+  const ct = [0, 0.12, 0.18, 0.3, 0.42, 0.48, 1];
+  const cursorX = [18, 64, 64, 210, 330];
+  const cursorY = [72, 112, 112, 158, 132];
+
+  // Per-segment easing for natural mouse feel
+  const cursorEase = [
+    [0.25, 0.46, 0.45, 0.94], // smooth glide in
+    "linear", // hover hold
+    [0.32, 0, 0.15, 1], // fast pickup
+    [0.16, 1, 0.3, 1], // smooth deceleration into drop
+    "linear", // settle
+    "linear", // rest
+  ] as any;
+
   return (
-    <div className="relative w-full max-w-[540px] mx-auto">
+    <div className="relative w-full max-w-[580px] mx-auto">
       {/* Browser chrome */}
       <div
-        className="rounded-2xl overflow-hidden shadow-2xl border border-default-200"
+        className="rounded-[20px] overflow-hidden shadow-2xl border border-default-200 bg-white/95"
         style={{
           background:
-            "linear-gradient(145deg, rgba(255,255,255,0.95), rgba(240,240,245,0.9))",
+            "linear-gradient(145deg, rgba(255,255,255,0.97), rgba(240,240,245,0.92))",
         }}
       >
         {/* Title bar */}
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-default-200 bg-default-50">
+        <div className="flex items-center gap-2 px-4 py-2.5 border-b border-default-200 bg-default-50">
           <div className="flex gap-1.5">
             <div className="w-3 h-3 rounded-full bg-red-400" />
             <div className="w-3 h-3 rounded-full bg-yellow-400" />
@@ -53,142 +85,312 @@ function BuilderMockup() {
           </div>
         </div>
 
-        {/* Builder workspace */}
-        <div className="p-4 space-y-3 min-h-[320px]">
-          {/* Block 1: Hero banner */}
-          <div
-            className="rounded-xl overflow-hidden"
-            style={{
-              animation: "block-assemble-1 0.8s ease-out 0.3s both",
-            }}
-          >
-            <div
-              className="h-24 rounded-xl flex items-center justify-center relative overflow-hidden"
-              style={{
-                background:
-                  "linear-gradient(135deg, #f43f5e 0%, #f97316 50%, #fbbf24 100%)",
-              }}
-            >
-              <div className="text-white/90 text-center">
-                <p className="font-bold text-lg">Cửa hàng của bạn</p>
-                <p className="text-xs text-white/70">
-                  Thiết kế bởi chính bạn
-                </p>
+        {/* Builder workspace — grid: sidebar + canvas */}
+        <div className="relative grid grid-cols-[118px_1fr] gap-3 p-4 min-h-[340px] bg-default-50/60">
+          {/* ─── Sidebar: component palette ─── */}
+          <div className="rounded-xl border border-default-200 bg-white/90 p-2.5 shadow-sm">
+            <div className="flex items-center justify-between mb-2.5">
+              <p className="text-[10px] font-semibold text-default-700">
+                Components
+              </p>
+              <div className="px-1.5 py-0.5 rounded-full bg-primary/10 text-[9px] font-medium text-primary">
+                3
               </div>
-              {/* Shimmer overlay */}
-              <div
-                className="absolute inset-0 opacity-30"
-                style={{
-                  background:
-                    "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)",
-                  backgroundSize: "200% 100%",
-                  animation: "shimmer 3s ease-in-out infinite",
-                }}
-              />
+            </div>
+            <div className="space-y-1.5">
+              {[
+                { label: "Hero", icon: Palette, accent: "#f43f5e" },
+                { label: "Products", icon: ShoppingCart, accent: "#f59e0b" },
+                { label: "Text", icon: Type, accent: "#10b981" },
+              ].map((item, i) => {
+                const Icon = item.icon;
+
+                return (
+                  <m.div
+                    key={item.label}
+                    animate={
+                      reduceMotion
+                        ? {}
+                        : {
+                            opacity: i === 0 ? [1, 1, 0.35, 0.35, 1, 1] : 1,
+                            scale: i === 0 ? [1, 1.02, 0.96, 0.96, 1, 1] : 1,
+                          }
+                    }
+                    className="flex items-center gap-2 rounded-lg border px-2 py-1.5"
+                    style={{
+                      background: `${item.accent}0a`,
+                      borderColor: `${item.accent}25`,
+                    }}
+                    transition={
+                      i === 0
+                        ? {
+                            ...repeatCfg,
+                            times: [0, 0.12, 0.2, 0.48, 0.55, 1],
+                          }
+                        : { duration: 0 }
+                    }
+                  >
+                    <div
+                      className="flex h-7 w-7 items-center justify-center rounded-md"
+                      style={{ background: `${item.accent}18` }}
+                    >
+                      <Icon
+                        className="w-3.5 h-3.5"
+                        style={{ color: item.accent }}
+                      />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold text-default-700 leading-tight">
+                        {item.label}
+                      </p>
+                      <p className="text-[9px] text-default-400">Drag</p>
+                    </div>
+                  </m.div>
+                );
+              })}
             </div>
           </div>
 
-          {/* Block 2: Product grid */}
-          <div
-            className="rounded-xl"
-            style={{
-              animation: "block-assemble-2 0.8s ease-out 0.7s both",
-            }}
-          >
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { color: "#fbbf24", label: "SP 1" },
-                { color: "#34d399", label: "SP 2" },
-                { color: "#60a5fa", label: "SP 3" },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className="rounded-lg p-3 text-center"
-                  style={{
-                    background: `${item.color}20`,
-                    border: `1px solid ${item.color}40`,
+          {/* ─── Canvas ─── */}
+          <div className="relative rounded-xl border border-default-200 bg-white p-3 shadow-sm">
+            <div className="flex items-center justify-between pb-2.5 border-b border-default-100 mb-3">
+              <div>
+                <p className="text-[10px] font-semibold text-default-800">
+                  Shop Builder
+                </p>
+                <p className="text-[9px] text-default-400">
+                  Nhấp chọn để xây dựng
+                </p>
+              </div>
+              <m.div
+                animate={
+                  reduceMotion
+                    ? { opacity: 1 }
+                    : { opacity: [0, 0, 0, 0, 0, 1, 1] }
+                }
+                className="px-1.5 py-0.5 rounded-full bg-success/10 text-success text-[9px] font-semibold"
+                transition={{
+                  ...repeatCfg,
+                  times: [0, 0.42, 0.5, 0.6, 0.74, 0.8, 1],
+                }}
+              >
+                ✓ Saved
+              </m.div>
+            </div>
+
+            <div className="relative rounded-xl border border-dashed border-default-200 bg-gradient-to-b from-default-50/80 to-white min-h-[242px] p-2.5">
+              {/* Drop zone indicator — pulses when cursor approaches */}
+              <m.div
+                animate={
+                  reduceMotion
+                    ? { opacity: 0 }
+                    : {
+                        opacity: [0, 0, 0.6, 0.9, 0, 0],
+                        scale: [0.97, 0.97, 1, 1.01, 1, 1],
+                      }
+                }
+                className="absolute inset-x-5 top-5 rounded-xl border-2 border-dashed border-primary/40 bg-primary/5 text-center py-4"
+                transition={{
+                  ...repeatCfg,
+                  times: [0, 0.16, 0.26, 0.4, 0.48, 1],
+                }}
+              >
+                <p className="text-[10px] font-semibold text-primary">
+                  Drop here
+                </p>
+              </m.div>
+
+              {/* Placed blocks — appear after drop */}
+              <div className="relative z-10 space-y-2 pt-1">
+                {/* Hero banner */}
+                <m.div
+                  animate={
+                    reduceMotion
+                      ? { opacity: 1 }
+                      : {
+                          opacity: [0, 0, 0, 0.7, 1, 1],
+                          y: [20, 20, 20, 4, 0, 0],
+                          scale: [0.95, 0.95, 0.95, 1.015, 1, 1],
+                        }
+                  }
+                  className="rounded-xl overflow-hidden border border-default-100 shadow-sm"
+                  transition={{
+                    ...repeatCfg,
+                    times: [0, 0.38, 0.42, 0.48, 0.54, 1],
                   }}
                 >
                   <div
-                    className="w-8 h-8 rounded-md mx-auto mb-1.5"
-                    style={{ background: `${item.color}60` }}
-                  />
-                  <p className="text-[10px] text-default-600 font-medium">
-                    {item.label}
-                  </p>
-                  <p
-                    className="text-[10px] font-bold"
-                    style={{ color: item.color }}
+                    className="h-[86px] relative overflow-hidden px-4 py-3 flex items-end"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #f43f5e 0%, #f97316 55%, #fbbf24 100%)",
+                    }}
                   >
-                    100k
+                    <div className="absolute right-3 top-3 rounded-full border border-white/25 bg-white/15 px-1.5 py-0.5 text-[9px] font-semibold text-white backdrop-blur-sm">
+                      New
+                    </div>
+                    <div className="text-white">
+                      <p className="text-sm font-bold leading-tight">
+                        Cửa hàng của bạn
+                      </p>
+                      <p className="text-[10px] text-white/75">Hero block</p>
+                    </div>
+                  </div>
+                </m.div>
+
+                {/* Products grid */}
+                <m.div
+                  animate={
+                    reduceMotion
+                      ? { opacity: 1 }
+                      : {
+                          opacity: [0, 0, 0, 0, 0.6, 1, 1],
+                          y: [16, 16, 16, 16, 5, 0, 0],
+                        }
+                  }
+                  className="rounded-xl border border-default-100 bg-white p-2.5 shadow-sm"
+                  transition={{
+                    ...repeatCfg,
+                    times: [0, 0.48, 0.52, 0.56, 0.6, 0.66, 1],
+                  }}
+                >
+                  <p className="text-[9px] font-semibold text-default-600 mb-1.5">
+                    Products
                   </p>
-                </div>
-              ))}
-            </div>
-          </div>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {[
+                      { color: "#fbbf24", label: "SP 1" },
+                      { color: "#34d399", label: "SP 2" },
+                      { color: "#60a5fa", label: "SP 3" },
+                    ].map((item) => (
+                      <div
+                        key={item.label}
+                        className="rounded-lg p-2 text-center"
+                        style={{
+                          background: `${item.color}12`,
+                          border: `1px solid ${item.color}22`,
+                        }}
+                      >
+                        <div
+                          className="mx-auto mb-1 h-6 w-6 rounded-md"
+                          style={{ background: `${item.color}50` }}
+                        />
+                        <p className="text-[9px] text-default-500">
+                          {item.label}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </m.div>
 
-          {/* Block 3: Text content */}
-          <div
-            className="rounded-xl bg-default-100 p-4"
-            style={{
-              animation: "block-assemble-3 0.8s ease-out 1.1s both",
-            }}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <Type className="w-3 h-3 text-default-400" />
-              <div className="h-2 w-24 bg-default-300 rounded-full" />
-            </div>
-            <div className="space-y-1.5">
-              <div className="h-1.5 w-full bg-default-200 rounded-full" />
-              <div className="h-1.5 w-4/5 bg-default-200 rounded-full" />
-              <div className="h-1.5 w-3/5 bg-default-200 rounded-full" />
+                {/* Text block */}
+                <m.div
+                  animate={
+                    reduceMotion
+                      ? { opacity: 1 }
+                      : {
+                          opacity: [0, 0, 0, 0, 0, 0.6, 1, 1],
+                          y: [14, 14, 14, 14, 14, 4, 0, 0],
+                        }
+                  }
+                  className="rounded-xl border border-default-100 bg-default-50 p-3"
+                  transition={{
+                    ...repeatCfg,
+                    times: [0, 0.58, 0.62, 0.66, 0.68, 0.72, 0.78, 1],
+                  }}
+                >
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <Type className="w-3 h-3 text-default-400" />
+                    <div className="h-1.5 w-20 rounded-full bg-default-300" />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="h-1 w-full rounded-full bg-default-200" />
+                    <div className="h-1 w-4/5 rounded-full bg-default-200" />
+                  </div>
+                </m.div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Floating cursor */}
-      <div
-        className="absolute -right-2 top-1/3"
-        style={{
-          animation: "float-gentle 3s ease-in-out infinite",
+      {/* ─── CURSOR — outside the browser chrome, never clipped ─── */}
+      <m.div
+        animate={
+          reduceMotion
+            ? { opacity: 1, x: 330, y: 132 }
+            : {
+                x: cursorX,
+                y: cursorY,
+                opacity: [0, 1, 1, 1, 1, 0.6, 0],
+              }
+        }
+        className="absolute top-0 left-0 z-50 pointer-events-none"
+        transition={{
+          ...repeatCfg,
+          times: ct,
+          x: { ...repeatCfg, times: ct, ease: cursorEase },
+          y: { ...repeatCfg, times: ct, ease: cursorEase },
+          opacity: { ...repeatCfg, times: ct },
         }}
       >
-        <div className="relative">
-          <MousePointer2 className="w-6 h-6 text-primary drop-shadow-lg" />
-          <div className="absolute -top-8 left-4 px-2 py-1 rounded-md bg-primary text-white text-[10px] font-medium whitespace-nowrap shadow-lg">
-            Kéo thả ở đây
+        <MousePointer2 className="w-6 h-6 text-primary drop-shadow-md" />
+        {/* Dragged block ghost — visible only during drag phase */}
+        <m.div
+          animate={
+            reduceMotion
+              ? { opacity: 0 }
+              : {
+                  opacity: [0, 0, 1, 1, 0, 0, 0],
+                  scale: [0.85, 0.85, 1.03, 1, 0.9, 0.85, 0.85],
+                  rotate: [0, 0, 2.5, 1.5, 0, 0, 0],
+                }
+          }
+          className="absolute top-5 left-2"
+          transition={{
+            ...repeatCfg,
+            times: [0, 0.16, 0.22, 0.38, 0.44, 0.48, 1],
+          }}
+        >
+          <div className="rounded-lg border border-primary/30 bg-white/95 shadow-xl backdrop-blur-sm px-2 py-1.5 flex items-center gap-1.5">
+            <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center">
+              <Palette className="w-3 h-3 text-primary" />
+            </div>
+            <span className="text-[9px] font-semibold text-default-700">
+              Hero
+            </span>
+          </div>
+        </m.div>
+      </m.div>
+
+      {/* Status toast */}
+      <m.div
+        animate={
+          reduceMotion
+            ? { opacity: 1, y: 0 }
+            : {
+                opacity: [0, 0, 0, 0, 1, 1],
+                y: [8, 8, 8, 8, 0, 0],
+              }
+        }
+        className="absolute -bottom-5 right-6 rounded-xl border border-default-200 bg-white/95 px-3 py-2 shadow-lg backdrop-blur-sm"
+        transition={{
+          ...repeatCfg,
+          times: [0, 0.5, 0.62, 0.76, 0.82, 1],
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-success/10 flex items-center justify-center">
+            <Zap className="w-3.5 h-3.5 text-success" />
+          </div>
+          <div>
+            <p className="text-[10px] font-semibold text-default-800">
+              Layout hoàn thiện
+            </p>
+            <p className="text-[9px] text-default-500">Nhấn, sửa, xuất bản</p>
           </div>
         </div>
-      </div>
-
-      {/* Floating component palette */}
-      <div
-        className="absolute -left-16 top-1/4 flex flex-col gap-2"
-        style={{
-          animation: "float-in-left 0.6s ease-out 1.5s both",
-        }}
-      >
-        {[
-          { icon: Image, color: "#f43f5e" },
-          { icon: Type, color: "#f97316" },
-          { icon: ShoppingCart, color: "#fbbf24" },
-        ].map((item, i) => {
-          const Icon = item.icon;
-
-          return (
-            <div
-              key={i}
-              className="w-10 h-10 rounded-xl bg-white shadow-lg border border-default-200 flex items-center justify-center hover:scale-110 transition-transform"
-              style={{
-                animation: `float-gentle 4s ease-in-out ${i * 0.5}s infinite`,
-              }}
-            >
-              <Icon className="w-4 h-4" style={{ color: item.color }} />
-            </div>
-          );
-        })}
-      </div>
+      </m.div>
     </div>
   );
 }
@@ -357,7 +559,11 @@ function BuilderStep({
   return (
     <m.div
       ref={ref}
-      animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
+      animate={
+        isInView
+          ? { opacity: 1, x: 0 }
+          : { opacity: 0, x: index % 2 === 0 ? -30 : 30 }
+      }
       className="flex items-start gap-6"
       initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
       transition={{ duration: 0.5, delay: index * 0.2 }}
@@ -375,9 +581,7 @@ function BuilderStep({
       {/* Content */}
       <div className="flex-1 pb-8">
         <h3 className="text-xl font-bold mb-2">{title}</h3>
-        <p className="text-default-500 text-sm mb-4 leading-relaxed">
-          {desc}
-        </p>
+        <p className="text-default-500 text-sm mb-4 leading-relaxed">{desc}</p>
         <div className="inline-block">{visual}</div>
       </div>
     </m.div>
@@ -418,26 +622,87 @@ export default function Home() {
                 backgroundSize: "32px 32px",
               }}
             />
+            {/* Ambient gradient orbs */}
+            <m.div
+              animate={
+                mounted
+                  ? {
+                      x: [0, 40, -30, 0],
+                      y: [0, -30, 20, 0],
+                      scale: [1, 1.2, 0.9, 1],
+                    }
+                  : {}
+              }
+              className="absolute top-[15%] left-[18%] w-72 h-72 rounded-full opacity-[0.07]"
+              style={{
+                background: "radial-gradient(circle, #f43f5e, transparent 70%)",
+              }}
+              transition={{
+                duration: 14,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            <m.div
+              animate={
+                mounted
+                  ? {
+                      x: [0, -35, 25, 0],
+                      y: [0, 25, -35, 0],
+                      scale: [1, 0.85, 1.15, 1],
+                    }
+                  : {}
+              }
+              className="absolute bottom-[20%] right-[12%] w-80 h-80 rounded-full opacity-[0.06]"
+              style={{
+                background: "radial-gradient(circle, #f97316, transparent 70%)",
+              }}
+              transition={{
+                duration: 18,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            <m.div
+              animate={
+                mounted ? { x: [0, 25, -20, 0], y: [0, -20, 30, 0] } : {}
+              }
+              className="absolute top-[45%] right-[35%] w-56 h-56 rounded-full opacity-[0.05]"
+              style={{
+                background: "radial-gradient(circle, #fbbf24, transparent 70%)",
+              }}
+              transition={{
+                duration: 22,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
           </div>
 
           <div className="relative z-10 max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left: Text content */}
-            <m.div
-              animate={mounted ? { opacity: 1, y: 0 } : {}}
-              className="text-center lg:text-left"
-              initial={{ opacity: 0, y: 30 }}
-              transition={{ duration: 0.6 }}
-            >
+            <div className="text-center lg:text-left">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 mb-6">
-                <Palette className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-primary">
-                  Thiết kế của bạn, cửa hàng của bạn
-                </span>
-              </div>
+              <m.div
+                animate={mounted ? { opacity: 1, y: 0 } : {}}
+                initial={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 mb-6">
+                  <Palette className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">
+                    Thiết kế của bạn, cửa hàng của bạn
+                  </span>
+                </div>
+              </m.div>
 
               {/* Heading */}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-[1.1]">
+              <m.h1
+                animate={mounted ? { opacity: 1, y: 0 } : {}}
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-[1.1]"
+                initial={{ opacity: 0, y: 25 }}
+                transition={{ duration: 0.6, delay: 0.25 }}
+              >
                 <span className="text-foreground">Không chỉ bán hàng,</span>
                 <br />
                 <span
@@ -451,16 +716,26 @@ export default function Home() {
                 >
                   xây dựng thương hiệu.
                 </span>
-              </h1>
+              </m.h1>
 
               {/* Subtitle */}
-              <p className="text-lg md:text-xl text-default-500 max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed">
-                Kéo, thả, tuỳ chỉnh — tạo cửa hàng trực tuyến với thiết kế
-                hoàn toàn theo phong cách riêng của bạn. Không cần code.
-              </p>
+              <m.p
+                animate={mounted ? { opacity: 1, y: 0 } : {}}
+                className="text-lg md:text-xl text-default-500 max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                Kéo, thả, tuỳ chỉnh — tạo cửa hàng trực tuyến với thiết kế hoàn
+                toàn theo phong cách riêng của bạn. Không cần code.
+              </m.p>
 
               {/* CTAs */}
-              <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start items-center">
+              <m.div
+                animate={mounted ? { opacity: 1, y: 0 } : {}}
+                className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start items-center"
+                initial={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.5, delay: 0.55 }}
+              >
                 {session?.user?.role === "VENDOR" ? (
                   <Button
                     as={Link}
@@ -493,10 +768,15 @@ export default function Home() {
                     Đăng nhập
                   </Button>
                 )}
-              </div>
+              </m.div>
 
               {/* Trust */}
-              <div className="mt-10 flex flex-wrap justify-center lg:justify-start gap-6 text-default-400 text-sm">
+              <m.div
+                animate={mounted ? { opacity: 1, y: 0 } : {}}
+                className="mt-10 flex flex-wrap justify-center lg:justify-start gap-6 text-default-400 text-sm"
+                initial={{ opacity: 0, y: 15 }}
+                transition={{ duration: 0.5, delay: 0.7 }}
+              >
                 <div className="flex items-center gap-1.5">
                   <CreditCard className="w-4 h-4" />
                   <span>Miễn phí</span>
@@ -509,15 +789,24 @@ export default function Home() {
                   <Zap className="w-4 h-4" />
                   <span>5 phút cài đặt</span>
                 </div>
-              </div>
-            </m.div>
+              </m.div>
+            </div>
 
             {/* Right: Animated builder mockup */}
             <m.div
-              animate={mounted ? { opacity: 1, scale: 1 } : {}}
+              animate={mounted ? { opacity: 1, scale: 1, y: [0, -8, 0] } : {}}
               className="hidden lg:block"
-              initial={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              initial={{ opacity: 0, scale: 0.92 }}
+              transition={{
+                opacity: { duration: 0.7, delay: 0.3 },
+                scale: { duration: 0.7, delay: 0.3 },
+                y: {
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1.2,
+                },
+              }}
             >
               <BuilderMockup />
             </m.div>
@@ -774,8 +1063,7 @@ export default function Home() {
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center"
                 style={{
-                  background:
-                    "linear-gradient(135deg, #f43f5e, #f97316)",
+                  background: "linear-gradient(135deg, #f43f5e, #f97316)",
                 }}
               >
                 <span className="text-white font-bold text-sm">F</span>
@@ -789,13 +1077,22 @@ export default function Home() {
               >
                 Giới thiệu
               </Link>
-              <Link className="hover:text-foreground transition-colors" href="#">
+              <Link
+                className="hover:text-foreground transition-colors"
+                href="#"
+              >
                 Quyền riêng tư
               </Link>
-              <Link className="hover:text-foreground transition-colors" href="#">
+              <Link
+                className="hover:text-foreground transition-colors"
+                href="#"
+              >
                 Điều khoản
               </Link>
-              <Link className="hover:text-foreground transition-colors" href="#">
+              <Link
+                className="hover:text-foreground transition-colors"
+                href="#"
+              >
                 Liên hệ
               </Link>
             </div>
