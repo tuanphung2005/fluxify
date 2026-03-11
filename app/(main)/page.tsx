@@ -143,7 +143,6 @@ function BuilderMockup() {
                       <p className="text-[10px] font-semibold text-default-700 leading-tight">
                         {item.label}
                       </p>
-                      <p className="text-[9px] text-default-400">Drag</p>
                     </div>
                   </m.div>
                 );

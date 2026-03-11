@@ -12,10 +12,10 @@ export function AuthButtons() {
   return (
     <>
       <Button variant="flat" onPress={openLogin}>
-        login
+        Đăng nhập
       </Button>
       <Button color="primary" onPress={openRegister}>
-        sign up
+        Đăng ký
       </Button>
     </>
   );
