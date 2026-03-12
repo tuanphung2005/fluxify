@@ -17,12 +17,12 @@ import {
 import { prisma } from "@/lib/prisma";
 
 const verifySchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   token: z.string().min(1),
 });
 
 const resendSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
 });
 
 /**

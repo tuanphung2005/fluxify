@@ -7,7 +7,7 @@ export const phoneSchema = z
   .string()
   .regex(/^0\d{9}$/, "Invalid Vietnamese phone number");
 
-export const emailSchema = z.string().email("Invalid email address");
+export const emailSchema = z.email("Invalid email address");
 
 export const addressSchema = z.object({
   street: z.string().min(1, "Address is required"),

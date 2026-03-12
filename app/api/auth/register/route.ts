@@ -30,7 +30,7 @@ const passwordSchema = z
   .regex(/[0-9]/, "Mật khẩu phải chứa ít nhất 1 số");
 
 const registerSchema = z.object({
-  email: z.string().email("Địa chỉ email không hợp lệ"),
+  email: z.email("Địa chỉ email không hợp lệ"),
   password: passwordSchema,
   name: z.string().min(2, "Tên phải chứa ít nhất 2 ký tự").optional(),
   role: z.enum(["CUSTOMER", "VENDOR"]).default("CUSTOMER"),

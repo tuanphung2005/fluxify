@@ -28,7 +28,9 @@ export function logAudit(entry: Omit<AuditLogEntry, "timestamp">): void {
 
   // Log to console in development
   if (process.env.NODE_ENV === "development") {
-    console.log("[AUDIT]", JSON.stringify(fullEntry, null, 2));
+    process.stdout.write(
+      `[AUDIT] ${entry.action} on ${entry.entityType} (${entry.entityId}) by user ${entry.userId}\n`,
+    );
   }
 
   // Add to in-memory store (for development only)

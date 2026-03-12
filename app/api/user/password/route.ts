@@ -14,12 +14,12 @@ import {
 } from "@/lib/api/password-reset";
 
 const requestResetSchema = z.object({
-  email: z.string().email("Email không hợp lệ"),
+  email: z.email("Email không hợp lệ"),
 });
 
 const resetPasswordSchema = z
   .object({
-    email: z.string().email(),
+    email: z.email(),
     token: z.string().min(1),
     newPassword: z
       .string()

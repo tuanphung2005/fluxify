@@ -16,6 +16,8 @@ export async function GET(req: NextRequest) {
   try {
     const auth = await getAuthenticatedVendor();
 
+    // process.stdout.write(`test: ${req}`);
+
     if (isErrorResult(auth)) {
       return errorResponse(auth.error, auth.status);
     }

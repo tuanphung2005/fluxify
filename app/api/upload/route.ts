@@ -57,7 +57,8 @@ export async function POST(request: NextRequest) {
       height: result.height,
     });
   } catch (error: any) {
-    console.error("UPLOAD ERROR", error);
+    // console.error("UPLOAD ERROR", error);
+    process.stdout.write(`UPLOAD ERROR: ${error.message}\n`);
 
     return NextResponse.json(
       { error: error.message || "Tải lên thất bại" },
