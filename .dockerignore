@@ -1,0 +1,14 @@
+node_modules
+.next
+coverage
+.git
+.github
+.vscode
+dist
+build
+*.log
+.env
+.env.*
+!.env.example
+README.md
+tests
