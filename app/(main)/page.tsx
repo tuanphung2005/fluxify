@@ -856,7 +856,7 @@ export default function Home() {
                 gradient="linear-gradient(135deg, #f43f5e 0%, #fb7185 100%)"
                 icon={Layers}
                 index={0}
-                title="Kéo thả trực quan"
+                title="Nhấp chọn, sắp xếp tùy ý"
                 visual={<DragDropVisual />}
               />
               <FeatureShowcase
