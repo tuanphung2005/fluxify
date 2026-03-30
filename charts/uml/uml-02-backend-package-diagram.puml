@@ -1,0 +1,97 @@
+@startuml
+!include ../shared/theme.puml
+!include ../shared/legend.puml
+
+title Fluxify UML - Backend Package and Dependency View
+
+top to bottom direction
+
+package "API Routes\napp/api/*" as Api {
+  [Auth Routes]
+  [Order Routes]
+  [Product Routes]
+  [Shop Routes]
+  [Chat Routes]
+  [Vendor Routes]
+  [Admin Routes]
+  [User Routes]
+  [Upload Routes]
+}
+
+package "API Utilities\nlib/api/*" as ApiUtils {
+  [Auth Helpers]
+  [Response Helpers]
+  [Rate Limit]
+  [Email Verification]
+  [Order Receipt]
+  [Audit]
+}
+
+package "Domain Data Access\nlib/db/*" as Db {
+  [Product Queries]
+  [Ecommerce Queries]
+  [Shop Queries]
+}
+
+package "Core Libraries" as Core {
+  [Prisma Client\nlib/prisma.ts]
+  [Auth Config\nlib/auth.ts]
+  [Validations\nlib/validations.ts]
+  [Variant Utils\nlib/variant-utils.ts]
+}
+
+package "External Integrations" as Ext {
+  [Cloudinary]
+  [Resend]
+  [VietQR]
+}
+
+database "PostgreSQL" as Postgres
+
+[Auth Routes] --> [Auth Helpers]
+[Auth Routes] --> [Email Verification]
+[Auth Routes] --> [Auth Config\nlib/auth.ts]
+
+[Order Routes] --> [Auth Helpers]
+[Order Routes] --> [Rate Limit]
+[Order Routes] --> [Response Helpers]
+[Order Routes] --> [Ecommerce Queries]
+[Order Routes] --> [Product Queries]
+[Order Routes] --> [Order Receipt]
+
+[Product Routes] --> [Auth Helpers]
+[Product Routes] --> [Rate Limit]
+[Product Routes] --> [Product Queries]
+[Product Routes] --> [Variant Utils\nlib/variant-utils.ts]
+
+[Shop Routes] --> [Auth Helpers]
+[Shop Routes] --> [Shop Queries]
+[Shop Routes] --> [Response Helpers]
+
+[Chat Routes] --> [Auth Helpers]
+[Chat Routes] --> [Ecommerce Queries]
+
+[Vendor Routes] --> [Auth Helpers]
+[Vendor Routes] --> [Ecommerce Queries]
+[Vendor Routes] --> [VietQR]
+
+[Admin Routes] --> [Auth Helpers]
+[Admin Routes] --> [Ecommerce Queries]
+[Admin Routes] --> [Product Queries]
+
+[User Routes] --> [Auth Helpers]
+[User Routes] --> [Ecommerce Queries]
+
+[Upload Routes] --> [Auth Helpers]
+[Upload Routes] --> [Cloudinary]
+
+[Email Verification] --> [Resend]
+[Order Receipt] --> [Resend]
+
+[Product Queries] --> [Prisma Client\nlib/prisma.ts]
+[Ecommerce Queries] --> [Prisma Client\nlib/prisma.ts]
+[Shop Queries] --> [Prisma Client\nlib/prisma.ts]
+[Prisma Client\nlib/prisma.ts] --> Postgres
+
+COMMON_LEGEND()
+@enduml

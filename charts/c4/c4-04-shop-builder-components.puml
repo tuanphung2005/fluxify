@@ -1,0 +1,40 @@
+@startuml
+!include ../shared/theme.puml
+!include ../shared/legend.puml
+
+title Fluxify C4 Level 3 - Shop Builder Components
+
+left to right direction
+
+rectangle "Vendor Builder UI\napp/vendor/shop-builder/*" as builderui <<frontend>>
+
+rectangle "Shop Builder Subsystem" as shopsub <<system>> {
+  rectangle "Template Route\napp/api/shop/template/route.ts" as templateroute <<backend>>
+  rectangle "Components Route\napp/api/shop/components/route.ts" as componentsroute <<backend>>
+  rectangle "Component Item Route\napp/api/shop/components/[id]/route.ts" as componentitem <<backend>>
+  rectangle "Batch/Sync Routes\n.../batch-update + .../sync" as syncroute <<backend>>
+  rectangle "Shop Queries\nlib/db/shop-queries.ts" as shopqueries <<backend>>
+  rectangle "Default Configs\nlib/shop/default-configs.ts" as defaults <<backend>>
+  rectangle "Auth Helpers\nlib/api/auth-helpers.ts" as authhelpers <<security>>
+  database "Prisma + PostgreSQL" as db
+}
+
+builderui --> templateroute : Load and save template
+builderui --> componentsroute : Add components
+builderui --> componentitem : Edit and delete component
+builderui --> syncroute : Reorder and synchronize
+
+templateroute --> authhelpers : Enforce vendor access
+componentsroute --> authhelpers : Enforce vendor access
+componentitem --> authhelpers : Enforce vendor access
+syncroute --> authhelpers : Enforce vendor access
+
+templateroute --> shopqueries : Persist template
+componentsroute --> shopqueries : Persist component operations
+componentitem --> shopqueries : Persist item changes
+syncroute --> shopqueries : Persist batch updates
+shopqueries --> defaults : Apply fallback config when missing
+shopqueries --> db : Read and write template graph
+
+COMMON_LEGEND()
+@enduml

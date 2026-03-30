@@ -1,0 +1,29 @@
+@startuml
+!include ../shared/theme.puml
+
+title Fluxify UML - Order Status State Machine
+
+[*] --> PENDING
+
+PENDING --> PROCESSING : Payment accepted
+PENDING --> CANCELLED : Customer cancel or timeout
+
+PROCESSING --> SHIPPED : Vendor dispatches package
+PROCESSING --> CANCELLED : Refund approved
+
+SHIPPED --> DELIVERED : Delivery confirmed
+
+DELIVERED --> [*]
+CANCELLED --> [*]
+
+note right of PROCESSING
+Inventory is already reserved during
+order creation transaction.
+end note
+
+note right of DELIVERED
+Review submission is enabled after
+successful delivery.
+end note
+
+@enduml

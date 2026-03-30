@@ -1,0 +1,40 @@
+@startuml
+!include ../shared/theme.puml
+!include ../shared/legend.puml
+
+title Fluxify C4 Level 2 - Container View
+
+left to right direction
+
+actor "Customer/Vendor/Admin" as user
+
+rectangle "Browser" as browser <<frontend>>
+rectangle "Cloudinary" as cloudinary <<external>>
+rectangle "Resend" as resend <<external>>
+rectangle "VietQR" as vietqr <<external>>
+
+rectangle "Fluxify Next.js Monolith" as mono <<system>> {
+  rectangle "App Router UI\napp/*" as appui <<frontend>>
+  rectangle "Client State Store\nstore/cart-store.ts" as zustand <<frontend>>
+
+  rectangle "Route Handlers\napp/api/*" as routes <<backend>>
+  rectangle "Auth and Middleware\nlib/auth.ts + middleware.ts" as auth <<security>>
+  rectangle "Domain/Data Access\nlib/db/*" as queries <<backend>>
+
+  database "PostgreSQL via Prisma\nlib/prisma.ts" as postgres
+}
+
+user --> browser : Use storefront and dashboards
+browser --> appui : Render pages and invoke actions
+appui --> zustand : Cart and transient UI state
+appui --> routes : Fetch and mutate business data
+routes --> auth : Session and role enforcement
+routes --> queries : Domain query and mutation calls
+queries --> postgres : Persist domain state
+
+routes --> cloudinary : Media upload and delete
+routes --> resend : Verification and receipt messages
+routes --> vietqr : Payment QR generation
+
+COMMON_LEGEND()
+@enduml

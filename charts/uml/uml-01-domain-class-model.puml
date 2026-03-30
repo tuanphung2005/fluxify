@@ -1,0 +1,164 @@
+@startuml
+!include ../shared/theme.puml
+!include ../shared/legend.puml
+
+title Fluxify UML - Domain Class Model
+
+hide methods
+
+class User {
+  +id: String
+  +email: String
+  +name: String
+  +role: Role
+  +isActive: Boolean
+}
+
+class VendorProfile {
+  +id: String
+  +storeName: String
+  +description: String
+}
+
+class Product {
+  +id: String
+  +name: String
+  +price: Decimal
+  +stock: Int
+  +variantStock: Json?
+  +deletedAt: DateTime?
+}
+
+class Category {
+  +id: String
+  +name: String
+  +slug: String
+  +parentId: String?
+}
+
+class Cart {
+  +id: String
+}
+
+class CartItem {
+  +id: String
+  +quantity: Int
+  +selectedVariant: String?
+}
+
+class Wishlist {
+  +id: String
+}
+
+class WishlistItem {
+  +id: String
+}
+
+class Address {
+  +id: String
+  +fullName: String
+  +phone: String
+  +city: String
+}
+
+class Coupon {
+  +id: String
+  +code: String
+  +discountType: DiscountType
+  +discountValue: Decimal
+  +usageLimit: Int?
+}
+
+class Order {
+  +id: String
+  +status: OrderStatus
+  +totalAmount: Decimal
+}
+
+class OrderItem {
+  +id: String
+  +quantity: Int
+  +priceAtPurchase: Decimal
+  +selectedVariant: String?
+}
+
+class Review {
+  +id: String
+  +rating: Int
+  +comment: String
+}
+
+class ChatConversation {
+  +id: String
+}
+
+class ChatMessage {
+  +id: String
+  +senderType: SenderType
+  +content: String
+  +isRead: Boolean
+}
+
+class ShopTemplate {
+  +id: String
+  +name: String
+  +publishedComponents: Json?
+}
+
+class ShopComponent {
+  +id: String
+  +type: ComponentType
+  +order: Int
+  +config: Json
+}
+
+class ProductView {
+  +id: String
+  +sessionId: String?
+}
+
+class FavoriteShop {
+  +id: String
+}
+
+User "1" -- "0..1" VendorProfile : owns
+User "1" -- "0..1" Cart : has
+User "1" -- "0..1" Wishlist : has
+User "1" -- "0..*" Address : stores
+User "1" -- "0..*" Order : places
+User "1" -- "0..*" Review : writes
+User "1" -- "0..*" ChatConversation : participates
+User "1" -- "0..*" ProductView : generates
+User "1" -- "0..*" FavoriteShop : favorites
+
+VendorProfile "1" -- "0..*" Product : sells
+VendorProfile "1" -- "0..*" Coupon : issues
+VendorProfile "1" -- "0..1" ShopTemplate : customizes
+VendorProfile "1" -- "0..*" ChatConversation : receives
+VendorProfile "1" -- "0..*" FavoriteShop : followed by
+
+Category "1" -- "0..*" Product : categorizes
+Category "0..1" -- "0..*" Category : parent-child
+
+Cart "1" -- "0..*" CartItem : contains
+CartItem "*" --> "1" Product : references
+
+Wishlist "1" -- "0..*" WishlistItem : contains
+WishlistItem "*" --> "1" Product : references
+
+Order "1" -- "1" Address : ships to
+Order "1" -- "0..*" OrderItem : contains
+Order "0..*" --> "0..1" Coupon : applies
+OrderItem "*" --> "1" Product : references
+
+Review "*" --> "1" Product : rates
+Review "*" --> "0..1" OrderItem : verified purchase
+
+ChatConversation "1" -- "0..*" ChatMessage : contains
+
+ShopTemplate "1" -- "0..*" ShopComponent : composes
+
+Product "1" -- "0..*" ProductView : tracked by
+
+COMMON_LEGEND()
+@enduml

@@ -1,0 +1,47 @@
+@startuml
+!include ../shared/theme.puml
+
+title Fluxify UML - Product Publish and Update Activity
+
+start
+
+:Vendor opens product editor;
+:Enter base fields\n(name, price, description, stock);
+
+if (Has media changes?) then (yes)
+  :Upload media via /api/upload;
+  :Persist Cloudinary metadata;
+else (no)
+endif
+
+if (Has variants?) then (yes)
+  :Normalize variant matrix;
+  :Validate variant stock totals;
+  if (Variant stock valid?) then (yes)
+    :Continue;
+  else (no)
+    :Return validation error;
+    stop
+  endif
+else (no)
+endif
+
+:Submit save request\n(app/api/products/route.ts or [id]/route.ts);
+:Enforce vendor role;
+:Run zod validation;
+
+if (Valid payload?) then (yes)
+  :Persist with product queries;
+  :Record audit event;
+  if (Publish requested?) then (yes)
+    :Expose in catalog queries;
+  else (no)
+    :Keep as draft-like internal state;
+  endif
+  :Return updated product;
+else (no)
+  :Return structured validation errors;
+endif
+
+stop
+@enduml

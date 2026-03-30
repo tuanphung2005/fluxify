@@ -1,0 +1,36 @@
+@startuml
+!include ../shared/theme.puml
+!include ../shared/legend.puml
+
+title Fluxify C4 Level 3 - Order Processing Components
+
+left to right direction
+
+rectangle "Shop UI\napp/(main)/shop/*" as shopui <<frontend>>
+
+rectangle "Order Processing Subsystem" as ordersub <<system>> {
+  rectangle "Create Order Route\napp/api/orders/route.ts" as ordersroute <<backend>>
+  rectangle "Auth Helpers\nlib/api/auth-helpers.ts" as authhelpers <<security>>
+  rectangle "Rate Limiter\nlib/api/rate-limit.ts" as ratelimit <<security>>
+  rectangle "Input Validation\nlib/validations.ts" as validations <<backend>>
+  rectangle "Ecommerce Queries\nlib/db/ecommerce-queries.ts" as ecommerce <<backend>>
+  rectangle "Product Queries\nlib/db/product-queries.ts" as products <<backend>>
+  rectangle "Audit Logger\nlib/api/audit.ts" as audit <<backend>>
+  database "Prisma + PostgreSQL\nlib/prisma.ts" as db
+}
+
+rectangle "Resend" as resend <<external>>
+
+shopui --> ordersroute : POST /api/orders
+ordersroute --> ratelimit : Check write quota
+ordersroute --> authhelpers : Resolve user context
+ordersroute --> validations : Validate payload
+ordersroute --> products : Verify stock and variants
+ordersroute --> ecommerce : Create order and items
+products --> db : Atomic stock updates
+ecommerce --> db : Transactional inserts
+ordersroute --> audit : Record critical actions
+ordersroute --> resend : Receipt flow via receipt endpoint
+
+COMMON_LEGEND()
+@enduml

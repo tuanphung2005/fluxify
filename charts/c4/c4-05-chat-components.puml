@@ -1,0 +1,45 @@
+@startuml
+!include ../shared/theme.puml
+!include ../shared/legend.puml
+
+title Fluxify C4 Level 3 - Chat and Unread Components
+
+left to right direction
+
+actor Customer
+actor Vendor
+
+rectangle "Chat UI\napp/vendor/chat + app/(main)/shop/*" as chatui <<frontend>>
+rectangle "Unread Poll Hook\nhooks/useUnreadMessages.ts" as unreadhook <<frontend>>
+
+rectangle "Chat Subsystem" as chatsub <<system>> {
+  rectangle "Conversations Route\napp/api/chat/conversations/route.ts" as conversations <<backend>>
+  rectangle "Conversation Detail Route\n.../conversations/[id]/route.ts" as conversationdetail <<backend>>
+  rectangle "Messages Route\n.../conversations/[id]/messages/route.ts" as messages <<backend>>
+  rectangle "Unread Route\napp/api/chat/unread/route.ts" as unreadroute <<backend>>
+  rectangle "Auth Helpers\nlib/api/auth-helpers.ts" as authhelpers <<security>>
+  rectangle "Query Layer\nlib/db/ecommerce-queries.ts" as querylayer <<backend>>
+  database "Prisma + PostgreSQL" as db
+}
+
+Customer --> chatui : Send and read messages
+Vendor --> chatui : Send and read messages
+chatui --> conversations : Create and list conversations
+chatui --> conversationdetail : Load conversation detail
+chatui --> messages : Send and list messages
+chatui --> unreadhook : Poll unread count
+unreadhook --> unreadroute : GET unread count
+
+conversations --> authhelpers : Validate session and role
+conversationdetail --> authhelpers : Validate participant access
+messages --> authhelpers : Validate participant access
+unreadroute --> authhelpers : Validate session and role
+
+conversations --> querylayer : Conversation operations
+conversationdetail --> querylayer : Message retrieval
+messages --> querylayer : Message create and read
+unreadroute --> querylayer : Aggregate unread count
+querylayer --> db : Persist and fetch chat data
+
+COMMON_LEGEND()
+@enduml

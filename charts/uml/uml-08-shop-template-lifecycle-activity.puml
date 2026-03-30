@@ -1,0 +1,35 @@
+@startuml
+!include ../shared/theme.puml
+
+title Fluxify UML - Shop Template Draft and Publish Lifecycle
+
+start
+
+:Vendor opens shop builder;
+:Load template from /api/shop/template;
+
+if (Template exists?) then (yes)
+  :Load existing component tree;
+else (no)
+  :Create default template from fallback configs;
+endif
+
+repeat
+  :Add/edit component\n(/api/shop/components);
+  :Reorder component\n(/api/shop/components/reorder);
+  :Batch synchronize changes\n(/api/shop/components/sync);
+repeat while (More edits?) is (yes)
+
+:Preview storefront output;
+
+if (Publish now?) then (yes)
+  :Persist published snapshot\n(publishedComponents);
+  :Expose latest configuration to shop pages;
+else (no)
+  :Keep draft in editable state;
+endif
+
+:Return builder summary and sync result;
+stop
+
+@enduml

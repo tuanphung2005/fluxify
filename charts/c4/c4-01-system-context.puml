@@ -1,0 +1,34 @@
+@startuml
+!include ../shared/theme.puml
+!include ../shared/legend.puml
+
+title Fluxify C4 Level 1 - System Context
+
+left to right direction
+
+actor Customer
+actor Vendor
+actor Admin
+
+rectangle "Cloudinary\nMedia Storage" as cloudinary <<external>>
+rectangle "Resend\nTransactional Email" as resend <<external>>
+rectangle "VietQR\nPayment QR Provider" as vietqr <<external>>
+
+rectangle "Fluxify Platform" as fluxify <<system>> {
+  rectangle "Next.js Web Application" as web <<frontend>>
+  rectangle "API Route Handlers" as api <<backend>>
+  database "PostgreSQL" as db
+}
+
+Customer --> web : Browse shops\nManage cart\nPlace orders
+Vendor --> web : Manage products\nView orders\nBuild shop pages
+Admin --> web : Manage users\nManage shops
+
+web --> api : HTTPS requests
+api --> db : Read and write data
+api --> cloudinary : Upload product media
+api --> resend : Send verification and receipt email
+api --> vietqr : Generate transfer QR
+
+COMMON_LEGEND()
+@enduml

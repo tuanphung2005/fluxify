@@ -1,0 +1,11 @@
+!definelong COMMON_LEGEND()
+legend right
+|= Marker |= Meaning |
+|<#E0F2FE>System|Platform or system boundary|
+|<#DCFCE7>Frontend|UI or client-facing component|
+|<#DBEAFE>Backend|API, service, or business logic component|
+|<#E2E8F0>Data|Database or persistence element|
+|<#F1F5F9>External|Third-party integration or external system|
+|<#FEE2E2>Security|Authentication, authorization, or guard component|
+endlegend
+!enddefinelong

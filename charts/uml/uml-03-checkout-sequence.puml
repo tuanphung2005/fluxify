@@ -1,0 +1,55 @@
+@startuml
+!include ../shared/theme.puml
+
+title Fluxify UML - Customer Checkout and Order Creation Sequence
+
+autonumber
+
+actor Customer
+participant "Shop UI\napp/(main)/shop/*" as UI
+participant "Orders Route\nPOST /api/orders" as OrdersRoute
+participant "Rate Limit\nlib/api/rate-limit.ts" as RateLimit
+participant "Auth Helpers\nlib/api/auth-helpers.ts" as Auth
+participant "Validation\nlib/validations.ts" as Validation
+participant "Product Queries\nlib/db/product-queries.ts" as ProductQueries
+participant "Ecommerce Queries\nlib/db/ecommerce-queries.ts" as Ecommerce
+database "Prisma + PostgreSQL" as DB
+
+Customer -> UI : Click Place Order
+UI -> OrdersRoute : POST order payload
+OrdersRoute -> RateLimit : checkRateLimit(write)
+RateLimit --> OrdersRoute : allowed / blocked
+
+alt request allowed
+  OrdersRoute -> Auth : getAuthenticatedUser()
+  Auth --> OrdersRoute : user context or guest context
+  OrdersRoute -> Validation : validate order input
+  Validation --> OrdersRoute : sanitized payload
+
+  loop For each line item
+    OrdersRoute -> ProductQueries : validate product and stock
+    ProductQueries -> DB : SELECT product and variant stock
+    DB --> ProductQueries : current stock
+    ProductQueries --> OrdersRoute : stock check result
+  end
+
+  alt stock available
+    OrdersRoute -> Ecommerce : create order transaction
+    Ecommerce -> DB : INSERT order and order_items
+    Ecommerce -> DB : UPDATE stock and variant stock
+    DB --> Ecommerce : transaction committed
+    Ecommerce --> OrdersRoute : order id and summary
+    OrdersRoute --> UI : 201 Created with order details
+  else stock missing
+    OrdersRoute --> UI : 400 with stock error
+  end
+else request blocked
+  OrdersRoute --> UI : 429 rate limit exceeded
+end
+
+note right of OrdersRoute
+Receipt generation is handled by
+POST /api/orders/[orderId]/receipt.
+end note
+
+@enduml

@@ -1,0 +1,46 @@
+@startuml
+!include ../shared/theme.puml
+
+title Fluxify UML - Vendor Operations Sequence
+
+autonumber
+
+actor Vendor
+participant "Vendor Dashboard UI\napp/vendor/*" as VendorUI
+participant "Vendor Orders Route\nGET /api/vendor/orders" as VendorOrders
+participant "Vendor Analytics Route\nGET /api/vendor/analytics" as VendorAnalytics
+participant "Vendor Payment Route\nGET/PUT /api/vendor/payment" as VendorPayment
+participant "Auth Helpers\nlib/api/auth-helpers.ts" as Auth
+participant "Ecommerce Queries\nlib/db/ecommerce-queries.ts" as Ecommerce
+participant "VietQR\nlib/vietqr.ts" as VietQR
+database "Prisma + PostgreSQL" as DB
+
+Vendor -> VendorUI : Open dashboard
+
+VendorUI -> VendorOrders : Request current orders
+VendorOrders -> Auth : getAuthenticatedVendor()
+Auth --> VendorOrders : vendor context
+VendorOrders -> Ecommerce : getVendorOrders(filters)
+Ecommerce -> DB : SELECT orders for vendor products
+DB --> Ecommerce : order list
+Ecommerce --> VendorOrders : paged result
+VendorOrders --> VendorUI : render order table
+
+VendorUI -> VendorAnalytics : Request metrics
+VendorAnalytics -> Auth : getAuthenticatedVendor()
+Auth --> VendorAnalytics : vendor context
+VendorAnalytics -> Ecommerce : aggregate revenue and counts
+Ecommerce -> DB : aggregate queries
+DB --> Ecommerce : analytics snapshot
+Ecommerce --> VendorAnalytics : analytics payload
+VendorAnalytics --> VendorUI : render charts and KPIs
+
+VendorUI -> VendorPayment : Update payout settings
+VendorPayment -> Auth : getAuthenticatedVendor()
+Auth --> VendorPayment : vendor context
+VendorPayment -> DB : persist account settings
+VendorPayment -> VietQR : generateVietQRUrl()
+VietQR --> VendorPayment : QR link
+VendorPayment --> VendorUI : updated settings and QR
+
+@enduml

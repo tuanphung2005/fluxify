@@ -1,0 +1,41 @@
+@startuml
+!include ../shared/theme.puml
+
+title Fluxify UML - Registration, Verification, and Login Sequence
+
+autonumber
+
+actor User
+participant "Register UI" as RegisterUI
+participant "Register Route\nPOST /api/auth/register" as RegisterRoute
+participant "Email Verification Service\nlib/api/email-verification.ts" as VerificationService
+participant "Resend\nlib/resend.ts" as Resend
+participant "Verify Route\nPOST /api/auth/verify" as VerifyRoute
+participant "NextAuth Route\n/api/auth/[...nextauth]" as NextAuthRoute
+database "Prisma + PostgreSQL" as DB
+
+User -> RegisterUI : Submit registration form
+RegisterUI -> RegisterRoute : POST user details
+RegisterRoute -> DB : Create user and optional vendor profile
+DB --> RegisterRoute : user created
+RegisterRoute -> VerificationService : create token and prepare email
+VerificationService -> DB : store verification token
+VerificationService -> Resend : send verification mail
+Resend --> VerificationService : accepted
+VerificationService --> RegisterRoute : email dispatch result
+RegisterRoute --> RegisterUI : registration success
+
+User -> RegisterUI : Open verification link
+RegisterUI -> VerifyRoute : POST token
+VerifyRoute -> DB : validate token and expiry
+DB --> VerifyRoute : token valid
+VerifyRoute -> DB : mark emailVerified true
+VerifyRoute --> RegisterUI : verification success
+
+User -> RegisterUI : Submit login credentials
+RegisterUI -> NextAuthRoute : credentials sign-in
+NextAuthRoute -> DB : verify email, status, and password
+DB --> NextAuthRoute : user and role
+NextAuthRoute --> RegisterUI : session JWT and profile
+
+@enduml

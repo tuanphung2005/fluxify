@@ -1,0 +1,54 @@
+@startuml
+!include ../shared/theme.puml
+!include ../shared/legend.puml
+
+title Fluxify C4 Level 3 - Vendor and Admin Management Components
+
+left to right direction
+
+actor Vendor
+actor Admin
+
+rectangle "Vendor Dashboard UI\napp/vendor/*" as vendorui <<frontend>>
+rectangle "Admin Dashboard UI\napp/admin/*" as adminui <<frontend>>
+
+rectangle "Management Subsystem" as mgmtsub <<system>> {
+  rectangle "Vendor Orders Route\napp/api/vendor/orders/route.ts" as vendororders <<backend>>
+  rectangle "Vendor Analytics Route\napp/api/vendor/analytics/route.ts" as vendoranalytics <<backend>>
+  rectangle "Vendor Coupons Route\napp/api/vendor/coupons/route.ts" as vendorcoupons <<backend>>
+  rectangle "Admin Users Route\napp/api/admin/users/route.ts" as adminusers <<backend>>
+  rectangle "Admin User Status Route\n.../admin/users/[id]/status/route.ts" as adminstatus <<backend>>
+  rectangle "Admin Shops Route\napp/api/admin/shops/route.ts" as adminshops <<backend>>
+  rectangle "Auth Helpers\nlib/api/auth-helpers.ts" as authhelpers <<security>>
+  rectangle "Query Layer\nlib/db/ecommerce-queries.ts + lib/db/product-queries.ts" as queries <<backend>>
+  database "Prisma + PostgreSQL" as db
+}
+
+Vendor --> vendorui : Manage store operations
+Admin --> adminui : Moderate platform operations
+
+vendorui --> vendororders : Fetch order pipeline
+vendorui --> vendoranalytics : Fetch metrics
+vendorui --> vendorcoupons : Manage coupons
+
+adminui --> adminusers : List and inspect users
+adminui --> adminstatus : Activate and deactivate users
+adminui --> adminshops : List and inspect shops
+
+vendororders --> authhelpers : Enforce vendor role
+vendoranalytics --> authhelpers : Enforce vendor role
+vendorcoupons --> authhelpers : Enforce vendor role
+adminusers --> authhelpers : Enforce admin role
+adminstatus --> authhelpers : Enforce admin role
+adminshops --> authhelpers : Enforce admin role
+
+vendororders --> queries : Order queries
+vendoranalytics --> queries : Aggregate analytics
+vendorcoupons --> queries : Coupon queries
+adminusers --> queries : User queries
+adminstatus --> queries : Status updates
+adminshops --> queries : Shop queries
+queries --> db : Persist and retrieve data
+
+COMMON_LEGEND()
+@enduml
