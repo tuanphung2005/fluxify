@@ -84,7 +84,7 @@ export const DEFAULT_CONFIGS: Record<ComponentType, ComponentConfig> = {
       {
         question: "How long does shipping take?",
         answer:
-          "Standard shipping takes 3-5 business days. Express shipping is available for 1-2 business day delivery.",
+          "Standard shipping takes 3-5 business days. Much depends on your location and the shipping method provided used by the shop owner. Suspect a fraudulent order? You can ticket our support team to investigate the order and provide a resolution.",
       },
       {
         question: "Do you ship internationally?",
