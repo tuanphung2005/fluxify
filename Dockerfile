@@ -31,6 +31,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=7860
+ENV AUTH_TRUST_HOST=true
 
 COPY --chown=bun:bun --from=builder /app/package.json ./package.json
 COPY --chown=bun:bun --from=builder /app/next.config.js ./next.config.js
