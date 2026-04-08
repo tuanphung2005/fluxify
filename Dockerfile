@@ -29,21 +29,18 @@ RUN bun run build
 FROM oven/bun:1 AS runner
 WORKDIR /app
 
-# Create a non-root user (Hugging Face requires user 1000)
-RUN useradd -m -u 1000 user
-
 ENV NODE_ENV=production
 ENV PORT=7860
 
-COPY --chown=user:user --from=builder /app/package.json ./package.json
-COPY --chown=user:user --from=builder /app/next.config.js ./next.config.js
-COPY --chown=user:user --from=builder /app/public ./public
-COPY --chown=user:user --from=builder /app/prisma ./prisma
-COPY --chown=user:user --from=builder /app/node_modules ./node_modules
-COPY --chown=user:user --from=builder /app/.next ./.next
+COPY --chown=bun:bun --from=builder /app/package.json ./package.json
+COPY --chown=bun:bun --from=builder /app/next.config.js ./next.config.js
+COPY --chown=bun:bun --from=builder /app/public ./public
+COPY --chown=bun:bun --from=builder /app/prisma ./prisma
+COPY --chown=bun:bun --from=builder /app/node_modules ./node_modules
+COPY --chown=bun:bun --from=builder /app/.next ./.next
 
-# Switch to the non-root user to run the app
-USER user
+# The bun image already has a user named "bun" with UID 1000
+USER bun
 
 EXPOSE 7860
 
