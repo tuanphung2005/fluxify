@@ -13,5 +13,8 @@
         "charts/shared"
     ],
     "plantuml.diagramsRoot": "charts",
-    "plantuml.exportOutDir": "charts/out"
+    "plantuml.exportOutDir": "charts/out",
+    "chat.tools.terminal.autoApprove": {
+        "docker run": true
+    }
 }

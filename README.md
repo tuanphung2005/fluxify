@@ -1,3 +1,12 @@
+---
+title: Fluxify
+emoji: 💻
+colorFrom: purple
+colorTo: gray
+sdk: docker
+pinned: false
+---
+
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tuanphung2005/fluxify)
 
 ## Architecture Charts
