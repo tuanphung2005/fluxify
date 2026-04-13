@@ -1,36 +1,39 @@
-# Architecture Charts
+# Sơ đồ kiến trúc
 
-This folder contains PlantUML source files for Fluxify architecture documentation.
+Thư mục này chứa mã nguồn PlantUML cho tài liệu kiến trúc Fluxify.
 
-## Structure
+Để xem bộ tài liệu kiến trúc phần mềm đầy đủ (phạm vi, NFR, triển khai,
+bảo mật, ADR và kiểm chứng), xem `docs/architecture/README.md`.
 
-- charts/shared: Common style and legend includes.
-- charts/c4: C4 style architecture views.
-- charts/uml: UML behavior and domain views.
+## Cấu trúc
 
-## C4 Diagrams
+- charts/shared: Các tệp dùng chung cho kiểu hiển thị và chú giải.
+- charts/c4: Các sơ đồ kiến trúc theo mô hình C4.
+- charts/uml: Các sơ đồ UML về hành vi và mô hình miền.
 
-- c4-01-system-context.puml: System context with primary actors and external services.
-- c4-02-container-view.puml: Container-level boundaries across UI, API, auth, and data.
-- c4-03-order-processing-components.puml: Order processing subsystem component interactions.
-- c4-04-shop-builder-components.puml: Shop builder subsystem components and data flow.
-- c4-05-chat-components.puml: Chat subsystem and unread polling interactions.
-- c4-06-vendor-admin-components.puml: Vendor and admin management subsystem interactions.
+## Sơ đồ C4
 
-## UML Diagrams
+- c4-01-system-context.puml: Ngữ cảnh hệ thống với tác nhân chính và dịch vụ bên ngoài.
+- c4-02-container-view.puml: Ranh giới vùng chứa giữa giao diện, API, xác thực và dữ liệu.
+- c4-03-order-processing-components.puml: Tương tác thành phần của phân hệ xử lý đơn hàng.
+- c4-04-shop-builder-components.puml: Thành phần và luồng dữ liệu của phân hệ trình dựng cửa hàng.
+- c4-05-chat-components.puml: Phân hệ chat và luồng kiểm tra tin nhắn chưa đọc.
+- c4-06-vendor-admin-components.puml: Tương tác thành phần của quản lý người bán/quản trị.
 
-- uml-01-domain-class-model.puml: Core domain model and cardinal relationships.
-- uml-02-backend-package-diagram.puml: Backend package dependency map.
-- uml-03-checkout-sequence.puml: Customer checkout and order transaction flow.
-- uml-04-vendor-operations-sequence.puml: Vendor dashboard operational request flow.
-- uml-05-auth-registration-sequence.puml: Registration, verification, and login sequence.
-- uml-06-product-lifecycle-activity.puml: Product creation and update workflow.
-- uml-07-order-state-machine.puml: Order lifecycle status transitions.
-- uml-08-shop-template-lifecycle-activity.puml: Shop template editing and publish workflow.
+## Sơ đồ UML
 
-## Validation
+- uml-01-domain-class-model.puml: Mô hình lớp miền và quan hệ số lượng.
+- uml-02-backend-package-diagram.puml: Bản đồ phụ thuộc gói backend.
+- uml-03-checkout-sequence.puml: Luồng thanh toán và giao dịch tạo đơn.
+- uml-04-vendor-operations-sequence.puml: Luồng thao tác nghiệp vụ trong bảng điều khiển người bán.
+- uml-05-auth-registration-sequence.puml: Luồng đăng ký, xác minh và đăng nhập.
+- uml-06-product-lifecycle-activity.puml: Quy trình tạo/cập nhật sản phẩm.
+- uml-07-order-state-machine.puml: Chuyển trạng thái vòng đời đơn hàng.
+- uml-08-shop-template-lifecycle-activity.puml: Vòng đời chỉnh sửa và xuất bản mẫu cửa hàng.
 
-If PlantUML is installed locally, run a syntax-only check:
+## Kiểm tra hợp lệ
+
+Nếu đã cài PlantUML cục bộ, chạy kiểm tra cú pháp:
 
 ```powershell
 Get-ChildItem charts -Recurse -Filter *.puml | ForEach-Object { plantuml -checkonly $_.FullName }
