@@ -1,41 +1,109 @@
 @startuml
-!include ../shared/theme.puml
+' Theme PlantUML dùng chung cho các sơ đồ kiến trúc Fluxify.
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
 
-title Fluxify UML - Registration, Verification, and Login Sequence
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam database {
+  BorderColor #1E293B
+  FontColor #0F172A
+  BackgroundColor #E2E8F0
+}
+
+skinparam note {
+  BackgroundColor #FEF9C3
+  BorderColor #A16207
+  FontColor #78350F
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam rectangle<<frontend>> {
+  BackgroundColor #DCFCE7
+  BorderColor #14532D
+}
+
+skinparam rectangle<<backend>> {
+  BackgroundColor #DBEAFE
+  BorderColor #1E3A8A
+}
+
+skinparam rectangle<<data>> {
+  BackgroundColor #EDE9FE
+  BorderColor #5B21B6
+}
+
+skinparam rectangle<<external>> {
+  BackgroundColor #F1F5F9
+  BorderColor #475569
+}
+
+skinparam rectangle<<security>> {
+  BackgroundColor #FEE2E2
+  BorderColor #7F1D1D
+}
+
+
+title Sơ đồ Tuần tự Đăng ký, Xác thực và Đăng nhập
 
 autonumber
 
 actor User
-participant "Register UI" as RegisterUI
-participant "Register Route\nPOST /api/auth/register" as RegisterRoute
-participant "Email Verification Service\nlib/api/email-verification.ts" as VerificationService
+participant "Giao diện đăng ký" as RegisterUI
+participant "Route đăng ký\nPOST /api/auth/register" as RegisterRoute
+participant "Xác minh email Service\nlib/api/email-verification.ts" as VerificationService
 participant "Resend\nlib/resend.ts" as Resend
-participant "Verify Route\nPOST /api/auth/verify" as VerifyRoute
-participant "NextAuth Route\n/api/auth/[...nextauth]" as NextAuthRoute
+participant "Route xác minh\nPOST /api/auth/verify" as VerifyRoute
+participant "Route NextAuth\n/api/auth/[...nextauth]" as NextAuthRoute
 database "Prisma + PostgreSQL" as DB
 
-User -> RegisterUI : Submit registration form
-RegisterUI -> RegisterRoute : POST user details
-RegisterRoute -> DB : Create user and optional vendor profile
-DB --> RegisterRoute : user created
-RegisterRoute -> VerificationService : create token and prepare email
-VerificationService -> DB : store verification token
-VerificationService -> Resend : send verification mail
-Resend --> VerificationService : accepted
-VerificationService --> RegisterRoute : email dispatch result
-RegisterRoute --> RegisterUI : registration success
+User -> RegisterUI : Gửi biểu mẫu đăng ký
+RegisterUI -> RegisterRoute : POST thông tin người dùng
+RegisterRoute -> DB : Tạo người dùng và hồ sơ người bán tùy chọn
+DB --> RegisterRoute : đã tạo người dùng
+RegisterRoute -> VerificationService : tạo token và chuẩn bị email
+VerificationService -> DB : lưu token xác minh
+VerificationService -> Resend : gửi email xác minh
+Resend --> VerificationService : đã chấp nhận
+VerificationService --> RegisterRoute : kết quả gửi email
+RegisterRoute --> RegisterUI : đăng ký thành công
 
-User -> RegisterUI : Open verification link
+User -> RegisterUI : Mở liên kết xác minh
 RegisterUI -> VerifyRoute : POST token
-VerifyRoute -> DB : validate token and expiry
-DB --> VerifyRoute : token valid
-VerifyRoute -> DB : mark emailVerified true
-VerifyRoute --> RegisterUI : verification success
+VerifyRoute -> DB : kiểm tra token và thời hạn
+DB --> VerifyRoute : token hợp lệ
+VerifyRoute -> DB : đánh dấu emailVerified = true
+VerifyRoute --> RegisterUI : xác minh thành công
 
-User -> RegisterUI : Submit login credentials
-RegisterUI -> NextAuthRoute : credentials sign-in
-NextAuthRoute -> DB : verify email, status, and password
-DB --> NextAuthRoute : user and role
-NextAuthRoute --> RegisterUI : session JWT and profile
+User -> RegisterUI : Gửi thông tin đăng nhập
+RegisterUI -> NextAuthRoute : đăng nhập bằng thông tin xác thực
+NextAuthRoute -> DB : xác minh email, trạng thái và mật khẩu
+DB --> NextAuthRoute : người dùng và vai trò
+NextAuthRoute --> RegisterUI : JWT phiên và hồ sơ
 
 @enduml
+
+
+
+
+

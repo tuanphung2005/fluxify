@@ -1,5 +1,16 @@
-@startuml
-' Theme PlantUML dùng chung cho các sơ đồ kiến trúc Fluxify.
+!definelong COMMON_LEGEND()
+legend right
+|= Marker |= Meaning |
+|<#E0F2FE>System|Platform or system boundary|
+|<#DCFCE7>Frontend|UI or client-facing component|
+|<#DBEAFE>Backend|API, service, or business logic component|
+|<#E2E8F0>Data|Database or persistence element|
+|<#F1F5F9>External|Third-party integration or external system|
+|<#FEE2E2>Security|Authentication, authorization, or guard component|
+endlegend
+!enddefinelong
+
+' Shared PlantUML visual theme for Fluxify architecture diagrams.
 skinparam backgroundColor #FCFCFC
 skinparam defaultFontName Segoe UI
 skinparam dpi 150
@@ -62,35 +73,3 @@ skinparam rectangle<<security>> {
   BackgroundColor #FEE2E2
   BorderColor #7F1D1D
 }
-
-
-title Fluxify UML - Máy trạng thái đơn hàng
-
-[*] --> PENDING
-
-PENDING --> PROCESSING : Payment đã chấp nhận
-PENDING --> CANCELLED : Khách hủy hoặc quá thời gian
-
-PROCESSING --> SHIPPED : Người bán bàn giao gói hàng
-PROCESSING --> CANCELLED : Hoàn tiền được phê duyệt
-
-SHIPPED --> DELIVERED : Xác nhận đã giao hàng
-
-DELIVERED --> [*]
-CANCELLED --> [*]
-
-note right of PROCESSING
-Tồn kho đã được giữ trước trong
-giao dịch tạo đơn hàng.
-end note
-
-note right of DELIVERED
-Gửi đánh giá được bật sau
-khi giao hàng thành công.
-end note
-
-@enduml
-
-
-
-

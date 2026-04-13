@@ -15,6 +15,17 @@
     "plantuml.diagramsRoot": "charts",
     "plantuml.exportOutDir": "charts/out",
     "chat.tools.terminal.autoApprove": {
-        "docker run": true
+        "docker run": true,
+        "/^node script\\.js$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "Set-Content": true,
+        ".\\title_translator.ps1": true,
+        "Out-File": true,
+        "/^Set-Content -Path inline\\.js -Value @\"\nconst fs = require\\('fs'\\);\nconst path = require\\('path'\\);\n\nconst c4Dir = path\\.join\\(process\\.cwd\\(\\), 'charts/c4'\\);\nconst umlDir = path\\.join\\(process\\.cwd\\(\\), 'charts/uml'\\);\n\nconst getFiles = \\(dir\\) => fs\\.readdirSync\\(dir\\)\\.filter\\(f => f\\.endsWith\\('\\.puml'\\)\\)\\.map\\(f => path\\.join\\(dir, f\\)\\);\nconst files = \\[\\.\\.\\.getFiles\\(c4Dir\\), \\.\\.\\.getFiles\\(umlDir\\)\\];\n\nfiles\\.forEach\\(file => \\{\n    let content = fs\\.readFileSync\\(file, 'utf8'\\);\n    const regex = /!include\\\\s\\+\\(\\[\\^\\\\n\\\\r\\]\\+\\)/g;\n    let modified = content;\n    let match;\n    while\\(\\(match = regex\\.exec\\(content\\)\\) !== null\\) \\{\n        const includedFile = match\\[1\\]\\.trim\\(\\);\n        const fullPath = path\\.resolve\\(path\\.dirname\\(file\\), includedFile\\);\n        if \\(fs\\.existsSync\\(fullPath\\)\\) \\{\n            const includedContent = fs\\.readFileSync\\(fullPath, 'utf8'\\);\n            modified = modified\\.replace\\(match\\[0\\], includedContent\\);\n        \\}\n    \\}\n    fs\\.writeFileSync\\(file, modified\\);\n\\}\\);\nconsole\\.log\\('Includes inlined!'\\);\n\"@\nnode inline\\.js$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
     }
 }

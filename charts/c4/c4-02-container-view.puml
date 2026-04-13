@@ -1,40 +1,119 @@
 @startuml
-!include ../shared/theme.puml
-!include ../shared/legend.puml
+' Theme PlantUML dùng chung cho các sơ đồ kiến trúc Fluxify.
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
 
-title Fluxify C4 Level 2 - Container View
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam database {
+  BorderColor #1E293B
+  FontColor #0F172A
+  BackgroundColor #E2E8F0
+}
+
+skinparam note {
+  BackgroundColor #FEF9C3
+  BorderColor #A16207
+  FontColor #78350F
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam rectangle<<frontend>> {
+  BackgroundColor #DCFCE7
+  BorderColor #14532D
+}
+
+skinparam rectangle<<backend>> {
+  BackgroundColor #DBEAFE
+  BorderColor #1E3A8A
+}
+
+skinparam rectangle<<data>> {
+  BackgroundColor #EDE9FE
+  BorderColor #5B21B6
+}
+
+skinparam rectangle<<external>> {
+  BackgroundColor #F1F5F9
+  BorderColor #475569
+}
+
+skinparam rectangle<<security>> {
+  BackgroundColor #FEE2E2
+  BorderColor #7F1D1D
+}
+
+
+!definelong COMMON_LEGEND()
+legend right
+|= Ký hiệu |= Ý nghĩa |
+|<#E0F2FE>Hệ thống|Nền tảng hoặc ranh giới hệ thống|
+|<#DCFCE7>Giao diện|Giao diện người dùng hoặc component phía client|
+|<#DBEAFE>Backend|API, dịch vụ, hoặc logic nghiệp vụ|
+|<#E2E8F0>Dữ liệu|Cơ sở dữ liệu hoặc thành phần lưu trữ|
+|<#F1F5F9>Ngoài|Tích hợp bên thứ 3 hoặc hệ thống bên ngoài|
+|<#FEE2E2>Bảo mật|Xác thực, phân quyền, hoặc rào cản bảo mật|
+endlegend
+!enddefinelong
+
+
+title C4 Mức 2 - Khung nhìn Container
 
 left to right direction
 
-actor "Customer/Vendor/Admin" as user
+actor "Khách Hàng/Người Bán/Quản Trị Viên" as user
 
-rectangle "Browser" as browser <<frontend>>
+rectangle "Trình duyệt" as browser <<frontend>>
 rectangle "Cloudinary" as cloudinary <<external>>
 rectangle "Resend" as resend <<external>>
 rectangle "VietQR" as vietqr <<external>>
 
-rectangle "Fluxify Next.js Monolith" as mono <<system>> {
-  rectangle "App Router UI\napp/*" as appui <<frontend>>
-  rectangle "Client State Store\nstore/cart-store.ts" as zustand <<frontend>>
+rectangle "Next.js Monolith" as mono <<system>> {
+    rectangle "Giao diện App Router\napp/*" as appui <<frontend>>
+    rectangle "Kho trạng thái client Zustand\nstore/cart-store.ts" as zustand <<frontend>>
 
-  rectangle "Route Handlers\napp/api/*" as routes <<backend>>
-  rectangle "Auth and Middleware\nlib/auth.ts + middleware.ts" as auth <<security>>
-  rectangle "Domain/Data Access\nlib/db/*" as queries <<backend>>
+    rectangle "Trình xử lý Route\napp/api/*" as routes <<backend>>
+    rectangle "Auth và Middleware\nlib/auth.ts + middleware.ts" as auth <<security>>
+    rectangle "Miền nghiệp vụ/Truy xuất dữ liệu\nlib/db/*" as queries <<backend>>
 
-  database "PostgreSQL via Prisma\nlib/prisma.ts" as postgres
-}
+    database "PostgreSQL qua Prisma\nlib/prisma.ts" as postgres
+  }
 
-user --> browser : Use storefront and dashboards
-browser --> appui : Render pages and invoke actions
-appui --> zustand : Cart and transient UI state
-appui --> routes : Fetch and mutate business data
-routes --> auth : Session and role enforcement
-routes --> queries : Domain query and mutation calls
-queries --> postgres : Persist domain state
+  user --> browser : Sử dụng storefront và dashboards
+    browser --> appui : Hiển thị trang và gọi hành động
+  appui --> zustand : Giỏ hàng và trạng thái UI tạm thời
+  appui --> routes : Fetch và cập nhật dữ liệu nghiệp vụ
+  routes --> auth : Quản lý phiên và phân quyền
+  routes --> queries : Các truy vấn domain và mutation
+  queries --> postgres : Lưu trạng thái domain
 
-routes --> cloudinary : Media upload and delete
-routes --> resend : Verification and receipt messages
-routes --> vietqr : Payment QR generation
-
+  routes --> cloudinary : Tải lên và xóa media
+  routes --> resend : Gửi mã xác nhận và hóa đơn
+  routes --> vietqr : Tạo mã QR thanh toán
 COMMON_LEGEND()
 @enduml
+
+
+
+
+

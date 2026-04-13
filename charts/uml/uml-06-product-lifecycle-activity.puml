@@ -1,47 +1,114 @@
 @startuml
-!include ../shared/theme.puml
+' Theme PlantUML dùng chung cho các sơ đồ kiến trúc Fluxify.
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
 
-title Fluxify UML - Product Publish and Update Activity
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam database {
+  BorderColor #1E293B
+  FontColor #0F172A
+  BackgroundColor #E2E8F0
+}
+
+skinparam note {
+  BackgroundColor #FEF9C3
+  BorderColor #A16207
+  FontColor #78350F
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam rectangle<<frontend>> {
+  BackgroundColor #DCFCE7
+  BorderColor #14532D
+}
+
+skinparam rectangle<<backend>> {
+  BackgroundColor #DBEAFE
+  BorderColor #1E3A8A
+}
+
+skinparam rectangle<<data>> {
+  BackgroundColor #EDE9FE
+  BorderColor #5B21B6
+}
+
+skinparam rectangle<<external>> {
+  BackgroundColor #F1F5F9
+  BorderColor #475569
+}
+
+skinparam rectangle<<security>> {
+  BackgroundColor #FEE2E2
+  BorderColor #7F1D1D
+}
+
+
+title Fluxify UML - Hoạt động xuất bản và cập nhật sản phẩm
 
 start
 
-:Vendor opens product editor;
-:Enter base fields\n(name, price, description, stock);
+:Người bán mở trình chỉnh sửa sản phẩm;
+:Nhập các trường cơ bản\n(name, price, description, stock);
 
-if (Has media changes?) then (yes)
-  :Upload media via /api/upload;
-  :Persist Cloudinary metadata;
+if (Có thay đổi media không?) then (yes)
+  :Tải media qua /api/upload;
+  :Lưu metadata Cloudinary;
 else (no)
 endif
 
-if (Has variants?) then (yes)
-  :Normalize variant matrix;
-  :Validate variant stock totals;
-  if (Variant stock valid?) then (yes)
-    :Continue;
+if (Có biến thể không?) then (yes)
+  :Chuẩn hóa ma trận biến thể;
+  :Kiểm tra tổng tồn kho biến thể;
+  if (Tồn kho biến thể hợp lệ?) then (yes)
+    :Tiếp tục;
   else (no)
-    :Return validation error;
+    :Trả về lỗi kiểm tra dữ liệu;
     stop
   endif
 else (no)
 endif
 
-:Submit save request\n(app/api/products/route.ts or [id]/route.ts);
-:Enforce vendor role;
-:Run zod validation;
+:Gửi yêu cầu lưu\n(app/api/products/route.ts or [id]/route.ts);
+:Đảm bảo quyền người bán;
+:Chạy kiểm tra zod;
 
-if (Valid payload?) then (yes)
-  :Persist with product queries;
-  :Record audit event;
-  if (Publish requested?) then (yes)
-    :Expose in catalog queries;
+if (Dữ liệu hợp lệ?) then (yes)
+  :Lưu bằng truy vấn sản phẩm;
+  :Ghi sự kiện kiểm toán;
+  if (Có yêu cầu xuất bản không?) then (yes)
+    :Hiển thị trong truy vấn catalog;
   else (no)
-    :Keep as draft-like internal state;
+    :Giữ ở trạng thái nháp nội bộ;
   endif
-  :Return updated product;
+  :Trả về sản phẩm đã cập nhật;
 else (no)
-  :Return structured validation errors;
+  :Trả về lỗi kiểm tra dữ liệu có cấu trúc;
 endif
 
 stop
 @enduml
+
+
+
+

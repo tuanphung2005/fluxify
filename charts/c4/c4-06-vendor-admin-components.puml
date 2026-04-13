@@ -1,54 +1,133 @@
 @startuml
-!include ../shared/theme.puml
-!include ../shared/legend.puml
+!definelong COMMON_LEGEND()
+legend right
+|= Ký hiệu |= Ý nghĩa |
+|<#E0F2FE>Hệ thống|Nền tảng hoặc ranh giới hệ thống|
+|<#DCFCE7>Giao diện|Giao diện người dùng hoặc component phía client|
+|<#DBEAFE>Backend|API, dịch vụ, hoặc logic nghiệp vụ|
+|<#E2E8F0>Dữ liệu|Cơ sở dữ liệu hoặc thành phần lưu trữ|
+|<#F1F5F9>Ngoài|Tích hợp bên thứ 3 hoặc hệ thống bên ngoài|
+|<#FEE2E2>Bảo mật|Xác thực, phân quyền, hoặc rào cản bảo mật|
+endlegend
+!enddefinelong
 
-title Fluxify C4 Level 3 - Vendor and Admin Management Components
+' Theme PlantUML dùng chung cho các sơ đồ kiến trúc Fluxify.
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam database {
+  BorderColor #1E293B
+  FontColor #0F172A
+  BackgroundColor #E2E8F0
+}
+
+skinparam note {
+  BackgroundColor #FEF9C3
+  BorderColor #A16207
+  FontColor #78350F
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam rectangle<<frontend>> {
+  BackgroundColor #DCFCE7
+  BorderColor #14532D
+}
+
+skinparam rectangle<<backend>> {
+  BackgroundColor #DBEAFE
+  BorderColor #1E3A8A
+}
+
+skinparam rectangle<<data>> {
+  BackgroundColor #EDE9FE
+  BorderColor #5B21B6
+}
+
+skinparam rectangle<<external>> {
+  BackgroundColor #F1F5F9
+  BorderColor #475569
+}
+
+skinparam rectangle<<security>> {
+  BackgroundColor #FEE2E2
+  BorderColor #7F1D1D
+}
+
+
+title C4 Mức 3 - Các thành phần quản lý người bán và quản trị
 
 left to right direction
 
-actor Vendor
-actor Admin
+actor Người_Bán as Vendor
+actor Quản_Trị_Viên as Admin
 
-rectangle "Vendor Dashboard UI\napp/vendor/*" as vendorui <<frontend>>
-rectangle "Admin Dashboard UI\napp/admin/*" as adminui <<frontend>>
+rectangle "Giao diện bảng điều khiển người bán\napp/vendor/*" as vendorui <<frontend>>
+rectangle "Giao diện bảng điều khiển quản trị\napp/admin/*" as adminui <<frontend>>
 
-rectangle "Management Subsystem" as mgmtsub <<system>> {
-  rectangle "Vendor Orders Route\napp/api/vendor/orders/route.ts" as vendororders <<backend>>
-  rectangle "Vendor Analytics Route\napp/api/vendor/analytics/route.ts" as vendoranalytics <<backend>>
-  rectangle "Vendor Coupons Route\napp/api/vendor/coupons/route.ts" as vendorcoupons <<backend>>
-  rectangle "Admin Users Route\napp/api/admin/users/route.ts" as adminusers <<backend>>
-  rectangle "Admin User Status Route\n.../admin/users/[id]/status/route.ts" as adminstatus <<backend>>
-  rectangle "Admin Shops Route\napp/api/admin/shops/route.ts" as adminshops <<backend>>
-  rectangle "Auth Helpers\nlib/api/auth-helpers.ts" as authhelpers <<security>>
-  rectangle "Query Layer\nlib/db/ecommerce-queries.ts + lib/db/product-queries.ts" as queries <<backend>>
+rectangle "Phân hệ Quản lý" as mgmtsub <<system>> {
+  rectangle "Route đơn hàng người bán\napp/api/vendor/orders/route.ts" as vendororders <<backend>>
+  rectangle "Route phân tích người bán\napp/api/vendor/analytics/route.ts" as vendoranalytics <<backend>>
+  rectangle "Route coupon người bán\napp/api/vendor/coupons/route.ts" as vendorcoupons <<backend>>
+  rectangle "Route người dùng quản trị\napp/api/admin/users/route.ts" as adminusers <<backend>>
+  rectangle "Route trạng thái người dùng (quản trị)\n.../admin/users/[id]/status/route.ts" as adminstatus <<backend>>
+  rectangle "Route cửa hàng quản trị\napp/api/admin/shops/route.ts" as adminshops <<backend>>
+  rectangle "Trợ giúp xác thực\nlib/api/auth-helpers.ts" as authhelpers <<security>>
+  rectangle "Lớp truy vấn\nlib/db/ecommerce-queries.ts + lib/db/product-queries.ts" as queries <<backend>>
   database "Prisma + PostgreSQL" as db
 }
 
-Vendor --> vendorui : Manage store operations
-Admin --> adminui : Moderate platform operations
+Vendor --> vendorui : Quản lý cửa hàng, đơn hàng, mã giảm giá, xem phân tích
+Admin --> adminui : Theo dõi và quản lý người dùng, cửa hàng
 
-vendorui --> vendororders : Fetch order pipeline
-vendorui --> vendoranalytics : Fetch metrics
-vendorui --> vendorcoupons : Manage coupons
+vendorui --> vendororders : Pipeline quản lý đơn hàng
+vendorui --> vendoranalytics : Xem chỉ số doanh thu, đơn hàng, v.v
+vendorui --> vendorcoupons : Quản lý mã giảm giá
 
-adminui --> adminusers : List and inspect users
-adminui --> adminstatus : Activate and deactivate users
-adminui --> adminshops : List and inspect shops
+adminui --> adminusers : Liệt kê và quản lý người dùng
+adminui --> adminstatus : Kích hoạt hoặc vô hiệu hóa người dùng
+adminui --> adminshops : Liệt kê và quản lý cửa hàng
 
-vendororders --> authhelpers : Enforce vendor role
-vendoranalytics --> authhelpers : Enforce vendor role
-vendorcoupons --> authhelpers : Enforce vendor role
-adminusers --> authhelpers : Enforce admin role
-adminstatus --> authhelpers : Enforce admin role
-adminshops --> authhelpers : Enforce admin role
+vendororders --> authhelpers : Đảm bảo quyền người bán
+vendoranalytics --> authhelpers : Đảm bảo quyền người bán
+vendorcoupons --> authhelpers : Đảm bảo quyền người bán
+adminusers --> authhelpers : Đảm bảo quyền người quản trị
+adminstatus --> authhelpers : Đảm bảo quyền người quản trị
+adminshops --> authhelpers : Đảm bảo quyền người quản trị
 
-vendororders --> queries : Order queries
-vendoranalytics --> queries : Aggregate analytics
-vendorcoupons --> queries : Coupon queries
-adminusers --> queries : User queries
-adminstatus --> queries : Status updates
-adminshops --> queries : Shop queries
-queries --> db : Persist and retrieve data
+vendororders --> queries : Truy vấn đơn hàng
+vendoranalytics --> queries : Tổng hợp dữ liệu phân tích
+vendorcoupons --> queries : Truy vấn mã giảm giá
+adminusers --> queries : Truy vấn người dùng
+adminstatus --> queries : Cập nhật trạng thái
+adminshops --> queries : Truy vấn cửa hàng
+queries --> db : Lưu trữ và truy xuất dữ liệu
 
 COMMON_LEGEND()
 @enduml
+
+
+
+
+

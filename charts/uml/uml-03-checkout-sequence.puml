@@ -1,55 +1,122 @@
 @startuml
-!include ../shared/theme.puml
+' Theme PlantUML dùng chung cho các sơ đồ kiến trúc Fluxify.
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
 
-title Fluxify UML - Customer Checkout and Order Creation Sequence
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam database {
+  BorderColor #1E293B
+  FontColor #0F172A
+  BackgroundColor #E2E8F0
+}
+
+skinparam note {
+  BackgroundColor #FEF9C3
+  BorderColor #A16207
+  FontColor #78350F
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam rectangle<<frontend>> {
+  BackgroundColor #DCFCE7
+  BorderColor #14532D
+}
+
+skinparam rectangle<<backend>> {
+  BackgroundColor #DBEAFE
+  BorderColor #1E3A8A
+}
+
+skinparam rectangle<<data>> {
+  BackgroundColor #EDE9FE
+  BorderColor #5B21B6
+}
+
+skinparam rectangle<<external>> {
+  BackgroundColor #F1F5F9
+  BorderColor #475569
+}
+
+skinparam rectangle<<security>> {
+  BackgroundColor #FEE2E2
+  BorderColor #7F1D1D
+}
+
+
+title Fluxify UML - Luồng thanh toán và tạo đơn hàng
 
 autonumber
 
-actor Customer
-participant "Shop UI\napp/(main)/shop/*" as UI
-participant "Orders Route\nPOST /api/orders" as OrdersRoute
-participant "Rate Limit\nlib/api/rate-limit.ts" as RateLimit
-participant "Auth Helpers\nlib/api/auth-helpers.ts" as Auth
+actor Khách_Hàng as Customer
+participant "Giao diện cửa hàng\napp/(main)/shop/*" as UI
+participant "Route đơn hàng\nPOST /api/orders" as OrdersRoute
+participant "Giới hạn tần suất\nlib/api/rate-limit.ts" as RateLimit
+participant "Trợ giúp xác thực\nlib/api/auth-helpers.ts" as Auth
 participant "Validation\nlib/validations.ts" as Validation
-participant "Product Queries\nlib/db/product-queries.ts" as ProductQueries
-participant "Ecommerce Queries\nlib/db/ecommerce-queries.ts" as Ecommerce
+participant "Truy vấn sản phẩm\nlib/db/product-queries.ts" as ProductQueries
+participant "Truy vấn thương mại điện tử\nlib/db/ecommerce-queries.ts" as Ecommerce
 database "Prisma + PostgreSQL" as DB
 
-Customer -> UI : Click Place Order
-UI -> OrdersRoute : POST order payload
+Customer -> UI : Nhấn Đặt hàng
+UI -> OrdersRoute : POST dữ liệu đơn hàng
 OrdersRoute -> RateLimit : checkRateLimit(write)
-RateLimit --> OrdersRoute : allowed / blocked
+RateLimit --> OrdersRoute : được phép / bị chặn
 
-alt request allowed
+alt yêu cầu được phép
   OrdersRoute -> Auth : getAuthenticatedUser()
-  Auth --> OrdersRoute : user context or guest context
-  OrdersRoute -> Validation : validate order input
-  Validation --> OrdersRoute : sanitized payload
+  Auth --> OrdersRoute : ngữ cảnh người dùng hoặc khách
+  OrdersRoute -> Validation : kiểm tra dữ liệu đơn hàng
+  Validation --> OrdersRoute : dữ liệu đã làm sạch
 
-  loop For each line item
-    OrdersRoute -> ProductQueries : validate product and stock
+  loop Với mỗi dòng sản phẩm
+    OrdersRoute -> ProductQueries : kiểm tra sản phẩm và tồn kho
     ProductQueries -> DB : SELECT product and variant stock
-    DB --> ProductQueries : current stock
-    ProductQueries --> OrdersRoute : stock check result
+    DB --> ProductQueries : tồn kho hiện tại
+    ProductQueries --> OrdersRoute : kết quả kiểm tra tồn kho
   end
 
-  alt stock available
-    OrdersRoute -> Ecommerce : create order transaction
+  alt còn hàng
+    OrdersRoute -> Ecommerce : tạo giao dịch đơn hàng
     Ecommerce -> DB : INSERT order and order_items
     Ecommerce -> DB : UPDATE stock and variant stock
     DB --> Ecommerce : transaction committed
-    Ecommerce --> OrdersRoute : order id and summary
-    OrdersRoute --> UI : 201 Created with order details
-  else stock missing
-    OrdersRoute --> UI : 400 with stock error
+    Ecommerce --> OrdersRoute : mã đơn và tóm tắt
+    OrdersRoute --> UI : 201 Đã tạo cùng chi tiết đơn hàng
+  else thiếu hàng
+    OrdersRoute --> UI : 400 lỗi tồn kho
   end
-else request blocked
-  OrdersRoute --> UI : 429 rate limit exceeded
+else yêu cầu bị chặn
+  OrdersRoute --> UI : 429 vượt giới hạn tần suất
 end
 
 note right of OrdersRoute
-Receipt generation is handled by
+Tạo biên nhận được xử lý bởi
 POST /api/orders/[orderId]/receipt.
 end note
 
 @enduml
+
+
+
+

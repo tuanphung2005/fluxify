@@ -1,36 +1,117 @@
 @startuml
-!include ../shared/theme.puml
-!include ../shared/legend.puml
+' Theme PlantUML dùng chung cho các sơ đồ kiến trúc Fluxify.
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
 
-title Fluxify C4 Level 3 - Order Processing Components
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam database {
+  BorderColor #1E293B
+  FontColor #0F172A
+  BackgroundColor #E2E8F0
+}
+
+skinparam note {
+  BackgroundColor #FEF9C3
+  BorderColor #A16207
+  FontColor #78350F
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam rectangle<<frontend>> {
+  BackgroundColor #DCFCE7
+  BorderColor #14532D
+}
+
+skinparam rectangle<<backend>> {
+  BackgroundColor #DBEAFE
+  BorderColor #1E3A8A
+}
+
+skinparam rectangle<<data>> {
+  BackgroundColor #EDE9FE
+  BorderColor #5B21B6
+}
+
+skinparam rectangle<<external>> {
+  BackgroundColor #F1F5F9
+  BorderColor #475569
+}
+
+skinparam rectangle<<security>> {
+  BackgroundColor #FEE2E2
+  BorderColor #7F1D1D
+}
+
+
+!definelong COMMON_LEGEND()
+legend right
+|= Ký hiệu |= Ý nghĩa |
+|<#E0F2FE>Hệ thống|Nền tảng hoặc ranh giới hệ thống|
+|<#DCFCE7>Giao diện|Giao diện người dùng hoặc component phía client|
+|<#DBEAFE>Backend|API, dịch vụ, hoặc logic nghiệp vụ|
+|<#E2E8F0>Dữ liệu|Cơ sở dữ liệu hoặc thành phần lưu trữ|
+|<#F1F5F9>Ngoài|Tích hợp bên thứ 3 hoặc hệ thống bên ngoài|
+|<#FEE2E2>Bảo mật|Xác thực, phân quyền, hoặc rào cản bảo mật|
+endlegend
+!enddefinelong
+
+
+title C4 Mức 3 - Các Component Xử lý Đơn hàng
 
 left to right direction
 
-rectangle "Shop UI\napp/(main)/shop/*" as shopui <<frontend>>
+rectangle "Giao diện cửa hàng\napp/(main)/shop/*" as shopui <<frontend>>
 
-rectangle "Order Processing Subsystem" as ordersub <<system>> {
-  rectangle "Create Order Route\napp/api/orders/route.ts" as ordersroute <<backend>>
-  rectangle "Auth Helpers\nlib/api/auth-helpers.ts" as authhelpers <<security>>
-  rectangle "Rate Limiter\nlib/api/rate-limit.ts" as ratelimit <<security>>
-  rectangle "Input Validation\nlib/validations.ts" as validations <<backend>>
-  rectangle "Ecommerce Queries\nlib/db/ecommerce-queries.ts" as ecommerce <<backend>>
-  rectangle "Product Queries\nlib/db/product-queries.ts" as products <<backend>>
-  rectangle "Audit Logger\nlib/api/audit.ts" as audit <<backend>>
+rectangle "Phân hệ xử lý đơn hàng" as ordersub <<system>> {
+  rectangle "Route tạo đơn hàng\napp/api/orders/route.ts" as ordersroute <<backend>>
+  rectangle "Quản lý auth\nlib/api/auth-helpers.ts" as authhelpers <<security>>
+  rectangle "Giới hạn Rate\nlib/api/rate-limit.ts" as ratelimit <<security>>
+  rectangle "Kiểm tra dữ liệu đầu vào\nlib/validations.ts" as validations <<backend>>
+  rectangle "Truy vấn Ecommerce\nlib/db/ecommerce-queries.ts" as ecommerce <<backend>>
+  rectangle "Truy vấn Product\nlib/db/product-queries.ts" as products <<backend>>
+  rectangle "Ghi log Audit\nlib/api/audit.ts" as audit <<backend>>
   database "Prisma + PostgreSQL\nlib/prisma.ts" as db
 }
 
 rectangle "Resend" as resend <<external>>
 
 shopui --> ordersroute : POST /api/orders
-ordersroute --> ratelimit : Check write quota
-ordersroute --> authhelpers : Resolve user context
-ordersroute --> validations : Validate payload
-ordersroute --> products : Verify stock and variants
-ordersroute --> ecommerce : Create order and items
-products --> db : Atomic stock updates
-ecommerce --> db : Transactional inserts
-ordersroute --> audit : Record critical actions
-ordersroute --> resend : Receipt flow via receipt endpoint
+ordersroute --> ratelimit : Kiểm tra rate limit
+ordersroute --> authhelpers : Xử lý context đăng nhập của user
+ordersroute --> validations : Kiểm tra dữ liệu đầu vào
+ordersroute --> products : Kiểm tra hàng tồn kho
+ordersroute --> ecommerce : Tạo đơn hàng
+products --> db : Cập nhật tồn kho
+ecommerce --> db : Thêm thông tin đơn hàng vào DB
+ordersroute --> audit : Ghi lại Audit hành động
+ordersroute --> resend : Gửi hóa đơn qua email
 
 COMMON_LEGEND()
 @enduml
+
+
+
+
+
+

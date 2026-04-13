@@ -1,8 +1,82 @@
 @startuml
-!include ../shared/theme.puml
-!include ../shared/legend.puml
+' Theme PlantUML dùng chung cho các sơ đồ kiến trúc Fluxify.
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
 
-title Fluxify UML - Domain Class Model
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam database {
+  BorderColor #1E293B
+  FontColor #0F172A
+  BackgroundColor #E2E8F0
+}
+
+skinparam note {
+  BackgroundColor #FEF9C3
+  BorderColor #A16207
+  FontColor #78350F
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam rectangle<<frontend>> {
+  BackgroundColor #DCFCE7
+  BorderColor #14532D
+}
+
+skinparam rectangle<<backend>> {
+  BackgroundColor #DBEAFE
+  BorderColor #1E3A8A
+}
+
+skinparam rectangle<<data>> {
+  BackgroundColor #EDE9FE
+  BorderColor #5B21B6
+}
+
+skinparam rectangle<<external>> {
+  BackgroundColor #F1F5F9
+  BorderColor #475569
+}
+
+skinparam rectangle<<security>> {
+  BackgroundColor #FEE2E2
+  BorderColor #7F1D1D
+}
+
+!definelong COMMON_LEGEND()
+legend right
+|= Ký hiệu |= Ý nghĩa |
+|<#E0F2FE>Hệ thống|Nền tảng hoặc ranh giới hệ thống|
+|<#DCFCE7>Giao diện|Giao diện người dùng hoặc component phía client|
+|<#DBEAFE>Backend|API, dịch vụ, hoặc logic nghiệp vụ|
+|<#E2E8F0>Dữ liệu|Cơ sở dữ liệu hoặc thành phần lưu trữ|
+|<#F1F5F9>Ngoài|Tích hợp bên thứ 3 hoặc hệ thống bên ngoài|
+|<#FEE2E2>Bảo mật|Xác thực, phân quyền, hoặc rào cản bảo mật|
+endlegend
+!enddefinelong
+
+
+title Sơ đồ Lớp Domain (Mô Hình Lớp Nghiệp Vụ (Mô Hình Lớp Nghiệp Vụ (Domain Class Model)))
 
 hide methods
 
@@ -121,44 +195,49 @@ class FavoriteShop {
   +id: String
 }
 
-User "1" -- "0..1" VendorProfile : owns
-User "1" -- "0..1" Cart : has
-User "1" -- "0..1" Wishlist : has
-User "1" -- "0..*" Address : stores
-User "1" -- "0..*" Order : places
-User "1" -- "0..*" Review : writes
-User "1" -- "0..*" ChatConversation : participates
-User "1" -- "0..*" ProductView : generates
-User "1" -- "0..*" FavoriteShop : favorites
+User "1" -- "0..1" VendorProfile : sở hữu
+User "1" -- "0..1" Cart : có
+User "1" -- "0..1" Wishlist : có
+User "1" -- "0..*" Address : lưu trữ
+User "1" -- "0..*" Order : đặt hàng
+User "1" -- "0..*" Review : viết
+User "1" -- "0..*" ChatConversation : tham gia
+User "1" -- "0..*" ProductView : tạo
+User "1" -- "0..*" FavoriteShop : yêu thích
 
-VendorProfile "1" -- "0..*" Product : sells
-VendorProfile "1" -- "0..*" Coupon : issues
-VendorProfile "1" -- "0..1" ShopTemplate : customizes
-VendorProfile "1" -- "0..*" ChatConversation : receives
-VendorProfile "1" -- "0..*" FavoriteShop : followed by
+VendorProfile "1" -- "0..*" Product : bán
+VendorProfile "1" -- "0..*" Coupon : phát hành
+VendorProfile "1" -- "0..1" ShopTemplate : tùy chỉnh
+VendorProfile "1" -- "0..*" ChatConversation : nhận
+VendorProfile "1" -- "0..*" FavoriteShop : được theo dõi bởi
 
-Category "1" -- "0..*" Product : categorizes
-Category "0..1" -- "0..*" Category : parent-child
+Category "1" -- "0..*" Product : phân loại
+Category "0..1" -- "0..*" Category : cha-con
 
-Cart "1" -- "0..*" CartItem : contains
-CartItem "*" --> "1" Product : references
+Cart "1" -- "0..*" CartItem : chứa
+CartItem "*" --> "1" Product : tham chiếu
 
-Wishlist "1" -- "0..*" WishlistItem : contains
-WishlistItem "*" --> "1" Product : references
+Wishlist "1" -- "0..*" WishlistItem : chứa
+WishlistItem "*" --> "1" Product : tham chiếu
 
-Order "1" -- "1" Address : ships to
-Order "1" -- "0..*" OrderItem : contains
-Order "0..*" --> "0..1" Coupon : applies
-OrderItem "*" --> "1" Product : references
+Order "1" -- "1" Address : giao đến
+Order "1" -- "0..*" OrderItem : chứa
+Order "0..*" --> "0..1" Coupon : áp dụng
+OrderItem "*" --> "1" Product : tham chiếu
 
-Review "*" --> "1" Product : rates
-Review "*" --> "0..1" OrderItem : verified purchase
+Review "*" --> "1" Product : đánh giá
+Review "*" --> "0..1" OrderItem : đã mua hàng
 
-ChatConversation "1" -- "0..*" ChatMessage : contains
+ChatConversation "1" -- "0..*" ChatMessage : chứa
 
-ShopTemplate "1" -- "0..*" ShopComponent : composes
+ShopTemplate "1" -- "0..*" ShopComponent : cấu thành từ
 
-Product "1" -- "0..*" ProductView : tracked by
+Product "1" -- "0..*" ProductView : được theo dõi bởi
 
 COMMON_LEGEND()
 @enduml
+
+
+
+
+

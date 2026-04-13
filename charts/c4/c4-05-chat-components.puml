@@ -1,45 +1,124 @@
 @startuml
-!include ../shared/theme.puml
-!include ../shared/legend.puml
+!definelong COMMON_LEGEND()
+legend right
+|= Ký hiệu |= Ý nghĩa |
+|<#E0F2FE>Hệ thống|Nền tảng hoặc ranh giới hệ thống|
+|<#DCFCE7>Giao diện|Giao diện người dùng hoặc component phía client|
+|<#DBEAFE>Backend|API, dịch vụ, hoặc logic nghiệp vụ|
+|<#E2E8F0>Dữ liệu|Cơ sở dữ liệu hoặc thành phần lưu trữ|
+|<#F1F5F9>Ngoài|Tích hợp bên thứ 3 hoặc hệ thống bên ngoài|
+|<#FEE2E2>Bảo mật|Xác thực, phân quyền, hoặc rào cản bảo mật|
+endlegend
+!enddefinelong
 
-title Fluxify C4 Level 3 - Chat and Unread Components
+' Theme PlantUML dùng chung cho các sơ đồ kiến trúc Fluxify.
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam database {
+  BorderColor #1E293B
+  FontColor #0F172A
+  BackgroundColor #E2E8F0
+}
+
+skinparam note {
+  BackgroundColor #FEF9C3
+  BorderColor #A16207
+  FontColor #78350F
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam rectangle<<frontend>> {
+  BackgroundColor #DCFCE7
+  BorderColor #14532D
+}
+
+skinparam rectangle<<backend>> {
+  BackgroundColor #DBEAFE
+  BorderColor #1E3A8A
+}
+
+skinparam rectangle<<data>> {
+  BackgroundColor #EDE9FE
+  BorderColor #5B21B6
+}
+
+skinparam rectangle<<external>> {
+  BackgroundColor #F1F5F9
+  BorderColor #475569
+}
+
+skinparam rectangle<<security>> {
+  BackgroundColor #FEE2E2
+  BorderColor #7F1D1D
+}
+
+
+title C4 Mức 3 - Component Chat và Tin nhắn chưa đọc
 
 left to right direction
 
-actor Customer
-actor Vendor
+actor Khách_Hàng as Customer
+actor Người_Bán as Vendor
 
-rectangle "Chat UI\napp/vendor/chat + app/(main)/shop/*" as chatui <<frontend>>
-rectangle "Unread Poll Hook\nhooks/useUnreadMessages.ts" as unreadhook <<frontend>>
+rectangle "Giao diện trò chuyện\napp/vendor/chat + app/(main)/shop/*" as chatui <<frontend>>
+rectangle "Thăm dò tin nhắn chưa đọc\nhooks/useUnreadMessages.ts" as unreadhook <<frontend>>
 
-rectangle "Chat Subsystem" as chatsub <<system>> {
-  rectangle "Conversations Route\napp/api/chat/conversations/route.ts" as conversations <<backend>>
-  rectangle "Conversation Detail Route\n.../conversations/[id]/route.ts" as conversationdetail <<backend>>
-  rectangle "Messages Route\n.../conversations/[id]/messages/route.ts" as messages <<backend>>
-  rectangle "Unread Route\napp/api/chat/unread/route.ts" as unreadroute <<backend>>
-  rectangle "Auth Helpers\nlib/api/auth-helpers.ts" as authhelpers <<security>>
-  rectangle "Query Layer\nlib/db/ecommerce-queries.ts" as querylayer <<backend>>
+rectangle "Chat Phân hệ" as chatsub <<system>> {
+  rectangle "Route trò chuyện\napp/api/chat/conversations/route.ts" as conversations <<backend>>
+  rectangle "Route chi tiết trò chuyện\n.../conversations/[id]/route.ts" as conversationdetail <<backend>>
+  rectangle "Route tin nhắn\n.../conversations/[id]/messages/route.ts" as messages <<backend>>
+  rectangle "Route tin nhắn chưa đọc\napp/api/chat/unread/route.ts" as unreadroute <<backend>>
+  rectangle "Trợ giúp xác thực\nlib/api/auth-helpers.ts" as authhelpers <<security>>
+  rectangle "Lớp truy vấn\nlib/db/ecommerce-queries.ts" as querylayer <<backend>>
   database "Prisma + PostgreSQL" as db
 }
 
-Customer --> chatui : Send and read messages
-Vendor --> chatui : Send and read messages
-chatui --> conversations : Create and list conversations
-chatui --> conversationdetail : Load conversation detail
-chatui --> messages : Send and list messages
-chatui --> unreadhook : Poll unread count
-unreadhook --> unreadroute : GET unread count
+Customer --> chatui : Gửi và đọc tin nhắn
+Vendor --> chatui : Gửi và đọc tin nhắn
+chatui --> conversations : Tạo và liệt kê các cuộc trò chuyện
+chatui --> conversationdetail : Tải chi tiết cuộc trò chuyện
+chatui --> messages : Gửi và liệt kê tin nhắn
+chatui --> unreadhook : Thăm dò số tin nhắn chưa đọc
+unreadhook --> unreadroute : GET số tin nhắn chưa đọc
 
-conversations --> authhelpers : Validate session and role
-conversationdetail --> authhelpers : Validate participant access
-messages --> authhelpers : Validate participant access
-unreadroute --> authhelpers : Validate session and role
+conversations --> authhelpers : Xác thực phiên và vai trò
+conversationdetail --> authhelpers : Xác thực người tham gia trò chuyện
+messages --> authhelpers : Xác thực người tham gia trò chuyện
+unreadroute --> authhelpers : Xác thực phiên và vai trò
 
-conversations --> querylayer : Conversation operations
-conversationdetail --> querylayer : Message retrieval
-messages --> querylayer : Message create and read
-unreadroute --> querylayer : Aggregate unread count
-querylayer --> db : Persist and fetch chat data
+conversations --> querylayer : Thao tác hội thoại
+conversationdetail --> querylayer : Lấy tin nhắn
+messages --> querylayer : Tạo và đọc tin nhắn
+unreadroute --> querylayer : Lấy số lượng tin nhắn chưa đọc
+querylayer --> db : Duy trì dữ liệu trò chuyện và tin nhắn
 
 COMMON_LEGEND()
 @enduml
+
+
+
+
+

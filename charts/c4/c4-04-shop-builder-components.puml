@@ -1,40 +1,119 @@
 @startuml
-!include ../shared/theme.puml
-!include ../shared/legend.puml
+!definelong COMMON_LEGEND()
+legend right
+|= Ký hiệu |= Ý nghĩa |
+|<#E0F2FE>Hệ thống|Nền tảng hoặc ranh giới hệ thống|
+|<#DCFCE7>Giao diện|Giao diện người dùng hoặc component phía client|
+|<#DBEAFE>Backend|API, dịch vụ, hoặc logic nghiệp vụ|
+|<#E2E8F0>Dữ liệu|Cơ sở dữ liệu hoặc thành phần lưu trữ|
+|<#F1F5F9>Ngoài|Tích hợp bên thứ 3 hoặc hệ thống bên ngoài|
+|<#FEE2E2>Bảo mật|Xác thực, phân quyền, hoặc rào cản bảo mật|
+endlegend
+!enddefinelong
 
-title Fluxify C4 Level 3 - Shop Builder Components
+' Theme PlantUML dùng chung cho các sơ đồ kiến trúc Fluxify.
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam database {
+  BorderColor #1E293B
+  FontColor #0F172A
+  BackgroundColor #E2E8F0
+}
+
+skinparam note {
+  BackgroundColor #FEF9C3
+  BorderColor #A16207
+  FontColor #78350F
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam rectangle<<frontend>> {
+  BackgroundColor #DCFCE7
+  BorderColor #14532D
+}
+
+skinparam rectangle<<backend>> {
+  BackgroundColor #DBEAFE
+  BorderColor #1E3A8A
+}
+
+skinparam rectangle<<data>> {
+  BackgroundColor #EDE9FE
+  BorderColor #5B21B6
+}
+
+skinparam rectangle<<external>> {
+  BackgroundColor #F1F5F9
+  BorderColor #475569
+}
+
+skinparam rectangle<<security>> {
+  BackgroundColor #FEE2E2
+  BorderColor #7F1D1D
+}
+
+
+title C4 Mức 3 - Các Component Xây dựng Nền tảng (Shop Builder)
 
 left to right direction
 
-rectangle "Vendor Builder UI\napp/vendor/shop-builder/*" as builderui <<frontend>>
+rectangle "Giao diện Trình dựng cửa hàng cho người bán\napp/vendor/shop-builder/*" as builderui <<frontend>>
 
-rectangle "Shop Builder Subsystem" as shopsub <<system>> {
-  rectangle "Template Route\napp/api/shop/template/route.ts" as templateroute <<backend>>
-  rectangle "Components Route\napp/api/shop/components/route.ts" as componentsroute <<backend>>
-  rectangle "Component Item Route\napp/api/shop/components/[id]/route.ts" as componentitem <<backend>>
-  rectangle "Batch/Sync Routes\n.../batch-update + .../sync" as syncroute <<backend>>
-  rectangle "Shop Queries\nlib/db/shop-queries.ts" as shopqueries <<backend>>
-  rectangle "Default Configs\nlib/shop/default-configs.ts" as defaults <<backend>>
-  rectangle "Auth Helpers\nlib/api/auth-helpers.ts" as authhelpers <<security>>
+rectangle "Phân hệ xây dựng cửa hàng" as shopsub <<system>> {
+  rectangle "Route template cửa hàng\napp/api/shop/template/route.ts" as templateroute <<backend>>
+  rectangle "Route danh sách component\napp/api/shop/components/route.ts" as componentsroute <<backend>>
+  rectangle "Route chi tiết component\napp/api/shop/components/[id]/route.ts" as componentitem <<backend>>
+  rectangle "Cập nhật hàng loạt (cập nhật hàng loạt)\n.../batch-update + .../sync" as syncroute <<backend>>
+  rectangle "Truy vấn cửa hàng\nlib/db/shop-queries.ts" as shopqueries <<backend>>
+  rectangle "Cấu hình mặc định cho các thành phần\nlib/shop/default-configs.ts" as defaults <<backend>>
+  rectangle "Quản lý auth (Trợ giúp xác thực)\nlib/api/auth-helpers.ts" as authhelpers <<security>>
   database "Prisma + PostgreSQL" as db
 }
 
-builderui --> templateroute : Load and save template
-builderui --> componentsroute : Add components
-builderui --> componentitem : Edit and delete component
-builderui --> syncroute : Reorder and synchronize
+builderui --> templateroute : Tải và lưu template
+builderui --> componentsroute : Thêm component mới
+builderui --> componentitem : Sửa/xóa component
+builderui --> syncroute : Sắp xếp lại và đồng bộ với DB
 
-templateroute --> authhelpers : Enforce vendor access
-componentsroute --> authhelpers : Enforce vendor access
-componentitem --> authhelpers : Enforce vendor access
-syncroute --> authhelpers : Enforce vendor access
+templateroute --> authhelpers : Kiểm tra quyền Vendor
+componentsroute --> authhelpers : Kiểm tra quyền Vendor
+componentitem --> authhelpers : Kiểm tra quyền Vendor
+syncroute --> authhelpers : Kiểm tra quyền Vendor
 
-templateroute --> shopqueries : Persist template
-componentsroute --> shopqueries : Persist component operations
-componentitem --> shopqueries : Persist item changes
-syncroute --> shopqueries : Persist batch updates
-shopqueries --> defaults : Apply fallback config when missing
-shopqueries --> db : Read and write template graph
+templateroute --> shopqueries : Cập nhật template của cửa hàng
+componentsroute --> shopqueries : Thực hiện các thao tác component
+componentitem --> shopqueries : Cập nhật thông tin chi tiết component
+syncroute --> shopqueries : Xử lý cập nhật hàng loạt
+shopqueries --> defaults : Áp dụng config mặc định khi tạo mới component
+shopqueries --> db : Đọc/ghi dữ liệu component và template
 
 COMMON_LEGEND()
 @enduml
+
+
+
+
+

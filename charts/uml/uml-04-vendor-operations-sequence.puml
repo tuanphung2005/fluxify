@@ -1,46 +1,113 @@
 @startuml
-!include ../shared/theme.puml
+' Theme PlantUML dùng chung cho các sơ đồ kiến trúc Fluxify.
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
 
-title Fluxify UML - Vendor Operations Sequence
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam database {
+  BorderColor #1E293B
+  FontColor #0F172A
+  BackgroundColor #E2E8F0
+}
+
+skinparam note {
+  BackgroundColor #FEF9C3
+  BorderColor #A16207
+  FontColor #78350F
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam rectangle<<frontend>> {
+  BackgroundColor #DCFCE7
+  BorderColor #14532D
+}
+
+skinparam rectangle<<backend>> {
+  BackgroundColor #DBEAFE
+  BorderColor #1E3A8A
+}
+
+skinparam rectangle<<data>> {
+  BackgroundColor #EDE9FE
+  BorderColor #5B21B6
+}
+
+skinparam rectangle<<external>> {
+  BackgroundColor #F1F5F9
+  BorderColor #475569
+}
+
+skinparam rectangle<<security>> {
+  BackgroundColor #FEE2E2
+  BorderColor #7F1D1D
+}
+
+
+title Fluxify UML - Luồng Các Thao Tác Của Người Bán
 
 autonumber
 
-actor Vendor
-participant "Vendor Dashboard UI\napp/vendor/*" as VendorUI
-participant "Vendor Orders Route\nGET /api/vendor/orders" as VendorOrders
-participant "Vendor Analytics Route\nGET /api/vendor/analytics" as VendorAnalytics
-participant "Vendor Payment Route\nGET/PUT /api/vendor/payment" as VendorPayment
-participant "Auth Helpers\nlib/api/auth-helpers.ts" as Auth
-participant "Ecommerce Queries\nlib/db/ecommerce-queries.ts" as Ecommerce
+actor Người_Bán as Vendor
+participant "Giao diện bảng điều khiển người bán\napp/vendor/*" as VendorUI
+participant "Route đơn hàng người bán\nGET /api/vendor/orders" as VendorOrders
+participant "Route phân tích người bán\nGET /api/vendor/analytics" as VendorAnalytics
+participant "Route thanh toán người bán\nGET/PUT /api/vendor/payment" as VendorPayment
+participant "Trợ giúp xác thực\nlib/api/auth-helpers.ts" as Auth
+participant "Truy vấn thương mại điện tử\nlib/db/ecommerce-queries.ts" as Ecommerce
 participant "VietQR\nlib/vietqr.ts" as VietQR
 database "Prisma + PostgreSQL" as DB
 
-Vendor -> VendorUI : Open dashboard
+Vendor -> VendorUI : Mở bảng điều khiển
 
-VendorUI -> VendorOrders : Request current orders
+VendorUI -> VendorOrders : Yêu cầu đơn hàng hiện tại
 VendorOrders -> Auth : getAuthenticatedVendor()
-Auth --> VendorOrders : vendor context
+Auth --> VendorOrders : ngữ cảnh người bán
 VendorOrders -> Ecommerce : getVendorOrders(filters)
 Ecommerce -> DB : SELECT orders for vendor products
-DB --> Ecommerce : order list
-Ecommerce --> VendorOrders : paged result
-VendorOrders --> VendorUI : render order table
+DB --> Ecommerce : danh sách đơn hàng
+Ecommerce --> VendorOrders : kết quả phân trang
+VendorOrders --> VendorUI : hiển thị bảng đơn hàng
 
-VendorUI -> VendorAnalytics : Request metrics
+VendorUI -> VendorAnalytics : Yêu cầu chỉ số
 VendorAnalytics -> Auth : getAuthenticatedVendor()
-Auth --> VendorAnalytics : vendor context
-VendorAnalytics -> Ecommerce : aggregate revenue and counts
-Ecommerce -> DB : aggregate queries
-DB --> Ecommerce : analytics snapshot
-Ecommerce --> VendorAnalytics : analytics payload
-VendorAnalytics --> VendorUI : render charts and KPIs
+Auth --> VendorAnalytics : ngữ cảnh người bán
+VendorAnalytics -> Ecommerce : tổng hợp doanh thu và số lượng
+Ecommerce -> DB : truy vấn tổng hợp
+DB --> Ecommerce : ảnh chụp dữ liệu phân tích
+Ecommerce --> VendorAnalytics : dữ liệu phân tích
+VendorAnalytics --> VendorUI : hiển thị biểu đồ và KPI
 
-VendorUI -> VendorPayment : Update payout settings
+VendorUI -> VendorPayment : Cập nhật cấu hình thanh toán
 VendorPayment -> Auth : getAuthenticatedVendor()
-Auth --> VendorPayment : vendor context
-VendorPayment -> DB : persist account settings
+Auth --> VendorPayment : ngữ cảnh người bán
+VendorPayment -> DB : lưu cấu hình tài khoản
 VendorPayment -> VietQR : generateVietQRUrl()
 VietQR --> VendorPayment : QR link
-VendorPayment --> VendorUI : updated settings and QR
+VendorPayment --> VendorUI : cấu hình và QR đã cập nhật
 
 @enduml
+
+
+
+

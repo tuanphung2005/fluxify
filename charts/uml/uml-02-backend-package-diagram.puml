@@ -1,46 +1,120 @@
 @startuml
-!include ../shared/theme.puml
-!include ../shared/legend.puml
+' Theme PlantUML dùng chung cho các sơ đồ kiến trúc Fluxify.
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
 
-title Fluxify UML - Backend Package and Dependency View
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam database {
+  BorderColor #1E293B
+  FontColor #0F172A
+  BackgroundColor #E2E8F0
+}
+
+skinparam note {
+  BackgroundColor #FEF9C3
+  BorderColor #A16207
+  FontColor #78350F
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam rectangle<<frontend>> {
+  BackgroundColor #DCFCE7
+  BorderColor #14532D
+}
+
+skinparam rectangle<<backend>> {
+  BackgroundColor #DBEAFE
+  BorderColor #1E3A8A
+}
+
+skinparam rectangle<<data>> {
+  BackgroundColor #EDE9FE
+  BorderColor #5B21B6
+}
+
+skinparam rectangle<<external>> {
+  BackgroundColor #F1F5F9
+  BorderColor #475569
+}
+
+skinparam rectangle<<security>> {
+  BackgroundColor #FEE2E2
+  BorderColor #7F1D1D
+}
+
+!definelong COMMON_LEGEND()
+legend right
+|= Ký hiệu |= Ý nghĩa |
+|<#E0F2FE>Hệ thống|Nền tảng hoặc ranh giới hệ thống|
+|<#DCFCE7>Giao diện|Giao diện người dùng hoặc component phía client|
+|<#DBEAFE>Backend|API, dịch vụ, hoặc logic nghiệp vụ|
+|<#E2E8F0>Dữ liệu|Cơ sở dữ liệu hoặc thành phần lưu trữ|
+|<#F1F5F9>Ngoài|Tích hợp bên thứ 3 hoặc hệ thống bên ngoài|
+|<#FEE2E2>Bảo mật|Xác thực, phân quyền, hoặc rào cản bảo mật|
+endlegend
+!enddefinelong
+
+
+title Fluxify UML - Sơ đồ gói Backend và phụ thuộc
 
 top to bottom direction
 
 package "API Routes\napp/api/*" as Api {
-  [Auth Routes]
-  [Order Routes]
-  [Product Routes]
-  [Shop Routes]
-  [Chat Routes]
-  [Vendor Routes]
-  [Admin Routes]
-  [User Routes]
-  [Upload Routes]
+  [Route xác thực]
+  [Route đơn hàng]
+  [Route sản phẩm]
+  [Route cửa hàng]
+  [Route trò chuyện]
+  [Route người bán]
+  [Route quản trị]
+  [Route người dùng]
+  [Route tải lên]
 }
 
 package "API Utilities\nlib/api/*" as ApiUtils {
-  [Auth Helpers]
-  [Response Helpers]
-  [Rate Limit]
-  [Email Verification]
-  [Order Receipt]
+  [Trợ giúp xác thực]
+  [Trợ giúp phản hồi]
+  [Giới hạn tần suất]
+  [Xác minh email]
+  [Biên nhận đơn hàng]
   [Audit]
 }
 
-package "Domain Data Access\nlib/db/*" as Db {
-  [Product Queries]
-  [Ecommerce Queries]
-  [Shop Queries]
+package "Truy cập dữ liệu miền\nlib/db/*" as Db {
+  [Truy vấn sản phẩm]
+  [Truy vấn thương mại điện tử]
+  [Truy vấn cửa hàng]
 }
 
 package "Core Libraries" as Core {
-  [Prisma Client\nlib/prisma.ts]
-  [Auth Config\nlib/auth.ts]
-  [Validations\nlib/validations.ts]
-  [Variant Utils\nlib/variant-utils.ts]
+  [Client Prisma\nlib/prisma.ts]
+  [Cấu hình xác thực\nlib/auth.ts]
+  [Ràng buộc dữ liệu\nlib/validations.ts]
+  [Tiện ích biến thể\nlib/variant-utils.ts]
 }
 
-package "External Integrations" as Ext {
+package "Tích hợp bên ngoài" as Ext {
   [Cloudinary]
   [Resend]
   [VietQR]
@@ -48,50 +122,54 @@ package "External Integrations" as Ext {
 
 database "PostgreSQL" as Postgres
 
-[Auth Routes] --> [Auth Helpers]
-[Auth Routes] --> [Email Verification]
-[Auth Routes] --> [Auth Config\nlib/auth.ts]
+[Route xác thực] --> [Trợ giúp xác thực]
+[Route xác thực] --> [Xác minh email]
+[Route xác thực] --> [Cấu hình xác thực\nlib/auth.ts]
 
-[Order Routes] --> [Auth Helpers]
-[Order Routes] --> [Rate Limit]
-[Order Routes] --> [Response Helpers]
-[Order Routes] --> [Ecommerce Queries]
-[Order Routes] --> [Product Queries]
-[Order Routes] --> [Order Receipt]
+[Route đơn hàng] --> [Trợ giúp xác thực]
+[Route đơn hàng] --> [Giới hạn tần suất]
+[Route đơn hàng] --> [Trợ giúp phản hồi]
+[Route đơn hàng] --> [Truy vấn thương mại điện tử]
+[Route đơn hàng] --> [Truy vấn sản phẩm]
+[Route đơn hàng] --> [Biên nhận đơn hàng]
 
-[Product Routes] --> [Auth Helpers]
-[Product Routes] --> [Rate Limit]
-[Product Routes] --> [Product Queries]
-[Product Routes] --> [Variant Utils\nlib/variant-utils.ts]
+[Route sản phẩm] --> [Trợ giúp xác thực]
+[Route sản phẩm] --> [Giới hạn tần suất]
+[Route sản phẩm] --> [Truy vấn sản phẩm]
+[Route sản phẩm] --> [Tiện ích biến thể\nlib/variant-utils.ts]
 
-[Shop Routes] --> [Auth Helpers]
-[Shop Routes] --> [Shop Queries]
-[Shop Routes] --> [Response Helpers]
+[Route cửa hàng] --> [Trợ giúp xác thực]
+[Route cửa hàng] --> [Truy vấn cửa hàng]
+[Route cửa hàng] --> [Trợ giúp phản hồi]
 
-[Chat Routes] --> [Auth Helpers]
-[Chat Routes] --> [Ecommerce Queries]
+[Route trò chuyện] --> [Trợ giúp xác thực]
+[Route trò chuyện] --> [Truy vấn thương mại điện tử]
 
-[Vendor Routes] --> [Auth Helpers]
-[Vendor Routes] --> [Ecommerce Queries]
-[Vendor Routes] --> [VietQR]
+[Route người bán] --> [Trợ giúp xác thực]
+[Route người bán] --> [Truy vấn thương mại điện tử]
+[Route người bán] --> [VietQR]
 
-[Admin Routes] --> [Auth Helpers]
-[Admin Routes] --> [Ecommerce Queries]
-[Admin Routes] --> [Product Queries]
+[Route quản trị] --> [Trợ giúp xác thực]
+[Route quản trị] --> [Truy vấn thương mại điện tử]
+[Route quản trị] --> [Truy vấn sản phẩm]
 
-[User Routes] --> [Auth Helpers]
-[User Routes] --> [Ecommerce Queries]
+[Route người dùng] --> [Trợ giúp xác thực]
+[Route người dùng] --> [Truy vấn thương mại điện tử]
 
-[Upload Routes] --> [Auth Helpers]
-[Upload Routes] --> [Cloudinary]
+[Route tải lên] --> [Trợ giúp xác thực]
+[Route tải lên] --> [Cloudinary]
 
-[Email Verification] --> [Resend]
-[Order Receipt] --> [Resend]
+[Xác minh email] --> [Resend]
+[Biên nhận đơn hàng] --> [Resend]
 
-[Product Queries] --> [Prisma Client\nlib/prisma.ts]
-[Ecommerce Queries] --> [Prisma Client\nlib/prisma.ts]
-[Shop Queries] --> [Prisma Client\nlib/prisma.ts]
-[Prisma Client\nlib/prisma.ts] --> Postgres
+[Truy vấn sản phẩm] --> [Client Prisma\nlib/prisma.ts]
+[Truy vấn thương mại điện tử] --> [Client Prisma\nlib/prisma.ts]
+[Truy vấn cửa hàng] --> [Client Prisma\nlib/prisma.ts]
+[Client Prisma\nlib/prisma.ts] --> Postgres
 
 COMMON_LEGEND()
 @enduml
+
+
+
+
