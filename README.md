@@ -30,7 +30,9 @@ Bộ tài liệu kiến trúc phần mềm hoàn chỉnh nằm tại:
 - `docs/architecture/05-traceability-and-validation.md` cho ma trận truy vết và kế hoạch kiểm chứng
 - `docs/architecture/06-architecture-and-design-patterns.md` cho kiểu kiến trúc, mẫu kiến trúc và design patterns
 - `docs/architecture/07-use-case-specifications.md` cho các bảng use case chia theo actor
+- `docs/architecture/08-software-evidence-and-demo.md` cho kịch bản demo, bản đồ mã nguồn và lệnh kiểm chứng
 - `docs/architecture/adr/` cho các hồ sơ quyết định kiến trúc (ADR)
+- `docs/architecture/evidence/` để lưu ảnh chụp màn hình hoặc link video demo trước khi nộp
 
 ### Thiết lập PlantUML trong không gian làm việc
 

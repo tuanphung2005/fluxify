@@ -16,6 +16,17 @@ Fluxify là nền tảng thương mại điện tử đa vai trò (Khách hàng,
 
 ## 3. Phạm vi chức năng
 
+### Yêu cầu chức năng cốt lõi
+
+| ID | Yêu cầu chức năng | Mô tả ngắn | Tham chiếu chi tiết |
+|---|---|---|---|
+| FR-01 | Quản lý tài khoản và xác thực | Đăng ký, xác minh email, đăng nhập, đặt lại mật khẩu và quản lý phiên theo vai trò | [07-use-case-specifications.md](07-use-case-specifications.md), [uml-05](../../charts/uml/uml-05-auth-registration-sequence.puml) |
+| FR-02 | Mua sắm và đặt hàng | Khám phá shop, quản lý giỏ hàng, áp dụng coupon, checkout, nhận QR và theo dõi đơn | [07-use-case-specifications.md](07-use-case-specifications.md), [uml-03](../../charts/uml/uml-03-checkout-sequence.puml), [uml-09](../../charts/uml/uml-09-checkout-activity.puml) |
+| FR-03 | Quản lý sản phẩm và vận hành shop | Người bán tạo/sửa/xóa/khôi phục sản phẩm, quản lý biến thể, media, coupon và đơn hàng | [07-use-case-specifications.md](07-use-case-specifications.md), [uml-04](../../charts/uml/uml-04-vendor-operations-sequence.puml), [uml-06](../../charts/uml/uml-06-product-lifecycle-activity.puml) |
+| FR-04 | Shop Builder | Tạo, chỉnh sửa, sắp xếp, đồng bộ và xuất bản bố cục cửa hàng | [07-use-case-specifications.md](07-use-case-specifications.md), [uml-08](../../charts/uml/uml-08-shop-template-lifecycle-activity.puml), [c4-04](../../charts/c4/c4-04-shop-builder-components.puml) |
+| FR-05 | Giao tiếp và phản hồi | Chat khách hàng-người bán, xem tin nhắn chưa đọc, đánh giá sản phẩm/cửa hàng | [07-use-case-specifications.md](07-use-case-specifications.md), [c4-05](../../charts/c4/c4-05-chat-components.puml) |
+| FR-06 | Quản trị hệ thống | Quản trị viên quản lý người dùng, cửa hàng, danh mục và xử lý sản phẩm vi phạm | [07-use-case-specifications.md](07-use-case-specifications.md), [c4-06](../../charts/c4/c4-06-vendor-admin-components.puml) |
+
 ### Trong phạm vi
 - Đăng ký, xác minh email, đăng nhập và quản lý phiên.
 - Danh mục sản phẩm, giỏ hàng, danh sách yêu thích, đơn hàng.
@@ -61,7 +72,21 @@ Lý do chọn:
 - Trải nghiệm tách dashboard theo vai trò và chat theo cơ chế polling.
 - Khả năng mở rộng cho mức tải vừa trong bối cảnh môn học.
 
-## 7. Liên kết sơ đồ và mã nguồn
+## 7. Yêu cầu phi chức năng mức tổng quan
+
+Các yêu cầu phi chức năng chính của đề tài đã được tách thành tài liệu riêng để có thể đo lường:
+- Bảo mật xác thực/phân quyền và chống lạm dụng endpoint ghi.
+- Toàn vẹn giao dịch đặt hàng và không để tồn kho âm.
+- Hiệu năng API ở mức phù hợp bối cảnh môn học.
+- Khả năng bảo trì qua lint, test, build và CI.
+- Khả năng quan sát và vận hành ở mức tối thiểu.
+
+Tham chiếu chi tiết:
+- [02-quality-attributes-nfr.md](02-quality-attributes-nfr.md)
+- [04-security-and-risk.md](04-security-and-risk.md)
+- [05-traceability-and-validation.md](05-traceability-and-validation.md)
+
+## 8. Liên kết sơ đồ và mã nguồn
 
 - Ca sử dụng tổng thể: [uml-00-system-usecase-diagram.puml](../../charts/uml/uml-00-system-usecase-diagram.puml)
 - Bảng Use Case theo actor: [07-use-case-specifications.md](07-use-case-specifications.md)
@@ -72,3 +97,4 @@ Lý do chọn:
 - Luồng dashboard người bán: [uml-04-vendor-operations-sequence.puml](../../charts/uml/uml-04-vendor-operations-sequence.puml)
 - Vòng đời đơn hàng: [uml-07-order-state-machine.puml](../../charts/uml/uml-07-order-state-machine.puml)
 - Kiến trúc, mẫu kiến trúc và mẫu thiết kế: [06-architecture-and-design-patterns.md](06-architecture-and-design-patterns.md)
+- Minh chứng demo và bản đồ mã nguồn: [08-software-evidence-and-demo.md](08-software-evidence-and-demo.md)

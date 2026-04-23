@@ -33,6 +33,15 @@ bảo mật, ADR và kiểm chứng), xem `docs/architecture/README.md`.
 - uml-08-shop-template-lifecycle-activity.puml: Vòng đời chỉnh sửa và xuất bản mẫu cửa hàng.
 - uml-09-checkout-activity.puml: Activity diagram cho hành trình checkout và xác nhận thanh toán.
 
+## Đối chiếu nhanh với rubric UML/C4
+
+- Use Case Diagram: `charts/uml/uml-00-system-usecase-diagram.puml`
+- Activity Diagram: `charts/uml/uml-06-product-lifecycle-activity.puml`, `charts/uml/uml-08-shop-template-lifecycle-activity.puml`, `charts/uml/uml-09-checkout-activity.puml`
+- Class Diagram: `charts/uml/uml-01-domain-class-model.puml`
+- Sequence Diagram: `charts/uml/uml-03-checkout-sequence.puml`, `charts/uml/uml-04-vendor-operations-sequence.puml`, `charts/uml/uml-05-auth-registration-sequence.puml`
+- C4 Level 1: `charts/c4/c4-01-system-context.puml`
+- C4 Level 2: `charts/c4/c4-02-container-view.puml`
+
 ## Kiểm tra hợp lệ
 
 Nếu đã cài PlantUML cục bộ, chạy kiểm tra cú pháp:

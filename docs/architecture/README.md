@@ -13,6 +13,7 @@ Bộ tài liệu gồm:
 6. Bảo mật, rủi ro và biện pháp giảm thiểu.
 7. Hồ sơ quyết định kiến trúc (ADR) cho các quyết định quan trọng.
 8. Ma trận truy vết yêu cầu và kế hoạch kiểm chứng kiến trúc.
+9. Minh chứng phần mềm: kịch bản demo, bản đồ mã nguồn và lệnh kiểm chứng.
 
 ## 2. Thứ tự đọc để bảo vệ
 
@@ -24,6 +25,7 @@ Bộ tài liệu gồm:
 6. [Bảo mật và quản trị rủi ro](04-security-and-risk.md)
 7. [Chỉ mục ADR](adr/README.md)
 8. [Truy vết và kiểm chứng kiến trúc](05-traceability-and-validation.md)
+9. [Minh chứng phần mềm: demo và mã nguồn](08-software-evidence-and-demo.md)
 
 ## 3. Liên kết bộ sơ đồ hiện có
 
@@ -61,10 +63,12 @@ Bộ tài liệu gồm:
 - [x] Góc nhìn bảo mật + sổ đăng ký rủi ro
 - [x] Ma trận truy vết
 - [x] Kế hoạch kiểm chứng + bản đồ bằng chứng
+- [x] Minh chứng phần mềm (demo + source code)
 
 ## 5. Cách cập nhật khi mã nguồn thay đổi
 
 1. Cập nhật sơ đồ trong thư mục charts.
 2. Cập nhật các file ADR nếu có thay đổi quyết định kiến trúc.
 3. Cập nhật ma trận truy vết trong [05-traceability-and-validation.md](05-traceability-and-validation.md).
-4. Chạy lại lint/test/build và cập nhật trạng thái bằng chứng.
+4. Cập nhật kịch bản demo hoặc link video trong [08-software-evidence-and-demo.md](08-software-evidence-and-demo.md) và [evidence/README.md](evidence/README.md) nếu có thay đổi luồng nghiệp vụ.
+5. Chạy lại lint/test/build và cập nhật trạng thái bằng chứng.

@@ -30,6 +30,8 @@ Get-ChildItem charts -Recurse -Filter *.puml | ForEach-Object { plantuml -checko
 3. Quản trị viên vô hiệu hóa user và middleware chặn truy cập.
 4. Chat message chứa HTML độc hại được làm sạch.
 
+Kịch bản demo chi tiết, lệnh chạy và bản đồ mã nguồn xem thêm tại [08-software-evidence-and-demo.md](08-software-evidence-and-demo.md).
+
 ## 3. Tiêu chí đạt
 
 - Không có lỗi lint/build.
