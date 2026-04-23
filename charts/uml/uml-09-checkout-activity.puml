@@ -1,0 +1,110 @@
+@startuml
+' Theme PlantUML dùng chung cho các sơ đồ kiến trúc Fluxify.
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam database {
+  BorderColor #1E293B
+  FontColor #0F172A
+  BackgroundColor #E2E8F0
+}
+
+skinparam note {
+  BackgroundColor #FEF9C3
+  BorderColor #A16207
+  FontColor #78350F
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam rectangle<<frontend>> {
+  BackgroundColor #DCFCE7
+  BorderColor #14532D
+}
+
+skinparam rectangle<<backend>> {
+  BackgroundColor #DBEAFE
+  BorderColor #1E3A8A
+}
+
+skinparam rectangle<<data>> {
+  BackgroundColor #EDE9FE
+  BorderColor #5B21B6
+}
+
+skinparam rectangle<<external>> {
+  BackgroundColor #F1F5F9
+  BorderColor #475569
+}
+
+skinparam rectangle<<security>> {
+  BackgroundColor #FEE2E2
+  BorderColor #7F1D1D
+}
+
+title Fluxify UML - Activity Diagram cho luồng Checkout
+
+start
+
+:Khách hàng mở Checkout Modal;
+:Tải thông tin thanh toán\n/api/shop/[vendorId]/payment;
+:Kiểm tra trạng thái xác thực email\n/api/user/personal;
+
+if (Email đã xác thực?) then (yes)
+  :Nhập họ tên, điện thoại,\nemail và địa chỉ giao hàng;
+else (no)
+  :Hiển thị cảnh báo cần xác thực email;
+  stop
+endif
+
+if (Dữ liệu biểu mẫu hợp lệ?) then (yes)
+  :Gửi POST /api/orders;
+else (no)
+  :Thông báo lỗi dữ liệu đầu vào;
+  stop
+endif
+
+:Áp dụng rate limit và validation;
+:Bắt đầu giao dịch Prisma;
+:Tạo hoặc tìm khách hàng theo email;
+:Tạo địa chỉ giao hàng;
+:Kiểm tra tồn kho sản phẩm/biến thể;
+
+if (Tồn kho hợp lệ?) then (yes)
+  :Tạo đơn hàng;
+  :Trừ tồn kho nguyên tử;
+else (no)
+  :Rollback giao dịch;\nTrả lỗi hết hàng;
+  stop
+endif
+
+:Sinh mã QR VietQR từ thông tin thanh toán của người bán;
+:Hiển thị QR và nội dung chuyển khoản;
+:Khách hàng thực hiện chuyển khoản;
+:Khách hàng xác nhận đã thanh toán;
+:Gửi POST /api/orders/[orderId]/receipt;
+:Hiển thị màn hình đặt hàng thành công;
+
+stop
+@enduml

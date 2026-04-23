@@ -16,6 +16,7 @@ Tài liệu kiến trúc được lưu dưới dạng mã nguồn PlantUML tại
 - `charts/index.md` cho danh mục sơ đồ và ghi chú sử dụng
 - `charts/c4` cho các góc nhìn kiến trúc kiểu C4
 - `charts/uml` cho các sơ đồ UML về cấu trúc và hành vi
+- `charts/uml/uml-00-system-usecase-diagram.puml` cho Use Case Diagram tổng thể
 
 ## Bộ tài liệu kiến trúc đầy đủ
 
@@ -26,8 +27,10 @@ Bộ tài liệu kiến trúc phần mềm hoàn chỉnh nằm tại:
 - `docs/architecture/02-quality-attributes-nfr.md` cho NFR có thể đo lường
 - `docs/architecture/03-deployment-and-operations.md` cho góc nhìn triển khai và vận hành
 - `docs/architecture/04-security-and-risk.md` cho kiểm soát bảo mật và sổ đăng ký rủi ro
-- `docs/architecture/adr/` cho các hồ sơ quyết định kiến trúc (ADR)
 - `docs/architecture/05-traceability-and-validation.md` cho ma trận truy vết và kế hoạch kiểm chứng
+- `docs/architecture/06-architecture-and-design-patterns.md` cho kiểu kiến trúc, mẫu kiến trúc và design patterns
+- `docs/architecture/07-use-case-specifications.md` cho các bảng use case chia theo actor
+- `docs/architecture/adr/` cho các hồ sơ quyết định kiến trúc (ADR)
 
 ### Thiết lập PlantUML trong không gian làm việc
 

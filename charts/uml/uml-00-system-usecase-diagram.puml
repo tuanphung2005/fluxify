@@ -1,0 +1,281 @@
+@startuml
+' Theme PlantUML dùng chung cho các sơ đồ kiến trúc Fluxify.
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam database {
+  BorderColor #1E293B
+  FontColor #0F172A
+  BackgroundColor #E2E8F0
+}
+
+skinparam note {
+  BackgroundColor #FEF9C3
+  BorderColor #A16207
+  FontColor #78350F
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam rectangle<<frontend>> {
+  BackgroundColor #DCFCE7
+  BorderColor #14532D
+}
+
+skinparam rectangle<<backend>> {
+  BackgroundColor #DBEAFE
+  BorderColor #1E3A8A
+}
+
+skinparam rectangle<<data>> {
+  BackgroundColor #EDE9FE
+  BorderColor #5B21B6
+}
+
+skinparam rectangle<<external>> {
+  BackgroundColor #F1F5F9
+  BorderColor #475569
+}
+
+skinparam rectangle<<security>> {
+  BackgroundColor #FEE2E2
+  BorderColor #7F1D1D
+}
+
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+title Fluxify UML - Sơ đồ Use Case Tổng thể (Đầy đủ)
+
+left to right direction
+
+actor "Khách truy cập" as Guest
+actor "Khách hàng" as Customer
+actor "Người bán" as Vendor
+actor "Quản trị viên" as Admin
+actor "Resend" as Resend
+actor "Cloudinary" as Cloudinary
+actor "VietQR" as VietQR
+
+note right of Guest
+  Đại diện cho mọi người dùng
+  trước khi đăng nhập,
+  gồm cả Vendor/Admin.
+end note
+
+rectangle "Hệ thống Fluxify" <<system>> {
+  package "Công khai & xác thực" {
+    usecase "Đăng ký tài khoản\n(Khách hàng/Người bán)" as UC_Register
+    usecase "Gửi email xác minh" as UC_SendVerification
+    usecase "Gửi lại email\nxác minh" as UC_ResendVerification
+    usecase "Xác minh email" as UC_VerifyEmail
+    usecase "Đăng nhập" as UC_Login
+    usecase "Yêu cầu đặt lại\nmật khẩu" as UC_RequestPasswordReset
+    usecase "Gửi email đặt lại\nmật khẩu" as UC_SendResetEmail
+    usecase "Đặt lại mật khẩu" as UC_ResetPassword
+    usecase "Khám phá cửa hàng\nvà sản phẩm" as UC_Browse
+    usecase "Xem chi tiết\nsản phẩm" as UC_ViewProduct
+    usecase "Xem thống kê\ncửa hàng" as UC_ViewShopStats
+    usecase "Xem đánh giá\nsản phẩm" as UC_ViewProductReviews
+    usecase "Xem đánh giá\ncửa hàng" as UC_ViewShopReviews
+  }
+
+  package "Khách hàng" {
+    usecase "Xem dashboard\ncá nhân" as UC_ViewPersonalDashboard
+    usecase "Quản lý giỏ hàng" as UC_ManageCart
+    usecase "Quản lý wishlist\nsản phẩm" as UC_ManageWishlist
+    usecase "Yêu thích cửa hàng" as UC_FavoriteShop
+    usecase "Áp dụng mã\ngiảm giá" as UC_ApplyCoupon
+    usecase "Đặt hàng" as UC_Checkout
+    usecase "Xem QR/thông tin\nthanh toán" as UC_ViewPaymentQR
+    usecase "Kiểm tra tồn kho\nvà tạo giao dịch" as UC_StockTxn
+    usecase "Xem đơn hàng\ncá nhân" as UC_TrackOrder
+    usecase "Hủy đơn hàng" as UC_CancelOrder
+    usecase "Nhận email biên nhận\nđơn hàng" as UC_ReceiveReceipt
+    usecase "Gửi biên nhận\nđơn hàng" as UC_SendReceipt
+    usecase "Bắt đầu cuộc\ntrò chuyện" as UC_StartConversation
+    usecase "Xem danh sách\ncuộc trò chuyện" as UC_ViewConversations
+    usecase "Xem tin nhắn" as UC_ViewMessages
+    usecase "Gửi tin nhắn" as UC_SendMessage
+    usecase "Xem số tin nhắn\nchưa đọc" as UC_ViewUnread
+    usecase "Viết đánh giá\nsản phẩm" as UC_WriteReview
+  }
+
+  package "Người bán" {
+    usecase "Xem dashboard\nngười bán" as UC_ViewVendorDashboard
+    usecase "Cập nhật hồ sơ\ncửa hàng" as UC_UpdateVendorProfile
+    usecase "Quản lý sản phẩm" as UC_ProductMgmt
+    usecase "Xem danh sách\nsản phẩm" as UC_ListProducts
+    usecase "Tạo sản phẩm" as UC_CreateProduct
+    usecase "Cập nhật sản phẩm" as UC_UpdateProduct
+    usecase "Xóa mềm sản phẩm" as UC_DeleteProduct
+    usecase "Khôi phục sản phẩm" as UC_RestoreProduct
+    usecase "Quản lý biến thể\nvà tồn kho" as UC_ManageVariants
+    usecase "Tải media\nsản phẩm" as UC_UploadMedia
+    usecase "Quản lý mã\ngiảm giá" as UC_CouponMgmt
+    usecase "Xem danh sách\ncoupon" as UC_ViewCoupons
+    usecase "Tạo coupon" as UC_CreateCoupon
+    usecase "Xóa coupon" as UC_DeleteCoupon
+    usecase "Quản lý đơn hàng\ncửa hàng" as UC_OrderMgmt
+    usecase "Xem đơn hàng\ncửa hàng" as UC_ViewVendorOrders
+    usecase "Cập nhật trạng thái\nđơn hàng" as UC_UpdateOrderStatus
+    usecase "Quản lý thanh toán\nVietQR" as UC_PaymentMgmt
+    usecase "Cấu hình thông tin\nthanh toán" as UC_ConfigPayment
+    usecase "Xem trước mã QR\nthanh toán" as UC_PreviewPaymentQR
+    usecase "Xem phân tích\nkinh doanh" as UC_ViewAnalytics
+    usecase "Quản lý Shop Builder" as UC_ShopBuilderMgmt
+    usecase "Tạo mẫu cửa hàng" as UC_CreateTemplate
+    usecase "Thêm/sửa/xóa\ncomponent cửa hàng" as UC_EditComponents
+    usecase "Sắp xếp component\ncửa hàng" as UC_ReorderComponents
+    usecase "Lưu đồng bộ bố cục\ncửa hàng" as UC_SaveBuilder
+    usecase "Xuất bản cửa hàng" as UC_PublishStore
+    usecase "Ẩn cửa hàng" as UC_UnpublishStore
+    usecase "Xem trước cửa hàng" as UC_PreviewStore
+  }
+
+  package "Quản trị viên" {
+    usecase "Xem dashboard\nquản trị" as UC_ViewAdminDashboard
+    usecase "Quản lý người dùng" as UC_UserAdmin
+    usecase "Xem danh sách\nngười dùng" as UC_ViewUsers
+    usecase "Khóa/mở tài khoản" as UC_UpdateUserStatus
+    usecase "Quản lý cửa hàng" as UC_ShopAdmin
+    usecase "Xem danh sách\ncửa hàng" as UC_ViewShops
+    usecase "Quản lý danh mục" as UC_CategoryAdmin
+    usecase "Xem danh sách\ndanh mục" as UC_ViewCategories
+    usecase "Tạo danh mục" as UC_CreateCategory
+    usecase "Cập nhật danh mục" as UC_UpdateCategory
+    usecase "Xóa danh mục" as UC_DeleteCategory
+    usecase "Xóa vĩnh viễn sản phẩm\nvi phạm" as UC_RemoveViolatedProducts
+  }
+}
+
+Guest -- UC_Register
+Guest -- UC_ResendVerification
+Guest -- UC_VerifyEmail
+Guest -- UC_Login
+Guest -- UC_RequestPasswordReset
+Guest -- UC_ResetPassword
+Guest -- UC_Browse
+Guest -- UC_ViewProduct
+Guest -- UC_ViewShopStats
+Guest -- UC_ViewProductReviews
+Guest -- UC_ViewShopReviews
+
+Customer -- UC_ViewPersonalDashboard
+Customer -- UC_ManageCart
+Customer -- UC_ManageWishlist
+Customer -- UC_FavoriteShop
+Customer -- UC_ApplyCoupon
+Customer -- UC_Checkout
+Customer -- UC_TrackOrder
+Customer -- UC_CancelOrder
+Customer -- UC_ReceiveReceipt
+Customer -- UC_StartConversation
+Customer -- UC_ViewConversations
+Customer -- UC_ViewMessages
+Customer -- UC_SendMessage
+Customer -- UC_ViewUnread
+Customer -- UC_WriteReview
+
+Vendor -- UC_ViewVendorDashboard
+Vendor -- UC_UpdateVendorProfile
+Vendor -- UC_ProductMgmt
+Vendor -- UC_CouponMgmt
+Vendor -- UC_OrderMgmt
+Vendor -- UC_PaymentMgmt
+Vendor -- UC_ViewAnalytics
+Vendor -- UC_ViewConversations
+Vendor -- UC_ViewMessages
+Vendor -- UC_SendMessage
+Vendor -- UC_ViewUnread
+Vendor -- UC_ShopBuilderMgmt
+
+Admin -- UC_ViewAdminDashboard
+Admin -- UC_UserAdmin
+Admin -- UC_ShopAdmin
+Admin -- UC_CategoryAdmin
+Admin -- UC_RemoveViolatedProducts
+
+UC_Register .> UC_SendVerification : <<include>>
+UC_ResendVerification .> UC_SendVerification : <<include>>
+UC_RequestPasswordReset .> UC_SendResetEmail : <<include>>
+UC_Checkout .> UC_ViewPaymentQR : <<include>>
+UC_Checkout .> UC_StockTxn : <<include>>
+UC_ApplyCoupon .> UC_Checkout : <<extend>>
+UC_CancelOrder .> UC_TrackOrder : <<extend>>
+UC_ReceiveReceipt .> UC_SendReceipt : <<include>>
+
+UC_ProductMgmt .> UC_ListProducts : <<include>>
+UC_ProductMgmt .> UC_CreateProduct : <<include>>
+UC_ProductMgmt .> UC_UpdateProduct : <<include>>
+UC_ProductMgmt .> UC_DeleteProduct : <<include>>
+UC_ProductMgmt .> UC_RestoreProduct : <<include>>
+UC_ProductMgmt .> UC_ManageVariants : <<include>>
+UC_ProductMgmt .> UC_UploadMedia : <<include>>
+
+UC_CouponMgmt .> UC_ViewCoupons : <<include>>
+UC_CouponMgmt .> UC_CreateCoupon : <<include>>
+UC_CouponMgmt .> UC_DeleteCoupon : <<include>>
+
+UC_OrderMgmt .> UC_ViewVendorOrders : <<include>>
+UC_OrderMgmt .> UC_UpdateOrderStatus : <<include>>
+
+UC_PaymentMgmt .> UC_ConfigPayment : <<include>>
+UC_PaymentMgmt .> UC_PreviewPaymentQR : <<include>>
+
+UC_ShopBuilderMgmt .> UC_CreateTemplate : <<include>>
+UC_ShopBuilderMgmt .> UC_EditComponents : <<include>>
+UC_ShopBuilderMgmt .> UC_ReorderComponents : <<include>>
+UC_ShopBuilderMgmt .> UC_SaveBuilder : <<include>>
+UC_ShopBuilderMgmt .> UC_PublishStore : <<include>>
+UC_ShopBuilderMgmt .> UC_UnpublishStore : <<include>>
+UC_ShopBuilderMgmt .> UC_PreviewStore : <<include>>
+
+UC_UserAdmin .> UC_ViewUsers : <<include>>
+UC_UserAdmin .> UC_UpdateUserStatus : <<include>>
+
+UC_ShopAdmin .> UC_ViewShops : <<include>>
+
+UC_CategoryAdmin .> UC_ViewCategories : <<include>>
+UC_CategoryAdmin .> UC_CreateCategory : <<include>>
+UC_CategoryAdmin .> UC_UpdateCategory : <<include>>
+UC_CategoryAdmin .> UC_DeleteCategory : <<include>>
+
+Resend -- UC_SendVerification
+Resend -- UC_SendResetEmail
+Resend -- UC_SendReceipt
+Cloudinary -- UC_UploadMedia
+VietQR -- UC_ConfigPayment
+VietQR -- UC_PreviewPaymentQR
+VietQR -- UC_ViewPaymentQR
+
+note bottom of UC_StockTxn
+  Được hiện thực qua giao dịch Prisma
+  trong app/api/orders/route.ts.
+end note
+
+@enduml

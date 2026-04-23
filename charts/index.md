@@ -22,6 +22,7 @@ bảo mật, ADR và kiểm chứng), xem `docs/architecture/README.md`.
 
 ## Sơ đồ UML
 
+- uml-00-system-usecase-diagram.puml: Sơ đồ use case tổng thể giữa Khách hàng, Người bán, Quản trị viên và các dịch vụ ngoài.
 - uml-01-domain-class-model.puml: Mô hình lớp miền và quan hệ số lượng.
 - uml-02-backend-package-diagram.puml: Bản đồ phụ thuộc gói backend.
 - uml-03-checkout-sequence.puml: Luồng thanh toán và giao dịch tạo đơn.
@@ -30,6 +31,7 @@ bảo mật, ADR và kiểm chứng), xem `docs/architecture/README.md`.
 - uml-06-product-lifecycle-activity.puml: Quy trình tạo/cập nhật sản phẩm.
 - uml-07-order-state-machine.puml: Chuyển trạng thái vòng đời đơn hàng.
 - uml-08-shop-template-lifecycle-activity.puml: Vòng đời chỉnh sửa và xuất bản mẫu cửa hàng.
+- uml-09-checkout-activity.puml: Activity diagram cho hành trình checkout và xác nhận thanh toán.
 
 ## Kiểm tra hợp lệ
 

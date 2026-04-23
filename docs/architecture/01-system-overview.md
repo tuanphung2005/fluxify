@@ -63,8 +63,12 @@ Lý do chọn:
 
 ## 7. Liên kết sơ đồ và mã nguồn
 
+- Ca sử dụng tổng thể: [uml-00-system-usecase-diagram.puml](../../charts/uml/uml-00-system-usecase-diagram.puml)
+- Bảng Use Case theo actor: [07-use-case-specifications.md](07-use-case-specifications.md)
 - Mô hình miền và quan hệ thực thể: [uml-01-domain-class-model.puml](../../charts/uml/uml-01-domain-class-model.puml)
 - Phụ thuộc gói backend: [uml-02-backend-package-diagram.puml](../../charts/uml/uml-02-backend-package-diagram.puml)
 - Luồng nghiệp vụ đặt hàng: [uml-03-checkout-sequence.puml](../../charts/uml/uml-03-checkout-sequence.puml)
+- Hoạt động checkout: [uml-09-checkout-activity.puml](../../charts/uml/uml-09-checkout-activity.puml)
 - Luồng dashboard người bán: [uml-04-vendor-operations-sequence.puml](../../charts/uml/uml-04-vendor-operations-sequence.puml)
 - Vòng đời đơn hàng: [uml-07-order-state-machine.puml](../../charts/uml/uml-07-order-state-machine.puml)
+- Kiến trúc, mẫu kiến trúc và mẫu thiết kế: [06-architecture-and-design-patterns.md](06-architecture-and-design-patterns.md)
