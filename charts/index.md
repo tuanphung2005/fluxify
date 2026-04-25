@@ -2,47 +2,50 @@
 
 Thư mục này chứa mã nguồn PlantUML cho tài liệu kiến trúc Fluxify.
 
-Để xem bộ tài liệu kiến trúc phần mềm đầy đủ (phạm vi, NFR, triển khai,
-bảo mật, ADR và kiểm chứng), xem `docs/architecture/README.md`.
+Đối chiếu chính thức theo đề bài xem tại [00-requirement-mapping.md](../docs/architecture/00-requirement-mapping.md).
 
-## Cấu trúc
+## 1. Nhóm bắt buộc theo đề
 
-- charts/shared: Các tệp dùng chung cho kiểu hiển thị và chú giải.
-- charts/c4: Các sơ đồ kiến trúc theo mô hình C4.
-- charts/uml: Các sơ đồ UML về hành vi và mô hình miền.
+### I. Tổng quan và giới thiệu
+Phần này nằm trong tài liệu:
+- [01-system-overview.md](../docs/architecture/01-system-overview.md)
+- [02-quality-attributes-nfr.md](../docs/architecture/02-quality-attributes-nfr.md)
 
-## Sơ đồ C4
+### II. Đặc tả và mô hình hóa yêu cầu (UML)
+- Use Case Diagram: [uml-00-system-usecase-diagram.puml](uml/uml-00-system-usecase-diagram.puml)
+- Activity Diagram: [uml-06-product-lifecycle-activity.puml](uml/uml-06-product-lifecycle-activity.puml), [uml-08-shop-template-lifecycle-activity.puml](uml/uml-08-shop-template-lifecycle-activity.puml), [uml-09-checkout-activity.puml](uml/uml-09-checkout-activity.puml)
 
-- c4-01-system-context.puml: Ngữ cảnh hệ thống với tác nhân chính và dịch vụ bên ngoài.
-- c4-02-container-view.puml: Ranh giới vùng chứa giữa giao diện, API, xác thực và dữ liệu.
-- c4-03-order-processing-components.puml: Tương tác thành phần của phân hệ xử lý đơn hàng.
-- c4-04-shop-builder-components.puml: Thành phần và luồng dữ liệu của phân hệ trình dựng cửa hàng.
-- c4-05-chat-components.puml: Phân hệ chat và luồng kiểm tra tin nhắn chưa đọc.
-- c4-06-vendor-admin-components.puml: Tương tác thành phần của quản lý người bán/quản trị.
+### III. Cấu trúc và hành vi (UML)
+- Class Diagram: [uml-01-domain-class-model.puml](uml/uml-01-domain-class-model.puml)
+- Sequence Diagram: [uml-03-checkout-sequence.puml](uml/uml-03-checkout-sequence.puml), [uml-04-vendor-operations-sequence.puml](uml/uml-04-vendor-operations-sequence.puml), [uml-05-auth-registration-sequence.puml](uml/uml-05-auth-registration-sequence.puml)
 
-## Sơ đồ UML
+### IV. Kiến trúc và mẫu thiết kế
+- C4 Level 1: [c4-01-system-context.puml](c4/c4-01-system-context.puml)
+- C4 Level 2: [c4-02-container-view.puml](c4/c4-02-container-view.puml)
+- Tài liệu kiến trúc, mẫu kiến trúc, design pattern: [06-architecture-and-design-patterns.md](../docs/architecture/06-architecture-and-design-patterns.md)
 
-- uml-00-system-usecase-diagram.puml: Sơ đồ use case tổng thể giữa Khách hàng, Người bán, Quản trị viên và các dịch vụ ngoài.
-- uml-01-domain-class-model.puml: Mô hình lớp miền và quan hệ số lượng.
-- uml-02-backend-package-diagram.puml: Bản đồ phụ thuộc gói backend.
-- uml-03-checkout-sequence.puml: Luồng thanh toán và giao dịch tạo đơn.
-- uml-04-vendor-operations-sequence.puml: Luồng thao tác nghiệp vụ trong bảng điều khiển người bán.
-- uml-05-auth-registration-sequence.puml: Luồng đăng ký, xác minh và đăng nhập.
-- uml-06-product-lifecycle-activity.puml: Quy trình tạo/cập nhật sản phẩm.
-- uml-07-order-state-machine.puml: Chuyển trạng thái vòng đời đơn hàng.
-- uml-08-shop-template-lifecycle-activity.puml: Vòng đời chỉnh sửa và xuất bản mẫu cửa hàng.
-- uml-09-checkout-activity.puml: Activity diagram cho hành trình checkout và xác nhận thanh toán.
+### V. Minh chứng phần mềm
+Phần này nằm trong tài liệu:
+- [08-software-evidence-and-demo.md](../docs/architecture/08-software-evidence-and-demo.md)
 
-## Đối chiếu nhanh với rubric UML/C4
+## 2. Nhóm bổ trợ đang giữ
 
-- Use Case Diagram: `charts/uml/uml-00-system-usecase-diagram.puml`
-- Activity Diagram: `charts/uml/uml-06-product-lifecycle-activity.puml`, `charts/uml/uml-08-shop-template-lifecycle-activity.puml`, `charts/uml/uml-09-checkout-activity.puml`
-- Class Diagram: `charts/uml/uml-01-domain-class-model.puml`
-- Sequence Diagram: `charts/uml/uml-03-checkout-sequence.puml`, `charts/uml/uml-04-vendor-operations-sequence.puml`, `charts/uml/uml-05-auth-registration-sequence.puml`
-- C4 Level 1: `charts/c4/c4-01-system-context.puml`
-- C4 Level 2: `charts/c4/c4-02-container-view.puml`
+- C4 Level 3 theo phân hệ:
+	- [c4-03-order-processing-components.puml](c4/c4-03-order-processing-components.puml)
+	- [c4-04-shop-builder-components.puml](c4/c4-04-shop-builder-components.puml)
+	- [c4-05-chat-components.puml](c4/c4-05-chat-components.puml)
+	- [c4-06-vendor-admin-components.puml](c4/c4-06-vendor-admin-components.puml)
+- UML bổ trợ:
+	- [uml-02-backend-package-diagram.puml](uml/uml-02-backend-package-diagram.puml)
+	- [uml-07-order-state-machine.puml](uml/uml-07-order-state-machine.puml)
 
-## Kiểm tra hợp lệ
+## 3. Cấu trúc thư mục
+
+- [shared](shared): Các tệp dùng chung cho theme/chú giải.
+- [c4](c4): Các sơ đồ kiến trúc theo mô hình C4.
+- [uml](uml): Các sơ đồ UML về yêu cầu, cấu trúc và hành vi.
+
+## 4. Kiểm tra hợp lệ
 
 Nếu đã cài PlantUML cục bộ, chạy kiểm tra cú pháp:
 

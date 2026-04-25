@@ -13,26 +13,21 @@ pinned: false
 
 Tài liệu kiến trúc được lưu dưới dạng mã nguồn PlantUML tại:
 
-- `charts/index.md` cho danh mục sơ đồ và ghi chú sử dụng
-- `charts/c4` cho các góc nhìn kiến trúc kiểu C4
-- `charts/uml` cho các sơ đồ UML về cấu trúc và hành vi
-- `charts/uml/uml-00-system-usecase-diagram.puml` cho Use Case Diagram tổng thể
+- [charts/index.md](charts/index.md) cho danh mục sơ đồ theo nhóm bắt buộc/bổ trợ
+- [charts/c4](charts/c4) cho các góc nhìn kiến trúc kiểu C4
+- [charts/uml](charts/uml) cho các sơ đồ UML về cấu trúc và hành vi
 
 ## Bộ tài liệu kiến trúc đầy đủ
 
 Bộ tài liệu kiến trúc phần mềm hoàn chỉnh nằm tại:
 
-- `docs/architecture/README.md` cho trang chỉ mục tổng
-- `docs/architecture/01-system-overview.md` cho phạm vi, bên liên quan và động lực kiến trúc
-- `docs/architecture/02-quality-attributes-nfr.md` cho NFR có thể đo lường
-- `docs/architecture/03-deployment-and-operations.md` cho góc nhìn triển khai và vận hành
-- `docs/architecture/04-security-and-risk.md` cho kiểm soát bảo mật và sổ đăng ký rủi ro
-- `docs/architecture/05-traceability-and-validation.md` cho ma trận truy vết và kế hoạch kiểm chứng
-- `docs/architecture/06-architecture-and-design-patterns.md` cho kiểu kiến trúc, mẫu kiến trúc và design patterns
-- `docs/architecture/07-use-case-specifications.md` cho các bảng use case chia theo actor
-- `docs/architecture/08-software-evidence-and-demo.md` cho kịch bản demo, bản đồ mã nguồn và lệnh kiểm chứng
-- `docs/architecture/adr/` cho các hồ sơ quyết định kiến trúc (ADR)
-- `docs/architecture/evidence/` để lưu ảnh chụp màn hình hoặc link video demo trước khi nộp
+- [docs/architecture/00-requirement-mapping.md](docs/architecture/00-requirement-mapping.md) để đối chiếu trực tiếp requirement I -> V
+- [docs/architecture/README.md](docs/architecture/README.md) cho chỉ mục tổng theo nhóm bắt buộc và bổ trợ
+- [docs/architecture/01-system-overview.md](docs/architecture/01-system-overview.md) và [docs/architecture/02-quality-attributes-nfr.md](docs/architecture/02-quality-attributes-nfr.md) cho phần I
+- [docs/architecture/07-use-case-specifications.md](docs/architecture/07-use-case-specifications.md) và sơ đồ UML trong [charts/uml](charts/uml) cho phần II, III
+- [docs/architecture/06-architecture-and-design-patterns.md](docs/architecture/06-architecture-and-design-patterns.md) và C4 trong [charts/c4](charts/c4) cho phần IV
+- [docs/architecture/08-software-evidence-and-demo.md](docs/architecture/08-software-evidence-and-demo.md) và [docs/architecture/evidence/README.md](docs/architecture/evidence/README.md) cho phần V
+- [docs/architecture/adr](docs/architecture/adr), [docs/architecture/03-deployment-and-operations.md](docs/architecture/03-deployment-and-operations.md), [docs/architecture/04-security-and-risk.md](docs/architecture/04-security-and-risk.md), [docs/architecture/05-traceability-and-validation.md](docs/architecture/05-traceability-and-validation.md) là bộ hồ sơ bổ trợ
 
 ### Thiết lập PlantUML trong không gian làm việc
 
