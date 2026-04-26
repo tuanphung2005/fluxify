@@ -55,9 +55,11 @@ export function RegisterModal() {
     setError("");
 
     const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const name = formData.get("name") as string;
+    const email = String(formData.get("email") || "")
+      .trim()
+      .toLowerCase();
+    const password = String(formData.get("password") || "");
+    const name = String(formData.get("name") || "").trim();
 
     try {
       const data = await api.post<{ requiresVerification?: boolean }>(
@@ -65,7 +67,7 @@ export function RegisterModal() {
         {
           email,
           password,
-          name,
+          name: name || undefined,
           role,
         },
       );
@@ -96,8 +98,10 @@ export function RegisterModal() {
         closeModal();
         router.refresh();
       }
-    } catch {
-      setError("Đã xảy ra lỗi. Vui lòng thử lại.");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Đã xảy ra lỗi. Vui lòng thử lại.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -117,6 +121,7 @@ export function RegisterModal() {
             <Input
               isRequired
               label="Họ và tên"
+              minLength={2}
               name="name"
               placeholder="Nhập tên của bạn"
               type="text"
@@ -132,7 +137,9 @@ export function RegisterModal() {
             />
             <Input
               isRequired
+              description="Ít nhất 8 ký tự, gồm chữ hoa, chữ thường và số"
               label="Mật khẩu"
+              minLength={8}
               name="password"
               placeholder="Nhập mật khẩu (tối thiểu 8 ký tự)"
               type="password"

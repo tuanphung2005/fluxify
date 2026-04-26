@@ -30,9 +30,24 @@ const passwordSchema = z
   .regex(/[0-9]/, "Mật khẩu phải chứa ít nhất 1 số");
 
 const registerSchema = z.object({
-  email: z.email("Địa chỉ email không hợp lệ"),
+  email: z.preprocess(
+    (value) =>
+      typeof value === "string" ? value.trim().toLowerCase() : value,
+    z.email("Địa chỉ email không hợp lệ"),
+  ),
   password: passwordSchema,
-  name: z.string().min(2, "Tên phải chứa ít nhất 2 ký tự").optional(),
+  name: z.preprocess(
+    (value) => {
+      if (typeof value !== "string") {
+        return value;
+      }
+
+      const trimmed = value.trim();
+
+      return trimmed === "" ? undefined : trimmed;
+    },
+    z.string().min(2, "Tên phải chứa ít nhất 2 ký tự").optional(),
+  ),
   role: z.enum(["CUSTOMER", "VENDOR"]).default("CUSTOMER"),
 });
 
@@ -57,7 +72,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingUser) {
-      return errorResponse("Người dùng đã tồn tại", 400);
+      return errorResponse("Email này đã được sử dụng", 409);
     }
 
     // hash pw
