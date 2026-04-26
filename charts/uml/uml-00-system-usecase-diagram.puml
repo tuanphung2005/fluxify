@@ -1,4 +1,4 @@
-@startuml
+@startuml uml-00-system-usecase-diagram
 ' Theme PlantUML dùng chung cho các sơ đồ kiến trúc Fluxify.
 skinparam backgroundColor #FCFCFC
 skinparam defaultFontName Segoe UI

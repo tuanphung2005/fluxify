@@ -1,0 +1,81 @@
+@startuml uml-00c-vendor-usecase
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+title Fluxify UML - Use Case Người bán
+
+left to right direction
+
+actor "Người bán" as Vendor
+actor "Cloudinary" as Cloudinary
+actor "VietQR" as VietQR
+
+rectangle "Hệ thống Fluxify" <<system>> {
+  usecase "Xem dashboard người bán" as UC_ViewVendorDashboard
+  usecase "Cập nhật hồ sơ cửa hàng" as UC_UpdateVendorProfile
+  usecase "Quản lý sản phẩm" as UC_ProductMgmt
+  usecase "Quản lý biến thể và tồn kho" as UC_ManageVariants
+  usecase "Tải media sản phẩm" as UC_UploadMedia
+  usecase "Quản lý mã giảm giá" as UC_CouponMgmt
+  usecase "Quản lý đơn hàng cửa hàng" as UC_OrderMgmt
+  usecase "Cập nhật trạng thái đơn hàng" as UC_UpdateOrderStatus
+  usecase "Quản lý thanh toán VietQR" as UC_PaymentMgmt
+  usecase "Cấu hình thông tin thanh toán" as UC_ConfigPayment
+  usecase "Xem trước mã QR thanh toán" as UC_PreviewPaymentQR
+  usecase "Xem phân tích kinh doanh" as UC_ViewAnalytics
+  usecase "Quản lý Shop Builder" as UC_ShopBuilderMgmt
+  usecase "Xuất bản/Ẩn cửa hàng" as UC_PublishOps
+  usecase "Xem/Gửi tin nhắn và chưa đọc" as UC_VendorMessaging
+}
+
+Vendor -- UC_ViewVendorDashboard
+Vendor -- UC_UpdateVendorProfile
+Vendor -- UC_ProductMgmt
+Vendor -- UC_ManageVariants
+Vendor -- UC_CouponMgmt
+Vendor -- UC_OrderMgmt
+Vendor -- UC_UpdateOrderStatus
+Vendor -- UC_PaymentMgmt
+Vendor -- UC_ViewAnalytics
+Vendor -- UC_ShopBuilderMgmt
+Vendor -- UC_PublishOps
+Vendor -- UC_VendorMessaging
+
+UC_ProductMgmt .> UC_UploadMedia : <<include>>
+UC_PaymentMgmt .> UC_ConfigPayment : <<include>>
+UC_PaymentMgmt .> UC_PreviewPaymentQR : <<include>>
+
+Cloudinary -- UC_UploadMedia
+VietQR -- UC_ConfigPayment
+VietQR -- UC_PreviewPaymentQR
+
+@enduml
