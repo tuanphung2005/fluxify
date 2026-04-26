@@ -25,7 +25,7 @@ export function LoginModal() {
   const [view, setView] = useState<"login" | "forgot">("login");
   const [forgotEmail, setForgotEmail] = useState("");
   const [resetSent, setResetSent] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
 
   const isOpen = searchParams.get("modal") === "login";
   const isVerificationPending = searchParams.get("verified") === "pending";
@@ -98,6 +98,7 @@ export function LoginModal() {
           setError("Email hoặc mật khẩu không chính xác");
         }
       } else {
+        await update();
         closeModal();
         router.refresh();
       }

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
@@ -6,16 +8,16 @@ import {
 } from "@heroui/navbar";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
+import { useSession } from "next-auth/react";
 
 import { NavbarUserMenu } from "./user-menu";
 import { AuthButtons } from "./auth-buttons";
 
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
-import { auth } from "@/lib/auth";
 
-export const Navbar = async () => {
-  const session = await auth();
+export const Navbar = () => {
+  const { data: session, status } = useSession();
 
   return (
     <HeroUINavbar maxWidth="xl" position="sticky">
@@ -44,7 +46,11 @@ export const Navbar = async () => {
       </NavbarContent>
 
       <NavbarContent className="" justify="end">
-        {session ? <NavbarUserMenu user={session.user} /> : <AuthButtons />}
+        {status === "loading" ? null : session?.user ? (
+          <NavbarUserMenu user={session.user} />
+        ) : (
+          <AuthButtons />
+        )}
       </NavbarContent>
     </HeroUINavbar>
   );

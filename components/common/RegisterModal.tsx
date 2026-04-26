@@ -23,7 +23,7 @@ export function RegisterModal() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [role, setRole] = useState("CUSTOMER");
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
 
   const isOpen = searchParams.get("modal") === "register";
 
@@ -95,6 +95,7 @@ export function RegisterModal() {
           "Tài khoản đã tạo thành công nhưng đăng nhập thất bại. Vui lòng thử đăng nhập lại.",
         );
       } else {
+        await update();
         closeModal();
         router.refresh();
       }
