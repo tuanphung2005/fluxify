@@ -1,0 +1,74 @@
+@startuml uml-00a-public-auth-usecase
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+title Fluxify UML - Use Case Công khai và Xác thực
+
+left to right direction
+
+actor "Khách truy cập" as Guest
+actor "Resend" as Resend
+
+rectangle "Hệ thống Fluxify" <<system>> {
+  usecase "Đăng ký tài khoản" as UC_Register
+  usecase "Gửi email xác minh" as UC_SendVerification
+  usecase "Gửi lại email xác minh" as UC_ResendVerification
+  usecase "Xác minh email" as UC_VerifyEmail
+  usecase "Đăng nhập" as UC_Login
+  usecase "Yêu cầu đặt lại mật khẩu" as UC_RequestPasswordReset
+  usecase "Gửi email đặt lại mật khẩu" as UC_SendResetEmail
+  usecase "Đặt lại mật khẩu" as UC_ResetPassword
+  usecase "Khám phá cửa hàng và sản phẩm" as UC_Browse
+  usecase "Xem chi tiết sản phẩm" as UC_ViewProduct
+  usecase "Xem thống kê cửa hàng" as UC_ViewShopStats
+  usecase "Xem đánh giá sản phẩm/cửa hàng" as UC_ViewReviews
+}
+
+Guest -- UC_Register
+Guest -- UC_ResendVerification
+Guest -- UC_VerifyEmail
+Guest -- UC_Login
+Guest -- UC_RequestPasswordReset
+Guest -- UC_ResetPassword
+Guest -- UC_Browse
+Guest -- UC_ViewProduct
+Guest -- UC_ViewShopStats
+Guest -- UC_ViewReviews
+
+UC_Register .> UC_SendVerification : <<include>>
+UC_ResendVerification .> UC_SendVerification : <<include>>
+UC_RequestPasswordReset .> UC_SendResetEmail : <<include>>
+
+Resend -- UC_SendVerification
+Resend -- UC_SendResetEmail
+
+@enduml

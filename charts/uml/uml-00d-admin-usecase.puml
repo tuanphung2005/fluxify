@@ -1,0 +1,65 @@
+@startuml uml-00d-admin-usecase
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+title Fluxify UML - Use Case Quản trị viên
+
+left to right direction
+
+actor "Quản trị viên" as Admin
+
+rectangle "Hệ thống Fluxify" <<system>> {
+  usecase "Xem dashboard quản trị" as UC_ViewAdminDashboard
+  usecase "Quản lý người dùng" as UC_UserAdmin
+  usecase "Xem danh sách người dùng" as UC_ViewUsers
+  usecase "Khóa/mở tài khoản" as UC_UpdateUserStatus
+  usecase "Quản lý cửa hàng" as UC_ShopAdmin
+  usecase "Xem danh sách cửa hàng" as UC_ViewShops
+  usecase "Quản lý danh mục" as UC_CategoryAdmin
+  usecase "Xem danh sách danh mục" as UC_ViewCategories
+  usecase "Tạo/Cập nhật/Xóa danh mục" as UC_CategoryCrud
+  usecase "Xóa vĩnh viễn sản phẩm vi phạm" as UC_RemoveViolatedProducts
+}
+
+Admin -- UC_ViewAdminDashboard
+Admin -- UC_UserAdmin
+Admin -- UC_ShopAdmin
+Admin -- UC_CategoryAdmin
+Admin -- UC_RemoveViolatedProducts
+
+UC_UserAdmin .> UC_ViewUsers : <<include>>
+UC_UserAdmin .> UC_UpdateUserStatus : <<include>>
+UC_ShopAdmin .> UC_ViewShops : <<include>>
+UC_CategoryAdmin .> UC_ViewCategories : <<include>>
+UC_CategoryAdmin .> UC_CategoryCrud : <<include>>
+
+@enduml

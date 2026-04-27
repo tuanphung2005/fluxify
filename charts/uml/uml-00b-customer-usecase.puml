@@ -1,0 +1,84 @@
+@startuml uml-00b-customer-usecase
+skinparam backgroundColor #FCFCFC
+skinparam defaultFontName Segoe UI
+skinparam dpi 150
+skinparam shadowing false
+skinparam linetype ortho
+skinparam ArrowColor #4B5563
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam actor {
+  BorderColor #1E293B
+  FontColor #0F172A
+}
+
+skinparam rectangle<<system>> {
+  BackgroundColor #E0F2FE
+  BorderColor #0C4A6E
+}
+
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+title Fluxify UML - Use Case Khách hàng
+
+left to right direction
+
+actor "Khách hàng" as Customer
+actor "Resend" as Resend
+actor "VietQR" as VietQR
+
+rectangle "Hệ thống Fluxify" <<system>> {
+  usecase "Xem dashboard cá nhân" as UC_ViewPersonalDashboard
+  usecase "Quản lý giỏ hàng" as UC_ManageCart
+  usecase "Quản lý wishlist" as UC_ManageWishlist
+  usecase "Yêu thích cửa hàng" as UC_FavoriteShop
+  usecase "Áp dụng mã giảm giá" as UC_ApplyCoupon
+  usecase "Đặt hàng" as UC_Checkout
+  usecase "Xem QR thanh toán" as UC_ViewPaymentQR
+  usecase "Kiểm tra tồn kho và tạo giao dịch" as UC_StockTxn
+  usecase "Xem đơn hàng cá nhân" as UC_TrackOrder
+  usecase "Hủy đơn hàng" as UC_CancelOrder
+  usecase "Nhận email biên nhận" as UC_ReceiveReceipt
+  usecase "Gửi biên nhận đơn hàng" as UC_SendReceipt
+  usecase "Bắt đầu/Xem cuộc trò chuyện" as UC_Conversation
+  usecase "Xem/Gửi tin nhắn" as UC_Messaging
+  usecase "Xem số tin nhắn chưa đọc" as UC_ViewUnread
+  usecase "Viết đánh giá sản phẩm" as UC_WriteReview
+}
+
+Customer -- UC_ViewPersonalDashboard
+Customer -- UC_ManageCart
+Customer -- UC_ManageWishlist
+Customer -- UC_FavoriteShop
+Customer -- UC_ApplyCoupon
+Customer -- UC_Checkout
+Customer -- UC_TrackOrder
+Customer -- UC_CancelOrder
+Customer -- UC_ReceiveReceipt
+Customer -- UC_Conversation
+Customer -- UC_Messaging
+Customer -- UC_ViewUnread
+Customer -- UC_WriteReview
+
+UC_Checkout .> UC_ViewPaymentQR : <<include>>
+UC_Checkout .> UC_StockTxn : <<include>>
+UC_ApplyCoupon .> UC_Checkout : <<extend>>
+UC_CancelOrder .> UC_TrackOrder : <<extend>>
+UC_ReceiveReceipt .> UC_SendReceipt : <<include>>
+
+Resend -- UC_SendReceipt
+VietQR -- UC_ViewPaymentQR
+
+@enduml
