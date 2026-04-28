@@ -1,93 +1,154 @@
 # 06. Kiến trúc, Mẫu kiến trúc và Mẫu thiết kế
 
-Tài liệu này chốt rõ loại kiến trúc, mẫu kiến trúc và các design pattern đang được dùng thực tế trong mã nguồn Fluxify để bám sát rubric của đề tài.
+## Mục tiêu chương
+
+Chương này giải thích theo cách dễ hiểu ba nội dung chính của Fluxify:
+1. Hệ thống đang dùng loại kiến trúc nào.
+2. Cách tổ chức các lớp chức năng trong kiến trúc đó.
+3. Các mẫu thiết kế (design pattern) tiêu biểu theo ba nhóm: tạo dựng, cấu trúc, hành vi.
+
+Nội dung được trình bày theo phong cách báo cáo: định nghĩa ngắn gọn, cách áp dụng trong dự án và lợi ích thực tế.
 
 ## 1. Kiến trúc hệ thống được chọn
 
-Fluxify chọn **kiến trúc nguyên khối mô-đun (modular monolith)**, thuộc nhóm **Monolith**.
+Fluxify chọn **kiến trúc nguyên khối mô-đun (modular monolith)**.
 
-| Phương án | Mức phù hợp với dự án | Nhận xét |
+Hiểu đơn giản:
+1. Toàn bộ hệ thống chạy trong một ứng dụng duy nhất.
+2. Bên trong ứng dụng, chức năng vẫn được chia thành nhiều mô-đun theo nghiệp vụ.
+3. Các mô-đun chia sẻ cùng dữ liệu và cùng cơ chế xác thực.
+
+### So sánh phương án kiến trúc
+
+| Phương án | Mức phù hợp với đề tài | Giải thích ngắn gọn |
 |---|---|---|
-| Monolith (được chọn) | Cao | Một codebase Next.js, một pipeline build/deploy, dễ truy vết toàn bộ luồng UI -> API -> DB trong phạm vi đồ án |
-| SOA | Trung bình | Có thể tách theo dịch vụ nghiệp vụ, nhưng làm tăng chi phí tích hợp và vận hành khi nhóm phát triển nhỏ |
-| Microservice | Thấp ở giai đoạn hiện tại | Đòi hỏi triển khai, giám sát, phân tán giao dịch và quản trị hạ tầng phức tạp hơn nhu cầu môn học |
+| Monolith mô-đun (được chọn) | Cao | Triển khai đơn giản, dễ theo dõi toàn bộ luồng xử lý từ giao diện đến dữ liệu |
+| SOA | Trung bình | Có thể tách dịch vụ, nhưng tăng chi phí tích hợp và quản lý vận hành |
+| Microservice | Thấp ở giai đoạn hiện tại | Mạnh về mở rộng lớn, nhưng phức tạp hơn nhu cầu của đồ án |
 
-### Minh chứng trong mã nguồn
+### Vì sao lựa chọn này hợp lý
 
-- Ứng dụng được đóng gói như một đơn vị triển khai duy nhất qua [Dockerfile](../../Dockerfile) và [package.json](../../package.json).
-- Giao diện, API và xác thực cùng nằm trong một codebase Next.js:
-  - [app/(main)](../../app/(main))
-  - [app/vendor](../../app/vendor)
-  - [app/admin](../../app/admin)
-  - [app/api](../../app/api)
-  - [middleware.ts](../../middleware.ts)
-- Lớp dữ liệu tập trung qua [lib/prisma.ts](../../lib/prisma.ts) và [prisma/schema.prisma](../../prisma/schema.prisma).
+1. Hệ thống có nhiều vai trò (khách hàng, vendor, admin) nhưng vẫn cần triển khai nhanh và ổn định.
+2. Đội phát triển quy mô nhỏ, ưu tiên tốc độ hoàn thiện chức năng trước khi tối ưu hạ tầng phân tán.
+3. Mô hình monolith mô-đun vẫn cho phép tách rõ nghiệp vụ mà không làm tăng độ phức tạp vận hành.
 
-Kết luận: hệ thống không tách thành nhiều service độc lập theo kiểu SOA hoặc microservice; thay vào đó, các miền nghiệp vụ được chia mô-đun ngay trong cùng ứng dụng.
+Kết luận: với phạm vi hiện tại, modular monolith là lựa chọn cân bằng tốt giữa **tốc độ phát triển**, **độ ổn định** và **chi phí vận hành**.
 
 ## 2. Mẫu kiến trúc được chọn
 
-Mẫu kiến trúc chủ đạo là **N-layered architecture** triển khai bên trong modular monolith.
+Fluxify tổ chức theo **N-layered architecture** bên trong monolith.
 
-| Lớp logic | Trách nhiệm chính | Minh chứng mã nguồn |
+Hiểu đơn giản, hệ thống được chia theo tầng để mỗi tầng làm đúng một nhóm việc.
+
+| Tầng | Chức năng chính | Người đọc có thể hình dung như sau |
 |---|---|---|
-| Presentation | Render giao diện, điều hướng, nhận thao tác người dùng | [app/(main)](../../app/(main)), [app/vendor](../../app/vendor), [app/admin](../../app/admin), [components](../../components) |
-| Interface/API | Nhận request, kiểm tra phiên, kiểm soát truy cập, chuẩn hóa phản hồi | [app/api](../../app/api), [middleware.ts](../../middleware.ts), [lib/api/responses.ts](../../lib/api/responses.ts) |
-| Business/Application | Thực thi use case, quy tắc nghiệp vụ, validation và orchestration | [lib/db](../../lib/db), [lib/api](../../lib/api), [lib/validations.ts](../../lib/validations.ts), [lib/variant-utils.ts](../../lib/variant-utils.ts) |
-| Data/Infrastructure | ORM, schema dữ liệu, tích hợp dịch vụ ngoài | [lib/prisma.ts](../../lib/prisma.ts), [prisma/schema.prisma](../../prisma/schema.prisma), [lib/cloudinary.ts](../../lib/cloudinary.ts), [lib/vietqr.ts](../../lib/vietqr.ts), [lib/resend.ts](../../lib/resend.ts) |
+| Presentation | Hiển thị giao diện và nhận thao tác | Trang cho khách hàng, vendor, admin và các thành phần UI |
+| API/Interface | Nhận request và kiểm soát truy cập | Kiểm tra đăng nhập, vai trò, chuẩn hóa phản hồi |
+| Business/Application | Xử lý quy tắc nghiệp vụ | Kiểm tra dữ liệu, điều phối các bước xử lý use case |
+| Data/Infrastructure | Làm việc với dữ liệu và dịch vụ ngoài | Ghi đọc database, gửi email, upload ảnh, rate limit, QR thanh toán |
 
-### Luồng điển hình giữa các lớp
+### Ví dụ luồng điển hình: tạo đơn hàng
 
-Luồng đặt hàng trong [app/api/orders/route.ts](../../app/api/orders/route.ts) thể hiện rõ các lớp:
-1. API layer nhận request và áp dụng rate limit.
-2. Validation kiểm tra payload qua `orderSchema`.
-3. Business logic điều phối tạo user, tạo địa chỉ, kiểm tra tồn kho, tạo đơn.
-4. Data layer dùng Prisma transaction để ghi dữ liệu nguyên tử.
+1. Người dùng gửi yêu cầu đặt hàng từ giao diện.
+2. API nhận yêu cầu, kiểm tra điều kiện truy cập và giới hạn tần suất.
+3. Tầng nghiệp vụ kiểm tra dữ liệu đầu vào và tồn kho.
+4. Tầng dữ liệu ghi các thay đổi trong transaction để đảm bảo nhất quán.
+5. API trả kết quả theo một định dạng thống nhất để giao diện xử lý.
 
-### Vì sao không chọn mẫu khác làm mẫu chính
+Ý nghĩa của N-layered: mỗi tầng rõ trách nhiệm, nên hệ thống dễ bảo trì và dễ mở rộng chức năng mới.
 
-- **MVC**: có xuất hiện cục bộ ở mức route/page/component, nhưng toàn hệ thống không tổ chức theo controller-model-view một cách chặt chẽ.
-- **CQRS**: có tách tương đối giữa luồng đọc và ghi qua các module query/helper, nhưng chưa tách read model, write model, bus hoặc datastore riêng.
-- **Clean Architecture + Dependency Injection**: có một vài điểm đảo ngược phụ thuộc cục bộ, nhưng chưa có DI container hay vòng phụ thuộc được kiểm soát theo đúng mô hình clean architecture nghiêm ngặt.
+## 3. Mẫu thiết kế theo 3 nhóm chính
 
-Kết luận: mô tả chính xác nhất cho Fluxify ở thời điểm hiện tại là **Monolith + N-layered**.
-
-## 3. Mẫu thiết kế đang dùng trong mã nguồn
+Phần này tập trung vào câu hỏi: Fluxify dùng pattern nào và pattern đó giải quyết vấn đề gì trong thực tế.
 
 ### 3.1. Nhóm tạo dựng (Creational)
 
-| Mẫu | Mục đích | Minh chứng |
-|---|---|---|
-| Singleton | Dùng một thể hiện chia sẻ để tránh tạo client lặp lại | [lib/prisma.ts](../../lib/prisma.ts) dùng `globalThis.prisma`; [lib/resend.ts](../../lib/resend.ts) lazy-init một instance `Resend` |
-| Factory Method / Simple Factory | Tạo đúng implementation tùy môi trường chạy | `getRateLimitStore()` trong [lib/api/rate-limit.ts](../../lib/api/rate-limit.ts) chọn `InMemoryRateLimitStore` hoặc `RedisRateLimitStore` theo `REDIS_URL` |
+Nhóm này trả lời: tạo đối tượng thế nào để tiết kiệm tài nguyên và tránh lỗi.
+
+| Pattern | Hiểu đơn giản | Fluxify áp dụng | Lợi ích chính |
+|---|---|---|---|
+| Singleton | Chỉ giữ một instance dùng chung | Các client hạ tầng quan trọng được tái sử dụng thay vì tạo mới liên tục | Giảm tải tài nguyên, giảm lỗi kết nối |
+| Lazy Initialization | Khi nào cần mới tạo | Dịch vụ ngoài chỉ khởi tạo tại thời điểm thực sự sử dụng | Khởi động nhanh hơn, giảm chi phí ban đầu |
+| Factory Method | Chọn cách tạo theo ngữ cảnh | Backend rate limit được chọn theo môi trường triển khai | Linh hoạt, không sửa nghiệp vụ khi đổi hạ tầng |
+| Object Pool | Tái sử dụng tài nguyên đắt đỏ | Kết nối dữ liệu được quản lý theo pool | Tăng hiệu năng, ổn định khi nhiều request đồng thời |
+
+Diễn giải dễ hiểu:
+1. Thay vì tạo mới mọi thứ ở mỗi request, hệ thống tái sử dụng tài nguyên có kiểm soát.
+2. Điều này đặc biệt quan trọng với đối tượng tốn kém như kết nối cơ sở dữ liệu hoặc client dịch vụ ngoài.
 
 ### 3.2. Nhóm cấu trúc (Structural)
 
-| Mẫu | Mục đích | Minh chứng |
-|---|---|---|
-| Facade | Bao bọc API ngoài bằng interface đơn giản hơn cho phần còn lại của hệ thống | [lib/cloudinary.ts](../../lib/cloudinary.ts) cung cấp `uploadToCloudinary()` và `deleteFromCloudinary()`; [lib/vietqr.ts](../../lib/vietqr.ts) cung cấp `generateVietQRUrl()` và `fetchVietQRBanks()` |
+Nhóm này trả lời: ghép các phần của hệ thống thế nào để dễ thay đổi và ít phụ thuộc chéo.
+
+| Pattern | Hiểu đơn giản | Fluxify áp dụng | Lợi ích chính |
+|---|---|---|---|
+| Facade | Đưa ra một "cửa vào" đơn giản | Lớp gọi API thống nhất và lớp tiện ích tích hợp dịch vụ ngoài | Giảm độ phức tạp cho tầng giao diện |
+| Adapter | Nối hai phần không cùng chuẩn | Lớp truy cập dữ liệu dùng adapter để kết hợp ORM với driver kết nối | Tận dụng ưu điểm của nhiều công nghệ cùng lúc |
+| Decorator/Wrapper | Bọc thêm chức năng mà không sửa lõi | Store và component được bọc thêm hành vi như persist, loading, chọn thành phần | Mở rộng nhanh, ít rủi ro phá chức năng cũ |
+| Composite-like | Xử lý nhiều phần tử như một cấu trúc chung | Shop được dựng từ danh sách block có cùng hợp đồng dữ liệu | Dễ thêm block mới, dễ sắp xếp và render động |
+
+Diễn giải dễ hiểu:
+1. Nhóm cấu trúc giúp hệ thống "ghép khối" tốt hơn.
+2. Khi cần thay đổi một phần, ảnh hưởng lan sang phần khác sẽ giảm rõ rệt.
 
 ### 3.3. Nhóm hành vi (Behavioral)
 
-| Mẫu | Mục đích | Minh chứng |
-|---|---|---|
-| Strategy | Hoán đổi thuật toán/lưu trữ rate limit tại runtime mà không đổi luồng xử lý bên trên | `RateLimitStore` cùng hai chiến lược `InMemoryRateLimitStore` và `RedisRateLimitStore` trong [lib/api/rate-limit.ts](../../lib/api/rate-limit.ts) |
+Nhóm này trả lời: các thành phần trao đổi dữ liệu và phối hợp xử lý như thế nào trong runtime.
 
-## 4. Liên kết tới các sơ đồ liên quan
+| Pattern | Hiểu đơn giản | Fluxify áp dụng | Lợi ích chính |
+|---|---|---|---|
+| Strategy | Chọn cách xử lý phù hợp từng tình huống | Chọn chiến lược lưu rate limit, chọn cách fetch/validate theo ngữ cảnh | Giảm rẽ nhánh cứng, dễ thay thuật toán |
+| Observer (Pub-Sub) | Một nơi phát sự kiện, nơi khác tự nhận | Đồng bộ trạng thái chat và đăng xuất giữa nhiều tab trình duyệt | Cập nhật trạng thái nhanh, ít thao tác thủ công |
+| Chain of Responsibility | Kiểm tra theo chuỗi, sai là dừng sớm | Bảo vệ route theo các bước: trạng thái tài khoản -> đăng nhập -> vai trò | Chính sách truy cập rõ ràng, dễ kiểm toán |
+| State-driven workflow | Trạng thái đổi thì hành vi đổi theo | Luồng builder/giỏ hàng vận hành theo các trạng thái xử lý | UI phản hồi đúng ngữ cảnh, giảm lỗi thao tác |
 
-- [Use Case Diagram](../../charts/uml/uml-00-system-usecase-diagram.puml)
-- [Class Diagram](../../charts/uml/uml-01-domain-class-model.puml)
-- [Activity Diagram - Vòng đời sản phẩm](../../charts/uml/uml-06-product-lifecycle-activity.puml)
-- [Activity Diagram - Vòng đời mẫu cửa hàng](../../charts/uml/uml-08-shop-template-lifecycle-activity.puml)
-- [C4 Level 1 - Ngữ cảnh hệ thống](../../charts/c4/c4-01-system-context.puml)
-- [C4 Level 2 - Container](../../charts/c4/c4-02-container-view.puml)
+Diễn giải dễ hiểu:
+1. Nhóm hành vi làm rõ cách hệ thống "ra quyết định" khi đang chạy.
+2. Nhờ vậy, trải nghiệm người dùng ổn định hơn và logic nghiệp vụ dễ kiểm soát hơn.
 
-## 5. Kết luận ngắn gọn để trình bày
+## 4. Kịch bản thực tế để kiểm chứng
 
-Khi bảo vệ, có thể chốt ngắn như sau:
-- Fluxify là **modular monolith**.
-- Mẫu kiến trúc chính là **N-layered architecture**.
-- Design pattern tiêu biểu gồm:
-  - **Creational**: Singleton, Factory Method
-  - **Structural**: Facade
-  - **Behavioral**: Strategy
+### Kịch bản 1: Vendor dựng trang shop
+
+1. Vendor thêm các block nội dung để xây trang.
+2. Hệ thống cho phản hồi giao diện ngay để thao tác mượt.
+3. Khi lưu, dữ liệu được đồng bộ theo transaction để tránh lệch thứ tự hoặc mất block.
+
+Ý nghĩa: kết hợp tốt giữa trải nghiệm realtime và tính nhất quán dữ liệu.
+
+### Kịch bản 2: Đồng bộ thông báo chat chưa đọc
+
+1. Khi có thay đổi chat, một tab phát sự kiện.
+2. Tab khác nhận sự kiện và cập nhật số lượng chưa đọc.
+
+Ý nghĩa: người dùng mở nhiều tab vẫn thấy cùng một trạng thái.
+
+### Kịch bản 3: Đăng xuất trên nhiều tab
+
+1. Tab đăng xuất phát tín hiệu toàn cục.
+2. Các tab còn lại tự cập nhật trạng thái phiên.
+
+Ý nghĩa: giảm rủi ro giữ session cũ không đồng bộ.
+
+### Kịch bản 4: Bảo vệ khu vực quản trị
+
+1. Chưa đăng nhập thì không vào được khu vực cần quyền.
+2. Đăng nhập nhưng sai vai trò cũng không truy cập được.
+3. Tài khoản bị vô hiệu hóa bị chặn và được điều hướng phù hợp.
+
+Ý nghĩa: bảo mật theo nguyên tắc kiểm tra nhiều lớp.
+
+### Kịch bản 5: Tăng độ bền khi gọi API
+
+1. Request có timeout và cơ chế retry khi lỗi mạng tạm thời.
+2. Lỗi không nên retry (đa số 4xx) được dừng sớm để tránh tạo tải thừa.
+
+Ý nghĩa: hệ thống ổn định hơn khi mạng không tốt hoặc tải cao.
+
+## 5. Kết luận chương
+
+1. Fluxify phù hợp với **modular monolith** trong bối cảnh đồ án hiện tại.
+2. **N-layered architecture** giúp phân tầng trách nhiệm rõ ràng, dễ bảo trì.
+3. Ba nhóm pattern được áp dụng nhất quán, gồm: tạo dựng (tối ưu cách tạo và tái sử dụng đối tượng), cấu trúc (giảm phụ thuộc và tăng khả năng thay đổi thành phần), và hành vi (điều phối xử lý linh hoạt theo trạng thái và ngữ cảnh runtime).
+
+Chốt lại, cách thiết kế hiện tại giúp hệ thống đạt ba mục tiêu quan trọng: **dễ phát triển**, **dễ vận hành**, **dễ mở rộng theo từng giai đoạn**.
